@@ -25,7 +25,7 @@ import {
   VolumeXIcon,
 } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const AudioPlayer = () => {
   const {
@@ -42,8 +42,9 @@ const AudioPlayer = () => {
   const [tempTime, setTempTime] = useState(0);
   const [isMuted, setIsMuted] = useState(false);
   const [volume, setVolume] = useState(1); // 0.0 - 1.0
-
-  const hasLastTrackPlayed = localStorage.getItem("lastTrack");
+  const [hasLastTrackPlayed, setHasLastTrackPlayed] = useState<string | null>(
+    null
+  );
 
   const handleValueChange = (values: number[]) => {
     setTempTime(values[0]);
@@ -82,6 +83,13 @@ const AudioPlayer = () => {
     if (volume <= 0.5) return <Volume1Icon size={16} />;
     return <Volume2Icon size={16} />;
   };
+
+  useEffect(() => {
+    const lastTrack = localStorage.getItem("lastTrack");
+    if (lastTrack) {
+      setHasLastTrackPlayed(lastTrack);
+    }
+  }, []);
 
   if (hasLastTrackPlayed) {
     return (

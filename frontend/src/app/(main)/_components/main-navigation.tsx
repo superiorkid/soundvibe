@@ -23,7 +23,7 @@ const MainNavigation = () => {
   const menus = useMainMenu();
 
   return (
-    <header className="px-4 md:px-6">
+    <header className="px-4 md:px-6 sticky top-0 bg-background z-50">
       <div className="flex h-12 justify-between gap-4">
         {/* Left side */}
         <div className="flex gap-2">
