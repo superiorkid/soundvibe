@@ -39,9 +39,9 @@ const AudioPlayer = () => {
   };
 
   return (
-    <div className="fixed bottom-0 left-0 w-full h-14 border-t px-5 2xl:px-0 bg-zinc-100">
+    <div className="fixed bottom-0 left-0 w-full h-13 border-t px-5 2xl:px-0 bg-zinc-100">
       <div className="max-w-7xl mx-auto h-full flex items-center gap-8">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-5">
           <button>
             <SkipBackIcon size={19} fill="black" />
           </button>
@@ -82,7 +82,7 @@ const AudioPlayer = () => {
 
         {currentTrack && (
           <div className="flex items-center gap-6">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-4">
               <div className="relative w-9 h-10">
                 <Image
                   fill

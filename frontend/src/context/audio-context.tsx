@@ -61,7 +61,7 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
       audio.removeEventListener("durationchange", updateDuration);
       audio.removeEventListener("ended", handleEnded);
     };
-  }, []);
+  }, [setCurrentTime]);
 
   const playTrack = (track: TTrack | null, startTime = 0) => {
     if (track === null) {

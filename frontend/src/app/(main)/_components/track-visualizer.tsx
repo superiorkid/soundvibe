@@ -50,6 +50,7 @@ const TrackVisualizer = ({ audio }: TrackVisualizerProps) => {
     return progressGradient;
   };
 
+  // Initialize waveform
   useEffect(() => {
     if (!containerRef.current) return;
 
@@ -88,6 +89,7 @@ const TrackVisualizer = ({ audio }: TrackVisualizerProps) => {
     };
   }, [audio.audioSrc]);
 
+  // Sync current time (local + global) in real time
   useEffect(() => {
     if (!wavesurfer || !audioRef.current) return;
     const audioEl = audioRef.current;
@@ -95,8 +97,8 @@ const TrackVisualizer = ({ audio }: TrackVisualizerProps) => {
     const updateProgress = () => {
       if (currentTrack?.audioSrc === audio.audioSrc) {
         const progress = audioEl.currentTime / audioEl.duration || 0;
-        setCurrentTime(audioEl.currentTime);
-        setGlobalCurrentTime(audioEl.currentTime);
+        setCurrentTime(audioEl.currentTime); // local state
+        setGlobalCurrentTime(audioEl.currentTime); // global state
         wavesurfer.seekTo(progress);
       }
     };
@@ -122,6 +124,7 @@ const TrackVisualizer = ({ audio }: TrackVisualizerProps) => {
     setGlobalCurrentTime,
   ]);
 
+  // Reset when track changes
   useEffect(() => {
     if (currentTrack?.audioSrc !== audio.audioSrc) {
       setCurrentTime(0);
@@ -129,6 +132,7 @@ const TrackVisualizer = ({ audio }: TrackVisualizerProps) => {
     }
   }, [currentTrack, audio.audioSrc, wavesurfer]);
 
+  // Handle click-to-seek + play
   useEffect(() => {
     if (!wavesurfer) return;
 
@@ -149,6 +153,7 @@ const TrackVisualizer = ({ audio }: TrackVisualizerProps) => {
     };
   }, [wavesurfer, audioRef, currentTrack, audio, playTrack]);
 
+  // Hover effect
   useEffect(() => {
     if (!hoverRef.current || !containerRef.current) return;
 

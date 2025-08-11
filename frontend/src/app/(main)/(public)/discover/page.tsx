@@ -24,7 +24,7 @@ const dummyAudios = [
 const DiscoverPage = () => {
   return (
     <div className="space-y-6">
-      <PageTitle className="2xl:text-3xl font-semibold text-2xl">
+      <PageTitle className="2xl:text-2xl font-semibold text-xl">
         Discover Tracks and Playlist
       </PageTitle>
 
