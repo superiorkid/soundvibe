@@ -86,6 +86,7 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
     setCurrentTime(startTime);
     audioRef.current.play();
     setIsPlaying(true);
+    localStorage.setItem("lastTrack", JSON.stringify(track));
   };
 
   const togglePlay = () => {
@@ -108,6 +109,17 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
   const resetTrack = () => {
     playTrack(null);
   };
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("lastTrack");
+      if (stored) {
+        setCurrentTrack(JSON.parse(stored) as TTrack);
+      }
+    } catch (error) {
+      console.error("Failed to parse lastTrack from localStorage", error);
+    }
+  }, []);
 
   return (
     <AudioContext.Provider
