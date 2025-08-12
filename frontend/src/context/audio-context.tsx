@@ -90,7 +90,15 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const togglePlay = () => {
-    if (!audioRef.current) return;
+    if (!audioRef.current) {
+      const storedTrack = localStorage.getItem("lastTrack");
+      if (storedTrack) {
+        const parsedTrack: TTrack = JSON.parse(storedTrack);
+        playTrack(parsedTrack, currentTime || 0);
+      }
+      return;
+    }
+
     if (audioRef.current.paused) {
       audioRef.current.play();
       setIsPlaying(true);
