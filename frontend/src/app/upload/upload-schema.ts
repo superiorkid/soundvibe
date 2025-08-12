@@ -24,7 +24,6 @@ export const uploadSchema = z.object({
       error: "Invalid audio format. Allowed: WAV, FLAC, AIFF, ALAC, MP3",
     }),
   title: z.string().min(1, { error: "Title is required" }),
-  prefix: z.string().min(1, { error: "Prefix is required" }),
   genre: z.string().min(1, { error: "Genre is required" }),
   additionalTags: z
     .array(z.object({ id: z.string().min(1), text: z.string().min(1) }))

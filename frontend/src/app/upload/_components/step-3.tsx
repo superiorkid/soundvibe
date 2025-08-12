@@ -43,12 +43,6 @@ const Step3 = ({ onBack }: Step3Props) => {
             <dd className="col-span-2">{values.title || "-"}</dd>
           </div>
 
-          {/* Prefix */}
-          <div className="px-4 py-3 grid grid-cols-3 gap-4">
-            <dt className="font-medium">Prefix</dt>
-            <dd className="col-span-2">{values.prefix || "-"}</dd>
-          </div>
-
           {/* Genre */}
           <div className="px-4 py-3 grid grid-cols-3 gap-4">
             <dt className="font-medium">Genre</dt>

@@ -6,8 +6,11 @@ import { AlertCircleIcon, AudioLinesIcon, UploadIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useFormContext } from "react-hook-form";
 import { H3, P } from "shadcn-typography";
-import { ACCEPTED_AUDIO_TYPES, TUploadSchema } from "../upload-schema";
-import { useEffect } from "react";
+import {
+  ACCEPTED_AUDIO_TYPES,
+  MAX_AUDIO_SIZE,
+  TUploadSchema,
+} from "../upload-schema";
 
 interface Step1Props {
   onNext: () => void;
@@ -16,9 +19,6 @@ interface Step1Props {
 const Step1 = ({ onNext }: Step1Props) => {
   const router = useRouter();
   const form = useFormContext<TUploadSchema>();
-
-  const maxSizeMB = 100;
-  const maxSize = maxSizeMB * 1024 * 1024; // 100MB
 
   const onCancel = () => {
     const confirmed = window.confirm(
@@ -42,7 +42,7 @@ const Step1 = ({ onNext }: Step1Props) => {
     },
   ] = useFileUpload({
     accept: ACCEPTED_AUDIO_TYPES.join(","),
-    maxSize,
+    maxSize: MAX_AUDIO_SIZE,
     onFilesChange: (files) => {
       form.setValue("audio", files.at(0)?.file as File);
     },
@@ -52,7 +52,7 @@ const Step1 = ({ onNext }: Step1Props) => {
   const fileName = files[0]?.file.name || audioFile?.name || null;
 
   return (
-    <div className="space-y-8 mt-5">
+    <div className="space-y-8">
       <div className="space-y-3">
         <H3 className="text-3xl font-bold">Upload your audio files.</H3>
         <P className="text-muted-foreground tracking-wide font-medium">

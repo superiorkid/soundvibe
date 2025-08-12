@@ -17,12 +17,19 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Tag, TagInput } from "emblor";
-import { CameraIcon, PencilIcon } from "lucide-react";
-import { useState } from "react";
+import { useDebounce } from "@/hooks/use-debounce";
+import { useFileUpload } from "@/hooks/use-file-upload";
+import { TagInput } from "emblor";
+import { AlertCircleIcon, CameraIcon, XIcon } from "lucide-react";
+import Image from "next/image";
+import { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { H3, P } from "shadcn-typography";
-import { TUploadSchema } from "../upload-schema";
+import {
+  ACCEPTED_IMAGE_TYPES,
+  MAX_COVER_SIZE,
+  TUploadSchema,
+} from "../upload-schema";
 
 interface Step2Props {
   onNext: () => void;
@@ -30,10 +37,61 @@ interface Step2Props {
 }
 
 const Step2 = ({ onNext, onBack }: Step2Props) => {
-  const [exampleTags, setExampleTags] = useState<Tag[]>([]);
   const [activeTagIndex, setActiveTagIndex] = useState<number | null>(null);
 
   const form = useFormContext<TUploadSchema>();
+
+  const [
+    { files, isDragging, errors },
+    {
+      handleDragEnter,
+      handleDragLeave,
+      handleDragOver,
+      handleDrop,
+      openFileDialog,
+      removeFile,
+      getInputProps,
+    },
+  ] = useFileUpload({
+    accept: ACCEPTED_IMAGE_TYPES.join(","),
+    maxSize: MAX_COVER_SIZE,
+    onFilesChange: (files) => {
+      form.setValue("cover", files.at(0)?.file as File);
+    },
+  });
+
+  const coverImage = form.getValues("cover");
+
+  // State to hold preview URL from existing form cover image file
+  const [initialPreviewUrl, setInitialPreviewUrl] = useState<string | null>(
+    null
+  );
+
+  useEffect(() => {
+    if (coverImage && coverImage instanceof File) {
+      const url = URL.createObjectURL(coverImage);
+      setInitialPreviewUrl(url);
+      return () => {
+        URL.revokeObjectURL(url);
+        setInitialPreviewUrl(null);
+      };
+    } else {
+      setInitialPreviewUrl(null);
+    }
+  }, [coverImage]);
+
+  // Prefer live upload preview, fallback to initial preview URL
+  const previewUrl = files[0]?.preview || initialPreviewUrl || null;
+
+  const titleWatch = form.watch("title");
+  const debouncedTitle = useDebounce(titleWatch, 300);
+  const slugPreview = debouncedTitle
+    ? debouncedTitle
+        .toLowerCase()
+        .trim()
+        .replace(/[\s\W-]+/g, "-")
+        .replace(/^-+|-+$/g, "")
+    : "";
 
   return (
     <div className="space-y-8">
@@ -46,12 +104,67 @@ const Step2 = ({ onNext, onBack }: Step2Props) => {
       </div>
 
       <div className="flex space-x-6">
-        <div className="size-96 flex justify-center items-end pb-5 rounded-lg bg-gradient-to-b from-amber-400 to-amber-600">
-          <Button size="lg" type="button">
-            <CameraIcon size={18} strokeWidth={2} className="mr-1" />
-            Update image
-          </Button>
+        <div>
+          <div className="relative">
+            {/* Drop area */}
+            <div
+              role="button"
+              onClick={openFileDialog}
+              onDragEnter={handleDragEnter}
+              onDragLeave={handleDragLeave}
+              onDragOver={handleDragOver}
+              onDrop={handleDrop}
+              data-dragging={isDragging || undefined}
+              className="border-input hover:bg-accent/50 data-[dragging=true]:bg-accent/50 has-[input:focus]:border-ring has-[input:focus]:ring-ring/50 relative flex min-h-52 flex-col items-center justify-center overflow-hidden rounded-xl border border-dashed p-4 transition-colors has-disabled:pointer-events-none has-disabled:opacity-50 has-[img]:border-none has-[input:focus]:ring-[3px] size-80 bg-gradient-to-b from-amber-400 to-amber-600"
+            >
+              <input
+                {...getInputProps()}
+                className="sr-only"
+                aria-label="Upload file"
+              />
+              {previewUrl ? (
+                <div className="absolute inset-0">
+                  <Image
+                    fill
+                    src={previewUrl}
+                    alt={files[0]?.file?.name || "Uploaded image"}
+                    className="size-full object-cover"
+                  />
+                </div>
+              ) : (
+                <div className="flex flex-col justify-end px-4 py-3 text-center h-full">
+                  <Button size="lg" type="button" onClick={openFileDialog}>
+                    <CameraIcon size={18} strokeWidth={2} className="mr-1" />
+                    Update image
+                  </Button>
+                </div>
+              )}
+            </div>
+            {previewUrl && (
+              <div className="absolute top-4 right-4">
+                <button
+                  type="button"
+                  className="focus-visible:border-ring focus-visible:ring-ring/50 z-50 flex size-8 cursor-pointer items-center justify-center rounded-full bg-black/60 text-white transition-[color,box-shadow] outline-none hover:bg-black/80 focus-visible:ring-[3px]"
+                  onClick={() => removeFile(files[0]?.id)}
+                  aria-label="Remove image"
+                >
+                  <XIcon className="size-4" aria-hidden="true" />
+                </button>
+              </div>
+            )}
+          </div>
+
+          {errors.length > 0 && (
+            <div
+              className="text-destructive flex items-center gap-1 text-xs"
+              role="alert"
+            >
+              <AlertCircleIcon className="size-3 shrink-0" />
+              <span>{errors[0]}</span>
+            </div>
+          )}
         </div>
+
         <div className="flex-1 space-y-8">
           <div className="space-y-2">
             <FormField
@@ -72,13 +185,9 @@ const Step2 = ({ onNext, onBack }: Step2Props) => {
             />
 
             <div className="flex justify-between items-center">
-              <p className="text-muted-foreground">
-                soundcloud.com/schelpcenter/white-noise
+              <p className="text-muted-foreground select-none">
+                soundcloud.com/schelpcenter/{slugPreview || "(no slug)"}
               </p>
-              <Button variant="outline" size="icon" type="button">
-                <PencilIcon size={18} strokeWidth={2} />
-                <span className="sr-only">Edit prefix</span>
-              </Button>
             </div>
           </div>
 
@@ -100,9 +209,17 @@ const Step2 = ({ onNext, onBack }: Step2Props) => {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="m@example.com">m@example.com</SelectItem>
-                    <SelectItem value="m@google.com">m@google.com</SelectItem>
-                    <SelectItem value="m@support.com">m@support.com</SelectItem>
+                    <SelectItem value="0" disabled>
+                      Select Genre
+                    </SelectItem>
+                    <SelectItem value="pop">Pop</SelectItem>
+                    <SelectItem value="rock">Rock</SelectItem>
+                    <SelectItem value="hip-hop">Hip Hop</SelectItem>
+                    <SelectItem value="electronic">Electronic</SelectItem>
+                    <SelectItem value="jazz">Jazz</SelectItem>
+                    <SelectItem value="classical">Classical</SelectItem>
+                    <SelectItem value="country">Country</SelectItem>
+                    <SelectItem value="reggae">Reggae</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -165,8 +282,8 @@ const Step2 = ({ onNext, onBack }: Step2Props) => {
         </div>
       </div>
 
-      <div className="flex justify-end gap-2">
-        <Button type="button" onClick={onBack}>
+      <div className="flex justify-between">
+        <Button variant="outline" onClick={onBack} type="button">
           Back
         </Button>
         <Button type="button" onClick={onNext}>
