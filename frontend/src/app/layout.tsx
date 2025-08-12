@@ -1,9 +1,10 @@
+import { AudioProvider } from "@/context/audio-context";
 import { cn } from "@/lib/utils";
 import { type Metadata } from "next";
 import { Geist } from "next/font/google";
-import { AudioProvider } from "@/context/audio-context";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 
-import "./global.css";
+import "./globals.css";
 
 const geist = Geist({
   subsets: ["latin"],
@@ -27,7 +28,9 @@ export default function RootLayout({
         )}
       >
         <AudioProvider>
-          <div className="max-w-7xl mx-auto px-5 2xl:px-0">{children}</div>
+          <div className="max-w-7xl mx-auto px-5 2xl:px-0">
+            <NuqsAdapter>{children}</NuqsAdapter>
+          </div>
         </AudioProvider>
       </body>
     </html>
