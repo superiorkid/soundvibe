@@ -107,7 +107,7 @@ const DetailTrackPage = () => {
             <div className="flex justify-between items-center">
               <h1 className="font-semibold uppercase text-sm">in playlist</h1>
               <Link
-                href="#"
+                href="/username/track-title/sets"
                 className="text-xs text-muted-foreground tracking-wide"
               >
                 View all
@@ -152,7 +152,7 @@ const DetailTrackPage = () => {
             <div className="flex justify-between items-center">
               <h1 className="font-semibold uppercase text-sm">14.3K likes</h1>
               <Link
-                href="#"
+                href="/username/track-title/likes"
                 className="text-xs text-muted-foreground tracking-wide"
               >
                 View all
@@ -177,7 +177,7 @@ const DetailTrackPage = () => {
             <div className="flex justify-between items-center">
               <h1 className="font-semibold uppercase text-sm">14.3K reposts</h1>
               <Link
-                href="#"
+                href="/username/track-title/reposts"
                 className="text-xs text-muted-foreground tracking-wide"
               >
                 View all
