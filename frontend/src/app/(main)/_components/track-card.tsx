@@ -2,25 +2,14 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAudio } from "@/context/audio-context";
-import { cn } from "@/lib/utils";
 import { TTrack } from "@/types/track.type";
-import {
-  CopyIcon,
-  EllipsisIcon,
-  HeartIcon,
-  MessageSquareTextIcon,
-  PauseIcon,
-  PlayIcon,
-  SendIcon,
-  ShuffleIcon,
-  UploadIcon,
-} from "lucide-react";
+import { PauseIcon, PlayIcon } from "lucide-react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
+import Link from "next/link";
+import { PlayerActions } from "./player-actions";
 
 const TrackVisualizer = dynamic(() => import("./track-visualizer"), {
   ssr: false,
@@ -87,10 +76,10 @@ const TrackCard = ({ audio }: TrackCardProps) => {
               </div>
               <div className="-space-y-0.5">
                 <h2 className="font-semibold text-muted-foreground">
-                  {audio.trackArtist}
+                  <Link href="/username">{audio.trackArtist}</Link>
                 </h2>
                 <p className="font-semibold tracking-tight">
-                  {audio.trackTitle}
+                  <Link href="/username/track-title">{audio.trackTitle}</Link>
                 </p>
               </div>
             </div>
@@ -104,54 +93,7 @@ const TrackCard = ({ audio }: TrackCardProps) => {
             </div>
           </div>
           <TrackVisualizer audio={audio} />
-          <div className={cn(isThisTrackPlaying ? "space-y-2.5" : "space-y-0")}>
-            {isThisTrackPlaying && (
-              <div className="flex space-x-4 items-center">
-                <Avatar>
-                  <AvatarImage src="https://github.com/shadcn.png" />
-                  <AvatarFallback>CN</AvatarFallback>
-                </Avatar>
-                <Input
-                  placeholder="Write a comment"
-                  className="bg-zinc-100 rounded-sm h-8"
-                />
-                <button>
-                  <SendIcon size={20} strokeWidth={2} />
-                </button>
-              </div>
-            )}
-            <div className="flex justify-between items-center">
-              <div className="flex space-x-3.5 items-center">
-                <Button variant="secondary" size="sm">
-                  <HeartIcon strokeWidth={2} size={16} className="mr-1" />
-                  518
-                </Button>
-                <Button variant="secondary" size="sm">
-                  <ShuffleIcon strokeWidth={2} size={16} className="mr-1" />
-                  47
-                </Button>
-                <Button variant="secondary" size="icon">
-                  <UploadIcon strokeWidth={2} size={16} />
-                </Button>
-                <Button variant="secondary" size="sm">
-                  <CopyIcon strokeWidth={2} size={16} />
-                </Button>
-                <Button variant="secondary" size="sm">
-                  <EllipsisIcon strokeWidth={2} size={16} />
-                </Button>
-              </div>
-              <div className="flex space-x-3 items-center text-xs text-muted-foreground">
-                <Label>
-                  <PlayIcon size={16} />
-                  2,262
-                </Label>
-                <Label>
-                  <MessageSquareTextIcon size={16} />
-                  40
-                </Label>
-              </div>
-            </div>
-          </div>
+          <PlayerActions showComment={isThisTrackPlaying} />
         </div>
       </div>
     </div>

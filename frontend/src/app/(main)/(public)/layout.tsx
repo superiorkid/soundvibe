@@ -1,4 +1,3 @@
-import AuthDialog from "@/app/_components/auth-dialog";
 import React from "react";
 
 interface PublicLayoutProps {
@@ -7,7 +6,7 @@ interface PublicLayoutProps {
 
 const PublicLayout = ({ children }: PublicLayoutProps) => {
   return (
-    <div className="flex space-x-10">
+    <div className="flex space-x-10 mt-5">
       <div className="flex-1">{children}</div>
 
       <aside className="w-96 text-sm text-gray-700">

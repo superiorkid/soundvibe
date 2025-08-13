@@ -8,9 +8,25 @@ import WaveSurfer from "wavesurfer.js";
 
 interface TrackVisualizerProps {
   audio: TTrack;
+  height?: number;
+  barWidth?: number;
+  barGap?: number;
+  cursorColor?: string;
+  waveColor?: string | CanvasGradient;
+  progressColor?: string | CanvasGradient;
+  hoverOverlayColor?: string;
 }
 
-const TrackVisualizer = ({ audio }: TrackVisualizerProps) => {
+const TrackVisualizer = ({
+  audio,
+  height = 50,
+  barWidth = 2,
+  barGap = 1.3,
+  cursorColor = "#f43f5e",
+  waveColor,
+  progressColor,
+  hoverOverlayColor = "rgba(255,255,255,0.5)",
+}: TrackVisualizerProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const hoverRef = useRef<HTMLDivElement>(null);
   const {
@@ -25,7 +41,10 @@ const TrackVisualizer = ({ audio }: TrackVisualizerProps) => {
   const [currentTime, setCurrentTime] = useState(0);
   const [loading, setLoading] = useState(true);
 
-  const createGradient = (ctx: CanvasRenderingContext2D, height: number) => {
+  const createDefaultGradient = (
+    ctx: CanvasRenderingContext2D,
+    height: number
+  ) => {
     const gradient = ctx.createLinearGradient(0, 0, 0, height * 1.35);
     gradient.addColorStop(0, "#656666");
     gradient.addColorStop((height * 0.7) / height, "#656666");
@@ -36,7 +55,7 @@ const TrackVisualizer = ({ audio }: TrackVisualizerProps) => {
     return gradient;
   };
 
-  const createProgressGradient = (
+  const createDefaultProgressGradient = (
     ctx: CanvasRenderingContext2D,
     height: number
   ) => {
@@ -58,18 +77,18 @@ const TrackVisualizer = ({ audio }: TrackVisualizerProps) => {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    const height = 50;
-    const waveGradient = createGradient(ctx, height);
-    const progressGradient = createProgressGradient(ctx, height);
+    const waveColorFinal = waveColor || createDefaultGradient(ctx, height);
+    const progressColorFinal =
+      progressColor || createDefaultProgressGradient(ctx, height);
 
     const ws = WaveSurfer.create({
       container: containerRef.current,
-      waveColor: waveGradient,
-      progressColor: progressGradient,
+      waveColor: waveColorFinal,
+      progressColor: progressColorFinal,
       height,
-      barWidth: 2,
-      barGap: 1.3,
-      cursorColor: "#f43f5e",
+      barWidth,
+      barGap,
+      cursorColor,
       normalize: true,
       interact: true,
     });
@@ -87,9 +106,17 @@ const TrackVisualizer = ({ audio }: TrackVisualizerProps) => {
     return () => {
       ws.destroy();
     };
-  }, [audio.audioSrc]);
+  }, [
+    audio.audioSrc,
+    height,
+    barWidth,
+    barGap,
+    cursorColor,
+    waveColor,
+    progressColor,
+  ]);
 
-  // Sync current time (local + global) in real time
+  // Sync current time (local + global)
   useEffect(() => {
     if (!wavesurfer || !audioRef.current) return;
     const audioEl = audioRef.current;
@@ -97,8 +124,8 @@ const TrackVisualizer = ({ audio }: TrackVisualizerProps) => {
     const updateProgress = () => {
       if (currentTrack?.audioSrc === audio.audioSrc) {
         const progress = audioEl.currentTime / audioEl.duration || 0;
-        setCurrentTime(audioEl.currentTime); // local state
-        setGlobalCurrentTime(audioEl.currentTime); // global state
+        setCurrentTime(audioEl.currentTime);
+        setGlobalCurrentTime(audioEl.currentTime);
         wavesurfer.seekTo(progress);
       }
     };
@@ -132,7 +159,7 @@ const TrackVisualizer = ({ audio }: TrackVisualizerProps) => {
     }
   }, [currentTrack, audio.audioSrc, wavesurfer]);
 
-  // Handle click-to-seek + play
+  // Click-to-seek + play
   useEffect(() => {
     if (!wavesurfer) return;
 
@@ -179,7 +206,7 @@ const TrackVisualizer = ({ audio }: TrackVisualizerProps) => {
   return (
     <div
       className="relative select-none"
-      style={{ userSelect: "none", height: 50 }}
+      style={{ userSelect: "none", height }}
     >
       {loading && (
         <div
@@ -188,7 +215,7 @@ const TrackVisualizer = ({ audio }: TrackVisualizerProps) => {
             left: 0,
             top: 0,
             width: "100%",
-            height: 50,
+            height,
             backgroundColor: "#ccc",
             filter: "blur(8px)",
             borderRadius: 4,
@@ -200,7 +227,7 @@ const TrackVisualizer = ({ audio }: TrackVisualizerProps) => {
       <div
         ref={containerRef}
         className="w-full cursor-pointer relative"
-        style={{ visibility: loading ? "hidden" : "visible", height: 50 }}
+        style={{ visibility: loading ? "hidden" : "visible", height }}
       />
 
       <div
@@ -209,17 +236,18 @@ const TrackVisualizer = ({ audio }: TrackVisualizerProps) => {
           position: "absolute",
           left: 0,
           top: 0,
-          height: 50,
+          height,
           width: 0,
           pointerEvents: "none",
           mixBlendMode: "overlay",
-          backgroundColor: "rgba(255,255,255,0.5)",
+          backgroundColor: hoverOverlayColor,
           opacity: 0,
           transition: "opacity 0.2s ease",
           zIndex: 11,
         }}
       />
 
+      {/* Current Time */}
       <div
         style={{
           position: "absolute",
@@ -237,6 +265,7 @@ const TrackVisualizer = ({ audio }: TrackVisualizerProps) => {
         {formatTime(currentTime)}
       </div>
 
+      {/* Duration */}
       <div
         style={{
           position: "absolute",

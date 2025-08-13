@@ -12,7 +12,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
     <>
       <div className="grid min-h-[100dvh] grid-rows-[auto_1fr_auto] pb-20">
         <MainNavigation />
-        <main className="mt-5">{children}</main>
+        <main>{children}</main>
       </div>
       <AudioPlayer />
     </>
