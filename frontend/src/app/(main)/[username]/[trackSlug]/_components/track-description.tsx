@@ -4,7 +4,8 @@ import { Badge } from "@/components/ui/badge";
 import React, { useState } from "react";
 
 const TrackDescription = () => {
-  const [expanded, setExpanded] = useState<boolean>(false);
+  const [expanded, setExpanded] = useState(false);
+  const [tagsExpanded, setTagsExpanded] = useState(false);
 
   const fullText = `Artists: Vanotek, Eneli, N.O.A.H
 Label: Global Records
@@ -18,8 +19,11 @@ theartistunion.com/tracks/c7d12b`;
   const previewText =
     fullText.length > 100 ? fullText.slice(0, 100) + "..." : fullText;
 
+  const tags = Array.from({ length: 16 }).map((_, index) => `#tag${index}`);
+
   return (
     <div className="space-y-3.5">
+      {/* Description */}
       <p className="whitespace-pre-line leading-relaxed">
         {expanded ? fullText : previewText}
       </p>
@@ -31,17 +35,27 @@ theartistunion.com/tracks/c7d12b`;
         {expanded ? "Show less" : "Show more"}
       </button>
 
-      <div className="flex space-x-3 flex-wrap space-y-2">
-        {Array.from({ length: 16 }).map((_, index) => (
+      {/* Tags */}
+      <div className="flex flex-wrap gap-2">
+        {(tagsExpanded ? tags : tags.slice(0, 5)).map((tag, index) => (
           <Badge
             key={index}
             className="text-sm font-medium"
             variant="secondary"
           >
-            #tag{index}
+            {tag}
           </Badge>
         ))}
       </div>
+
+      {tags.length > 5 && (
+        <button
+          className="text-blue-600 text-sm font-medium hover:underline"
+          onClick={() => setTagsExpanded((prev) => !prev)}
+        >
+          {tagsExpanded ? "Show less tags" : "Show more tags"}
+        </button>
+      )}
     </div>
   );
 };
