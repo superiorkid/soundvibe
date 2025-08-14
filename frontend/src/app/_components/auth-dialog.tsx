@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import DeviconGithub from "@/components/icons/DeviconGithub";
 import DeviconGoogle from "@/components/icons/DeviconGoogle";
+import { authClient } from "@/lib/auth-client";
 
 interface AuthDialogProps {
   children: React.ReactNode;
@@ -21,6 +22,12 @@ interface AuthDialogProps {
 
 const AuthDialog = ({ children }: AuthDialogProps) => {
   const [openDialog, openDialogToggle] = useState<boolean>(false);
+
+  const handleSocialLogin = async (provider: "github" | "google") => {
+    await authClient.signIn.social({
+      provider,
+    });
+  };
 
   return (
     <Dialog open={openDialog} onOpenChange={openDialogToggle}>
@@ -47,16 +54,13 @@ const AuthDialog = ({ children }: AuthDialogProps) => {
             <SocialButton
               size="lg"
               variant="outline"
-              onClick={() => console.log("login using github")}
+              onClick={() => handleSocialLogin("github")}
             >
               <SocialButton.Icon icon={DeviconGithub} />
               <SocialButton.Text>Continue with GitHub</SocialButton.Text>
             </SocialButton>
 
-            <SocialButton
-              size="lg"
-              onClick={() => console.log("login using google")}
-            >
+            <SocialButton size="lg" onClick={() => handleSocialLogin("google")}>
               <SocialButton.Icon icon={DeviconGoogle} />
               <SocialButton.Text>Continue with Google</SocialButton.Text>
             </SocialButton>
