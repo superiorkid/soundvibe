@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { SocialButton } from "./social-button";
+import DeviconGithub from "@/components/icons/DeviconGithub";
+import DeviconGoogle from "@/components/icons/DeviconGoogle";
 import {
   Dialog,
   DialogContent,
@@ -12,9 +12,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import DeviconGithub from "@/components/icons/DeviconGithub";
-import DeviconGoogle from "@/components/icons/DeviconGoogle";
 import { authClient } from "@/lib/auth-client";
+import { useState } from "react";
+import { SocialButton } from "./social-button";
+
+import "dotenv/config";
 
 interface AuthDialogProps {
   children: React.ReactNode;
@@ -26,6 +28,7 @@ const AuthDialog = ({ children }: AuthDialogProps) => {
   const handleSocialLogin = async (provider: "github" | "google") => {
     await authClient.signIn.social({
       provider,
+      callbackURL: `${process.env.NEXT_PUBLIC_FRONTEND_URL}/discover`,
     });
   };
 
