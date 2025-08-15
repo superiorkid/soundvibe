@@ -28,15 +28,17 @@ import { DatabaseService } from './shared/database/database.service';
               clientSecret: configService.getOrThrow<'string'>(
                 'GITHUB_CLIENT_SECRET',
               ),
+              prompt: 'consent',
             },
             google: {
               clientId: configService.getOrThrow<'string'>('GOOGLE_CLIENT_ID'),
               clientSecret: configService.getOrThrow<'string'>(
                 'GOOGLE_CLIENT_SECRET',
               ),
+              prompt: 'consent',
             },
           },
-          trustedOrigins: ['http://localhost:3000'],
+          trustedOrigins: [configService.getOrThrow<string>('FRONTEND_URL')],
         }),
       }),
       inject: [DatabaseService, ConfigService],
