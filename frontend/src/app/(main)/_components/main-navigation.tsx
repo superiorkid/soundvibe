@@ -37,10 +37,21 @@ import {
   UserIcon,
 } from "lucide-react";
 import Link from "next/link";
+import { useEffect } from "react";
 
 const MainNavigation = () => {
   const menus = useMainMenu();
   const { data: session, isPending } = authClient.useSession();
+
+  useEffect(() => {
+    const fetchSession = async () => {
+      const res = await fetch("/api/users/me");
+      const parsedRes = await res.json();
+      console.log(parsedRes);
+    };
+
+    fetchSession();
+  });
 
   return (
     <header className="px-4 md:px-6 sticky top-0 bg-background z-50">
