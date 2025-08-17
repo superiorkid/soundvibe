@@ -1,13 +1,14 @@
 import { AuthGuard, AuthModule } from '@mguay/nestjs-better-auth';
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
+import { openAPI } from 'better-auth/plugins';
+import { LoggerMiddleware } from './common/middlewares/logger.middleware';
 import { UsersModule } from './modules/users/users.module';
 import { DatabaseModule } from './shared/database/database.module';
 import { DatabaseService } from './shared/database/database.service';
-import { openAPI } from 'better-auth/plugins';
 
 @Module({
   imports: [
@@ -57,4 +58,8 @@ import { openAPI } from 'better-auth/plugins';
     },
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LoggerMiddleware).forRoutes('*');
+  }
+}
