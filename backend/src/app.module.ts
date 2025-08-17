@@ -7,6 +7,7 @@ import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { UsersModule } from './modules/users/users.module';
 import { DatabaseModule } from './shared/database/database.module';
 import { DatabaseService } from './shared/database/database.service';
+import { openAPI } from 'better-auth/plugins';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { DatabaseService } from './shared/database/database.service';
       ) => ({
         auth: betterAuth({
           database: prismaAdapter(database, { provider: 'postgresql' }),
+          plugins: [openAPI()],
           emailAndPassword: {
             enabled: false,
           },

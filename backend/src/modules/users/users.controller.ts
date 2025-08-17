@@ -1,13 +1,12 @@
 import { Public, Session, type UserSession } from '@mguay/nestjs-better-auth';
-import { Controller, Get, Req } from '@nestjs/common';
-import { type Request } from 'express';
+import { Controller, Get } from '@nestjs/common';
 
 @Controller('users')
 export class UsersController {
   @Get('me')
-  getProfile(@Session() session: UserSession, @Req() request: Request) {
-    console.log('cookies', request.cookies);
-    return { user: session.user };
+  getProfile(@Session() session: UserSession) {
+    const user = session.user;
+    return { data: user, success: true, message: 'get session successfully' };
   }
 
   @Public()

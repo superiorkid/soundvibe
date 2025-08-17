@@ -26,7 +26,6 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { useMainMenu } from "@/hooks/use-main-menu";
 import { authClient } from "@/lib/auth-client";
-import axiosInstance from "@/lib/http";
 import {
   AudioLinesIcon,
   ChevronDownIcon,
@@ -38,24 +37,13 @@ import {
   UserIcon,
 } from "lucide-react";
 import Link from "next/link";
-import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 const MainNavigation = () => {
+  const router = useRouter();
   const menus = useMainMenu();
+
   const { data: session, isPending } = authClient.useSession();
-
-  useEffect(() => {
-    const fetchSession = async () => {
-      try {
-        const res = await axiosInstance.get("/users/me");
-        console.log(res.data);
-      } catch (error) {
-        console.error("Failed to fetch session", error);
-      }
-    };
-
-    fetchSession();
-  }, []);
 
   return (
     <header className="px-4 md:px-6 sticky top-0 bg-background z-50">
@@ -262,7 +250,19 @@ const MainNavigation = () => {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem>Settings</DropdownMenuItem>
-                  <DropdownMenuItem>Sign Out</DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => {
+                      authClient.signOut({
+                        fetchOptions: {
+                          onSuccess: () => {
+                            router.push("/logout");
+                          },
+                        },
+                      });
+                    }}
+                  >
+                    Sign Out
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>

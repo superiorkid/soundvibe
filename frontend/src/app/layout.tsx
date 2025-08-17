@@ -4,6 +4,7 @@ import { type Metadata } from "next";
 import { Geist } from "next/font/google";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 
+import QueryClientProvider from "@/providers/query-client-provider";
 import "./globals.css";
 
 const geist = Geist({
@@ -29,7 +30,9 @@ export default function RootLayout({
       >
         <AudioProvider>
           <div className="max-w-7xl mx-auto px-5 2xl:px-0">
-            <NuqsAdapter>{children}</NuqsAdapter>
+            <QueryClientProvider>
+              <NuqsAdapter>{children}</NuqsAdapter>
+            </QueryClientProvider>
           </div>
         </AudioProvider>
       </body>
