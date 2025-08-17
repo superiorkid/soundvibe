@@ -26,6 +26,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { useMainMenu } from "@/hooks/use-main-menu";
 import { authClient } from "@/lib/auth-client";
+import axiosInstance from "@/lib/http";
 import {
   AudioLinesIcon,
   ChevronDownIcon,
@@ -45,13 +46,16 @@ const MainNavigation = () => {
 
   useEffect(() => {
     const fetchSession = async () => {
-      const res = await fetch("/api/users/me");
-      const parsedRes = await res.json();
-      console.log(parsedRes);
+      try {
+        const res = await axiosInstance.get("/users/me");
+        console.log(res.data);
+      } catch (error) {
+        console.error("Failed to fetch session", error);
+      }
     };
 
     fetchSession();
-  });
+  }, []);
 
   return (
     <header className="px-4 md:px-6 sticky top-0 bg-background z-50">
