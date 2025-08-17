@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { useFormContext } from "react-hook-form";
 import { TUploadSchema } from "../upload-schema";
+import Image from "next/image";
 
 interface Step3Props {
   onBack: () => void;
@@ -81,7 +82,7 @@ const Step3 = ({ onBack }: Step3Props) => {
             <dt className="font-medium">Cover</dt>
             <dd className="col-span-2">
               {values.cover ? (
-                <img
+                <Image
                   src={URL.createObjectURL(values.cover)}
                   alt="Cover preview"
                   className="w-32 h-32 object-cover rounded"
@@ -98,7 +99,7 @@ const Step3 = ({ onBack }: Step3Props) => {
         <Button variant="outline" onClick={onBack} type="button">
           Back
         </Button>
-        <Button type="submit">Confirm & Save</Button>
+        <Button type="submit">Confirm & Upload</Button>
       </div>
     </div>
   );
