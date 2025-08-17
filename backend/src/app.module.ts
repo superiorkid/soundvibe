@@ -39,6 +39,9 @@ import { DatabaseService } from './shared/database/database.service';
             },
           },
           trustedOrigins: [configService.getOrThrow<string>('FRONTEND_URL')],
+          telemetry: {
+            debug: true,
+          },
         }),
       }),
       inject: [DatabaseService, ConfigService],

@@ -254,13 +254,13 @@ const MainNavigation = () => {
           ) : (
             <>
               <AuthDialog>
-                <Button asChild variant="ghost" size="sm" className="text-sm">
-                  <a href="#">Sign In</a>
+                <Button variant="ghost" size="sm" className="text-sm">
+                  Sign In
                 </Button>
               </AuthDialog>
               <AuthDialog>
-                <Button asChild size="sm" className="text-sm">
-                  <a href="#">Get Started</a>
+                <Button size="sm" className="text-sm">
+                  Get Started
                 </Button>
               </AuthDialog>
             </>
