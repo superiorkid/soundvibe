@@ -1,11 +1,6 @@
+import { TMenu } from "@/types/menu-type";
 import { usePathname } from "next/navigation";
 import { useMemo } from "react";
-
-type TMenu = {
-  href: string;
-  label: string;
-  isActive: boolean;
-};
 
 export function useMainMenu() {
   const pathname = usePathname();
@@ -25,7 +20,7 @@ export function useMainMenu() {
       {
         href: "/you/library",
         label: "Library",
-        isActive: pathname === "/you/library",
+        isActive: pathname.includes("you"),
       },
     ],
     [pathname]
