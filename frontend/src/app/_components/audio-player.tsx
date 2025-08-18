@@ -93,7 +93,7 @@ const AudioPlayer = () => {
 
   if (hasLastTrackPlayed) {
     return (
-      <div className="fixed bottom-0 left-0 w-full h-13 border-t px-5 2xl:px-0 bg-zinc-100">
+      <div className="fixed bottom-0 left-0 w-full h-13 border-t px-5 2xl:px-0 bg-zinc-100 border-zinc-300">
         <div className="max-w-7xl mx-auto h-full flex items-center gap-8">
           {/* Playback Controls */}
           <div className="flex items-center gap-5">
