@@ -23,6 +23,7 @@ model User {
   updatedAt     DateTime
   sessions      Session[]
   accounts      Account[]
+  audios        Audio[]
 
   @@unique([email])
   @@index([email])
@@ -75,4 +76,71 @@ model Verification {
 
   @@index([identifier])
   @@map("verification")
+}
+
+model Tag {
+  id        String   @id @default(cuid())
+  name      String
+  audioId   String   @map("audio_id")
+  audio     Audio    @relation(fields: [audioId], references: [id])
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([name])
+  @@map("tag")
+}
+
+model Genre {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  Audio     Audio[]
+
+  @@index([name])
+  @@map("genre")
+}
+
+model Audio {
+  id          String     @id @default(cuid())
+  title       String
+  description String?    @db.Text
+  duration    Int        @default(0)
+  userId      String     @map("user_id")
+  user        User       @relation(fields: [userId], references: [id])
+  tags        Tag[]
+  genreId     String     @map("genre_id")
+  genre       Genre      @relation(fields: [genreId], references: [id])
+  audioFile   AudioFile?
+  coverFile   CoverFile?
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+
+  @@index([title, duration])
+  @@map("audio")
+}
+
+model AudioFile {
+  id        String   @id @default(cuid())
+  url       String
+  format    String?
+  size      Int? // bytes
+  audioId   String   @unique @map("audio_id")
+  audio     Audio    @relation(fields: [audioId], references: [id])
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("audio_file")
+}
+
+model CoverFile {
+  id        String   @id @default(cuid())
+  url       String
+  alt       String?
+  audioId   String   @unique @map("audio_id")
+  audio     Audio    @relation(fields: [audioId], references: [id])
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("cover_file")
 }

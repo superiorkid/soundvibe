@@ -9,6 +9,8 @@ import { LoggerMiddleware } from './common/middlewares/logger.middleware';
 import { UsersModule } from './modules/users/users.module';
 import { DatabaseModule } from './shared/database/database.module';
 import { DatabaseService } from './shared/database/database.service';
+import { NestjsFormDataModule } from 'nestjs-form-data';
+import { FileUploadModule } from './shared/file-upload/file-upload.module';
 
 @Module({
   imports: [
@@ -49,6 +51,8 @@ import { DatabaseService } from './shared/database/database.service';
       }),
       inject: [DatabaseService, ConfigService],
     }),
+    NestjsFormDataModule,
+    FileUploadModule,
     UsersModule,
   ],
   providers: [

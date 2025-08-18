@@ -1,0 +1,48 @@
+import { DatabaseService } from '../database/database.service';
+
+export abstract class BaseRepository<
+  TModel,
+  TDelegate extends {
+    findUnique: (args: any) => Promise<TModel | null>;
+    findMany: (args: any) => Promise<TModel[]>;
+    create: (args: any) => Promise<TModel>;
+    update: (args: any) => Promise<TModel>;
+    delete: (args: any) => Promise<TModel>;
+  },
+  TWhereUnique,
+  TWhere,
+  TCreate,
+  TUpdate,
+  TOrderBy,
+> {
+  constructor(
+    protected readonly prisma: DatabaseService,
+    protected readonly delegate: TDelegate,
+  ) {}
+
+  async findAll(args?: {
+    skip?: number;
+    take?: number;
+    cursor?: TWhereUnique;
+    where?: TWhere;
+    orderBy?: TOrderBy;
+  }): Promise<TModel[]> {
+    return this.delegate.findMany(args);
+  }
+
+  async findOne(where: TWhereUnique): Promise<TModel | null> {
+    return this.delegate.findUnique({ where });
+  }
+
+  async create(data: TCreate): Promise<TModel> {
+    return this.delegate.create({ data });
+  }
+
+  async update(where: TWhereUnique, data: TUpdate): Promise<TModel> {
+    return this.delegate.update({ where, data });
+  }
+
+  async delete(where: TWhereUnique): Promise<TModel> {
+    return this.delegate.delete({ where });
+  }
+}
