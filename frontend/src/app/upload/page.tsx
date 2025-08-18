@@ -4,6 +4,7 @@ import { XIcon } from "lucide-react";
 import Link from "next/link";
 import { AppBrand } from "../_components/app-brand";
 import UploadFlow from "./_components/upload-flow";
+import { Suspense } from "react";
 
 const UploadPage = () => {
   return (
@@ -31,7 +32,9 @@ const UploadPage = () => {
         </div>
       </header>
       <div className="px-4 mt-24 max-w-5xl mx-auto">
-        <UploadFlow />
+        <Suspense>
+          <UploadFlow />
+        </Suspense>
       </div>
     </>
   );
