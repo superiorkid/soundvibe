@@ -31,7 +31,7 @@ const SidebarMenu = () => {
   if (!session) return null;
 
   return (
-    <aside className="space-y-8">
+    <>
       <div className="space-y-2">
         <div className="flex justify-between items-center">
           <h1 className="font-semibold uppercase text-xs">
@@ -122,6 +122,7 @@ const SidebarMenu = () => {
                   loading="lazy"
                   decoding="async"
                   className="object-cover"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 />
               </div>
               <div className="flex-1 text-sm space-y-1.5">
@@ -200,6 +201,7 @@ const SidebarMenu = () => {
                   loading="lazy"
                   decoding="async"
                   className="object-cover"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 />
               </div>
               <div className="flex-1 text-sm space-y-1.5">
@@ -250,7 +252,7 @@ const SidebarMenu = () => {
           ))}
         </div>
       </div>
-    </aside>
+    </>
   );
 };
 
