@@ -23,9 +23,9 @@ export function useMainMenu() {
         isActive: pathname === "/feed",
       },
       {
-        href: "/library",
+        href: "/you/library",
         label: "Library",
-        isActive: pathname === "/library",
+        isActive: pathname === "/you/library",
       },
     ],
     [pathname]
