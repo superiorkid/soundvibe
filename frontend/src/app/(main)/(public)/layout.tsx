@@ -1,4 +1,6 @@
+import AppFooter from "@/app/_components/app-footer";
 import React from "react";
+import SidebarMenu from "./_components/sidebar-menu";
 
 interface PublicLayoutProps {
   children: React.ReactNode;
@@ -9,15 +11,13 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
     <div className="flex space-x-10 mt-5">
       <div className="flex-1">{children}</div>
 
-      <aside className="w-96 text-sm text-gray-700">
-        <p className="font-medium">You&apos;re not logged in</p>
+      <aside className="w-96 space-y-8">
+        <SidebarMenu />
 
-        <p className="mt-2 text-xs text-gray-500">
-          Language{" "}
-          <a href="#" className="text-blue-600">
-            English (US)
-          </a>
-        </p>
+        <AppFooter className="text-sm text-gray-700">
+          <AppFooter.Brand name="SoundVibe" />
+          <AppFooter.Language label="English (US)" />
+        </AppFooter>
       </aside>
     </div>
   );

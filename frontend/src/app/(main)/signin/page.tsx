@@ -1,3 +1,4 @@
+import AppFooter from "@/app/_components/app-footer";
 import AuthCard from "@/components/auth-card";
 import { H3 } from "shadcn-typography";
 
@@ -8,6 +9,12 @@ const SignInPage = () => {
         Join SoundVibe to hear the latest from people you follow
       </H3>
       <AuthCard />
+      <footer className="mt-16 flex justify-center">
+        <AppFooter className="text-center text-gray-700 text-sm">
+          <AppFooter.Brand name="SoundVibe" />
+          <AppFooter.Language label="English (US)" />
+        </AppFooter>
+      </footer>
     </div>
   );
 };
