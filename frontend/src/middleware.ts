@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 
+import "dotenv/config";
+
 const PUBLIC_ROUTES = ["/", "/signin", "/logout", "/discover"];
 const AUTH_REDIRECT_ROUTES = ["/", "/signin", "/logout"];
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const sessionToken = request.cookies.get("better-auth.session_token");
+  const sessionToken = request.cookies.get(process.env.COOKIE_NAME as string);
 
   const isAuthenticated = Boolean(sessionToken);
   const isPublicRoute = PUBLIC_ROUTES.includes(pathname);
