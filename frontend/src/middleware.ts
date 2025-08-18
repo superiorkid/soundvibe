@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import "dotenv/config";
-
 const PUBLIC_ROUTES = ["/", "/signin", "/logout", "/discover"];
 const AUTH_REDIRECT_ROUTES = ["/", "/signin", "/logout"];
 
@@ -28,6 +26,6 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
+    "/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|music).*)",
   ],
 };
