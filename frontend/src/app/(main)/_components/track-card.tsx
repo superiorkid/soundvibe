@@ -68,9 +68,15 @@ const TrackCard = ({ audio }: TrackCardProps) => {
                   className="p-2.5 rounded-full border boder-rose-400 bg-foreground text-background"
                 >
                   {isThisTrackPlaying ? (
-                    <PauseIcon size={20} />
+                    <PauseIcon
+                      size={20}
+                      className="fill-background stroke-background"
+                    />
                   ) : (
-                    <PlayIcon size={20} />
+                    <PlayIcon
+                      size={20}
+                      className="fill-background stroke-background"
+                    />
                   )}
                 </button>
               </div>

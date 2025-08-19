@@ -104,10 +104,11 @@ model Genre {
 model Audio {
   id          String     @id @default(cuid())
   title       String
+  slug        String     @unique
   description String?    @db.Text
   duration    Int        @default(0)
   userId      String     @map("user_id")
-  user        User       @relation(fields: [userId], references: [id])
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   tags        Tag[]
   genreId     String     @map("genre_id")
   genre       Genre      @relation(fields: [genreId], references: [id])
@@ -116,7 +117,7 @@ model Audio {
   createdAt   DateTime   @default(now()) @map("created_at")
   updatedAt   DateTime   @updatedAt @map("updated_at")
 
-  @@index([title, duration])
+  @@index([duration, slug])
   @@map("audio")
 }
 
@@ -126,7 +127,7 @@ model AudioFile {
   format    String?
   size      Int? // bytes
   audioId   String   @unique @map("audio_id")
-  audio     Audio    @relation(fields: [audioId], references: [id])
+  audio     Audio    @relation(fields: [audioId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
@@ -138,7 +139,7 @@ model CoverFile {
   url       String
   alt       String?
   audioId   String   @unique @map("audio_id")
-  audio     Audio    @relation(fields: [audioId], references: [id])
+  audio     Audio    @relation(fields: [audioId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 

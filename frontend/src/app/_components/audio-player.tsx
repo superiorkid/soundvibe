@@ -101,10 +101,20 @@ const AudioPlayer = () => {
               <SkipBackIcon size={19} fill="black" />
             </button>
             <button
-              className="p-2 rounded-full border border-rose-400 bg-foreground text-background"
+              className="p-2 rounded-full border border-background bg-foreground text-background"
               onClick={togglePlay}
             >
-              {isPlaying ? <PauseIcon size={19} /> : <PlayIcon size={19} />}
+              {isPlaying ? (
+                <PauseIcon
+                  className="fill-background stroke-background"
+                  size={19}
+                />
+              ) : (
+                <PlayIcon
+                  className="fill-background stroke-background"
+                  size={19}
+                />
+              )}
             </button>
             <button>
               <SkipForwardIcon size={19} fill="black" />

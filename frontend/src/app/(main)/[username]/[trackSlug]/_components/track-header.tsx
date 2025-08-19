@@ -18,8 +18,9 @@ const TrackHeader = () => {
   const track = {
     trackArtist: "K391",
     trackTitle: "Summertime",
-    audioSrc: "/music/Nito-Onna, Mangoo - Reason [NCS Release].mp3",
+    audioSrc: "/music/audio2.mp3",
   };
+
   const isThisTrackPlaying =
     currentTrack?.audioSrc === track.audioSrc && isPlaying;
 

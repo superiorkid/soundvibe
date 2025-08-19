@@ -14,6 +14,7 @@ export abstract class BaseRepository<
   TCreate,
   TUpdate,
   TOrderBy,
+  TInclude,
 > {
   constructor(
     protected readonly prisma: DatabaseService,
@@ -26,12 +27,16 @@ export abstract class BaseRepository<
     cursor?: TWhereUnique;
     where?: TWhere;
     orderBy?: TOrderBy;
+    include?: TInclude;
   }): Promise<TModel[]> {
     return this.delegate.findMany(args);
   }
 
-  async findOne(where: TWhereUnique): Promise<TModel | null> {
-    return this.delegate.findUnique({ where });
+  async findOne(
+    where: TWhereUnique,
+    include?: TInclude,
+  ): Promise<TModel | null> {
+    return this.delegate.findUnique({ where, include });
   }
 
   async create(data: TCreate): Promise<TModel> {

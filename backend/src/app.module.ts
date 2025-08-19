@@ -1,15 +1,15 @@
 import { AuthGuard, AuthModule } from '@mguay/nestjs-better-auth';
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
-import { openAPI } from 'better-auth/plugins';
-import { LoggerMiddleware } from './common/middlewares/logger.middleware';
+import { bearer, openAPI } from 'better-auth/plugins';
+import { MemoryStoredFile, NestjsFormDataModule } from 'nestjs-form-data';
+import { AudioModule } from './modules/audio/audio.module';
 import { UsersModule } from './modules/users/users.module';
 import { DatabaseModule } from './shared/database/database.module';
 import { DatabaseService } from './shared/database/database.service';
-import { NestjsFormDataModule } from 'nestjs-form-data';
 import { FileUploadModule } from './shared/file-upload/file-upload.module';
 
 @Module({
@@ -23,7 +23,7 @@ import { FileUploadModule } from './shared/file-upload/file-upload.module';
       ) => ({
         auth: betterAuth({
           database: prismaAdapter(database, { provider: 'postgresql' }),
-          plugins: [openAPI()],
+          plugins: [openAPI(), bearer()],
           emailAndPassword: {
             enabled: false,
           },
@@ -51,9 +51,13 @@ import { FileUploadModule } from './shared/file-upload/file-upload.module';
       }),
       inject: [DatabaseService, ConfigService],
     }),
-    NestjsFormDataModule,
+    NestjsFormDataModule.config({
+      isGlobal: true,
+      storage: MemoryStoredFile,
+    }),
     FileUploadModule,
     UsersModule,
+    AudioModule,
   ],
   providers: [
     {
@@ -62,8 +66,9 @@ import { FileUploadModule } from './shared/file-upload/file-upload.module';
     },
   ],
 })
-export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(LoggerMiddleware).forRoutes('*');
-  }
-}
+export class AppModule {}
+// export class AppModule implements NestModule {
+//   configure(consumer: MiddlewareConsumer) {
+//     consumer.apply(LoggerMiddleware).forRoutes('*');
+//   }
+// }

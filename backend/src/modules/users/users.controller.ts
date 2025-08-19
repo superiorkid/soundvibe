@@ -1,11 +1,6 @@
-import { Public } from '@mguay/nestjs-better-auth';
-import { Controller, Get } from '@nestjs/common';
+import { Controller } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('users')
-export class UsersController {
-  @Public()
-  @Get('public')
-  pulicRuote() {
-    return { message: 'Hello this is public route' };
-  }
-}
+@ApiTags('users')
+export class UsersController {}

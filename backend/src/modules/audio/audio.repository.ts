@@ -11,13 +11,18 @@ export class AudioRepository extends BaseRepository<
   Prisma.AudioWhereInput,
   Prisma.AudioCreateInput,
   Prisma.AudioUpdateInput,
-  Prisma.AudioOrderByWithRelationInput
+  Prisma.AudioOrderByWithRelationInput,
+  Prisma.AudioInclude
 > {
   constructor(prisma: DatabaseService) {
     super(prisma, prisma.audio);
   }
 
-  async findByTitle(title: string): Promise<Audio | null> {
-    return this.delegate.findFirst({ where: { title } });
-  }
+  // async findOneBySlug(slug: string): Promise<Audio | null> {
+  //   return this.delegate.findFirst({ where: { slug } });
+  // }
+
+  // async findManyByUserId(userId: string): Promise<Audio[]> {
+  //   return this.delegate.findMany({ where: { userId } });
+  // }
 }
