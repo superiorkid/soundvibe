@@ -6,7 +6,7 @@ import { DatabaseService } from 'src/shared/database/database.service';
 @Injectable()
 export class AudioRepository extends BaseRepository<
   Audio,
-  DatabaseService['audio'],
+  Prisma.AudioDelegate,
   Prisma.AudioWhereUniqueInput,
   Prisma.AudioWhereInput,
   Prisma.AudioCreateInput,
@@ -18,11 +18,17 @@ export class AudioRepository extends BaseRepository<
     super(prisma, prisma.audio);
   }
 
-  // async findOneBySlug(slug: string): Promise<Audio | null> {
-  //   return this.delegate.findFirst({ where: { slug } });
-  // }
+  async findOne<T extends Prisma.AudioFindUniqueArgs>(
+    args: T,
+  ): Promise<Prisma.AudioGetPayload<T> | null> {
+    // @ts-expect-error - error
+    return await this.delegate.findUnique(args);
+  }
 
-  // async findManyByUserId(userId: string): Promise<Audio[]> {
-  //   return this.delegate.findMany({ where: { userId } });
-  // }
+  async findAll<T extends Prisma.AudioFindManyArgs>(
+    args?: T,
+  ): Promise<Prisma.AudioGetPayload<T>[]> {
+    // @ts-expect-error - error
+    return await this.delegate.findMany(args);
+  }
 }

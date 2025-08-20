@@ -6,7 +6,9 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import path from 'node:path';
+import type { Request, Response } from 'express';
+import { createReadStream, statSync } from 'node:fs';
+import path, { join } from 'node:path';
 import slugify from 'slugify';
 import { DatabaseService } from 'src/shared/database/database.service';
 import { FileUploadService } from 'src/shared/file-upload/file-upload.service';
@@ -24,7 +26,9 @@ export class AudioService {
   async uploadTrack(uploadAudioDto: UploadAudioDTO, session: UserSession) {
     const audioSlug = slugify(uploadAudioDto.title);
 
-    const audio = await this.audioRepository.findOne({ slug: audioSlug });
+    const audio = await this.audioRepository.findOne({
+      where: { slug: audioSlug },
+    });
     if (audio)
       throw new ConflictException('Audio with this title already exists.');
 
@@ -110,9 +114,9 @@ export class AudioService {
 
   async detailAudio(id: string) {
     try {
-      const audio = await this.audioRepository.findOne(
-        { id },
-        {
+      const audio = await this.audioRepository.findOne({
+        where: { id },
+        include: {
           user: true,
           tags: true,
           audioFile: true,
@@ -120,11 +124,17 @@ export class AudioService {
           genre: true,
           _count: true,
         },
-      );
+      });
       if (!audio) throw new NotFoundException('');
 
       return {
-        data: audio,
+        data: {
+          ...audio,
+          audioFile: {
+            ...audio.audioFile,
+            streamUrl: `/api/audio/stream/${audio.id}`,
+          },
+        },
         success: true,
         message: 'get detail audio successfully',
       };
@@ -136,9 +146,9 @@ export class AudioService {
 
   async detailAudioBySlug(slug: string) {
     try {
-      const audio = await this.audioRepository.findOne(
-        { slug },
-        {
+      const audio = await this.audioRepository.findOne({
+        where: { slug },
+        include: {
           user: true,
           tags: true,
           audioFile: true,
@@ -146,17 +156,70 @@ export class AudioService {
           genre: true,
           _count: true,
         },
-      );
+      });
       if (!audio) throw new NotFoundException('');
 
       return {
-        data: audio,
+        data: {
+          ...audio,
+          audioFile: {
+            ...audio.audioFile,
+            streamUrl: `/api/audio/stream/${audio.id}`,
+          },
+        },
         success: true,
         message: 'get detail audio successfully',
       };
     } catch (error) {
       if (error instanceof NotFoundException) throw error;
       throw new InternalServerErrorException('');
+    }
+  }
+
+  async streamAudio(params: { id: string; req: Request; res: Response }) {
+    const { id, req, res } = params;
+
+    const audio = await this.audioRepository.findOne({
+      where: { id },
+      include: { audioFile: true },
+    });
+    if (!audio) throw new NotFoundException('Audio not found');
+    const filePath = join(
+      process.cwd(),
+      'public',
+      audio.audioFile?.url as string,
+    );
+
+    try {
+      const stat = statSync(filePath);
+      const fileSize = stat.size;
+      const range = req.headers.range;
+
+      if (range) {
+        // Example: "bytes=0-"
+        const parts = range.replace('/bytes=/', '').split('-');
+        const start = parseInt(parts[0], 10);
+        const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+        const chunkSize = end - start + 1;
+
+        const file = createReadStream(filePath, { start, end });
+        res.writeHead(206, {
+          'Content-Range': `bytes ${start}-${end}/${fileSize}`,
+          'Accept-Ranges': 'bytes',
+          'Content-Length': chunkSize,
+          'Content-Type': 'audio/mpeg',
+        });
+
+        file.pipe(res);
+      } else {
+        res.writeHead(200, {
+          'Content-Length': fileSize,
+          'Content-Type': 'audio/mpeg',
+        });
+        createReadStream(filePath).pipe(res);
+      }
+    } catch {
+      throw new InternalServerErrorException('Failed to stream audio');
     }
   }
 

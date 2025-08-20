@@ -33,34 +33,34 @@ export abstract class BaseRepository<
     return this.delegate.findMany(args);
   }
 
-  async findOne(
-    where: TWhereUnique,
-    include?: TInclude,
-  ): Promise<TModel | null> {
-    return this.delegate.findUnique({ where, include });
+  async findOne(args: {
+    where: TWhereUnique;
+    include?: TInclude;
+  }): Promise<TModel | null> {
+    return this.delegate.findUnique(args);
   }
 
-  async create(data: TCreate): Promise<TModel> {
-    return this.delegate.create({ data });
+  async create(data: { data: TCreate }): Promise<TModel> {
+    return this.delegate.create(data);
   }
 
-  async update(where: TWhereUnique, data: TUpdate): Promise<TModel> {
-    return this.delegate.update({ where, data });
+  async update(args: { where: TWhereUnique; data: TUpdate }): Promise<TModel> {
+    return this.delegate.update(args);
   }
 
-  async delete(where: TWhereUnique): Promise<TModel> {
-    return this.delegate.delete({ where });
+  async delete(args: { where: TWhereUnique }): Promise<TModel> {
+    return this.delegate.delete(args);
   }
 
-  async count(where?: TWhere): Promise<number> {
+  async count(args?: { where?: TWhere }): Promise<number> {
     if (!this.delegate.count) {
       throw new Error('Count not implemented in delegate');
     }
-    return this.delegate.count({ where });
+    return this.delegate.count(args);
   }
 
   async exists(where: TWhereUnique): Promise<boolean> {
-    const record = await this.findOne(where);
+    const record = await this.delegate.findUnique({ where });
     return !!record;
   }
 }

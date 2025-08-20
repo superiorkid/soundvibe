@@ -20,7 +20,7 @@ export class GenreService {
     if (genreExist) throw new ConflictException('Genre already exists');
 
     try {
-      await this.genreRepository.create({ name });
+      await this.genreRepository.create({ data: { name } });
       return {
         success: true,
         message: 'Genre created successfully',
@@ -51,7 +51,7 @@ export class GenreService {
 
   async detailGenre(id: string) {
     try {
-      const genre = await this.genreRepository.findOne({ id });
+      const genre = await this.genreRepository.findOne({ where: { id } });
       if (!genre) throw new NotFoundException('Genre not found');
       return {
         success: true,
@@ -73,7 +73,10 @@ export class GenreService {
     if (!genreExist) throw new NotFoundException('Genre not found');
 
     try {
-      await this.genreRepository.update({ id }, { name: genreDto.name });
+      await this.genreRepository.update({
+        where: { id },
+        data: { name: genreDto.name },
+      });
       return {
         success: true,
         message: 'Genre updated successfully',
@@ -90,7 +93,7 @@ export class GenreService {
     if (!genreExist) throw new NotFoundException('Genre not found');
 
     try {
-      await this.genreRepository.delete({ id });
+      await this.genreRepository.delete({ where: { id } });
       return {
         success: true,
         message: 'Genre deleted successfully',

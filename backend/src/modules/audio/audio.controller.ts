@@ -8,6 +8,8 @@ import {
   Logger,
   Param,
   Post,
+  Req,
+  Res,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
@@ -25,6 +27,7 @@ import {
 import { FormDataRequest } from 'nestjs-form-data';
 import { AudioService } from './audio.service';
 import { UploadAudioDTO } from './dto/upload-audio.dto';
+import type { Request, Response } from 'express';
 
 @Controller('audio')
 @ApiTags('audios')
@@ -59,6 +62,16 @@ export class AudioController {
     return this.audioService.uploadTrack(uploadAudioDto, session);
   }
 
+  @Get(':id')
+  @HttpCode(HttpStatus.OK)
+  @ApiParam({ description: '', name: 'id' })
+  @ApiOkResponse({ description: '' })
+  @ApiInternalServerErrorResponse({ description: '' })
+  @ApiNotFoundResponse({ description: '' })
+  async detailTrack(@Param('id') id: string) {
+    return this.audioService.detailAudio(id);
+  }
+
   @Get('slug/:slug')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
@@ -77,13 +90,13 @@ export class AudioController {
     return this.audioService.detailAudioBySlug(slug);
   }
 
-  @Get(':id')
-  @HttpCode(HttpStatus.OK)
-  @ApiParam({ description: '', name: 'id' })
-  @ApiOkResponse({ description: '' })
-  @ApiInternalServerErrorResponse({ description: '' })
-  @ApiNotFoundResponse({ description: '' })
-  async detailTrack(@Param('id') id: string) {
-    return this.audioService.detailAudio(id);
+  @Get('stream/:id')
+  @ApiParam({ name: 'id' })
+  async streamAudio(
+    @Param('id') id: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    return this.audioService.streamAudio({ id, req, res });
   }
 }

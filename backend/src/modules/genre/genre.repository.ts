@@ -6,7 +6,7 @@ import { DatabaseService } from 'src/shared/database/database.service';
 @Injectable()
 export class GenreRepository extends BaseRepository<
   Genre,
-  DatabaseService['genre'],
+  Prisma.GenreDelegate,
   Prisma.GenreWhereUniqueInput,
   Prisma.GenreWhereInput,
   Prisma.GenreCreateInput,
