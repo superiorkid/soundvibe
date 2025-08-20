@@ -144,6 +144,21 @@ export class AudioService {
     }
   }
 
+  async allAudios() {
+    try {
+      const audios = await this.audioRepository.findAll({
+        orderBy: { createdAt: 'desc' },
+      });
+      return {
+        success: true,
+        message: '',
+        data: audios,
+      };
+    } catch {
+      throw new InternalServerErrorException('');
+    }
+  }
+
   async detailAudioBySlug(slug: string) {
     try {
       const audio = await this.audioRepository.findOne({
@@ -184,6 +199,7 @@ export class AudioService {
       include: { audioFile: true },
     });
     if (!audio) throw new NotFoundException('Audio not found');
+
     const filePath = join(
       process.cwd(),
       'public',
@@ -196,8 +212,7 @@ export class AudioService {
       const range = req.headers.range;
 
       if (range) {
-        // Example: "bytes=0-"
-        const parts = range.replace('/bytes=/', '').split('-');
+        const parts = range.replace(/bytes=/, '').split('-');
         const start = parseInt(parts[0], 10);
         const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
         const chunkSize = end - start + 1;
@@ -218,7 +233,8 @@ export class AudioService {
         });
         createReadStream(filePath).pipe(res);
       }
-    } catch {
+    } catch (e) {
+      console.error(e);
       throw new InternalServerErrorException('Failed to stream audio');
     }
   }

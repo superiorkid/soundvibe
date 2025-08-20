@@ -24,10 +24,10 @@ import {
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
+import type { Request, Response } from 'express';
 import { FormDataRequest } from 'nestjs-form-data';
 import { AudioService } from './audio.service';
 import { UploadAudioDTO } from './dto/upload-audio.dto';
-import type { Request, Response } from 'express';
 
 @Controller('audio')
 @ApiTags('audios')
@@ -60,6 +60,15 @@ export class AudioController {
     @Body() uploadAudioDto: UploadAudioDTO,
   ) {
     return this.audioService.uploadTrack(uploadAudioDto, session);
+  }
+
+  @Get()
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({})
+  @ApiInternalServerErrorResponse({})
+  @ApiOkResponse({})
+  async allTracks() {
+    return this.audioService.allAudios();
   }
 
   @Get(':id')
