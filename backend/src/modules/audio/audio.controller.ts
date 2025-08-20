@@ -11,7 +11,6 @@ import {
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
-  ApiBearerAuth,
   ApiBody,
   ApiConflictResponse,
   ApiConsumes,
@@ -29,7 +28,6 @@ import { UploadAudioDTO } from './dto/upload-audio.dto';
 
 @Controller('audio')
 @ApiTags('audios')
-@ApiBearerAuth()
 export class AudioController {
   protected readonly logger = new Logger(AudioController.name);
 

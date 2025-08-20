@@ -8,6 +8,7 @@ export abstract class BaseRepository<
     create: (args: any) => Promise<TModel>;
     update: (args: any) => Promise<TModel>;
     delete: (args: any) => Promise<TModel>;
+    count?: (args: any) => Promise<number>;
   },
   TWhereUnique,
   TWhere,
@@ -49,5 +50,17 @@ export abstract class BaseRepository<
 
   async delete(where: TWhereUnique): Promise<TModel> {
     return this.delegate.delete({ where });
+  }
+
+  async count(where?: TWhere): Promise<number> {
+    if (!this.delegate.count) {
+      throw new Error('Count not implemented in delegate');
+    }
+    return this.delegate.count({ where });
+  }
+
+  async exists(where: TWhereUnique): Promise<boolean> {
+    const record = await this.findOne(where);
+    return !!record;
   }
 }

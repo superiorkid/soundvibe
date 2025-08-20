@@ -24,7 +24,7 @@ export class AudioService {
   async uploadTrack(uploadAudioDto: UploadAudioDTO, session: UserSession) {
     const audioSlug = slugify(uploadAudioDto.title);
 
-    const audio = await this.audioRepository.findOneBySlug(audioSlug);
+    const audio = await this.audioRepository.findOne({ slug: audioSlug });
     if (audio)
       throw new ConflictException('Audio with this title already exists.');
 
@@ -98,6 +98,9 @@ export class AudioService {
         };
       });
     } catch (error) {
+      if (savedAudioFile) await this.fileUploadService.remove(savedAudioFile);
+      if (savedCoverFile) await this.fileUploadService.remove(savedCoverFile);
+
       throw new InternalServerErrorException(
         'Something went wrong ::',
         (error as Error).message,
