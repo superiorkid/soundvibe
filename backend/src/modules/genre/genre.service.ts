@@ -1,5 +1,6 @@
 import {
   ConflictException,
+  Injectable,
   InternalServerErrorException,
   Logger,
   NotFoundException,
@@ -7,6 +8,7 @@ import {
 import { GenreDTO } from './dto/genre.dto';
 import { GenreRepository } from './genre.repository';
 
+@Injectable()
 export class GenreService {
   protected readonly logger = new Logger(GenreService.name);
 

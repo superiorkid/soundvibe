@@ -25,61 +25,61 @@ import { GenreDTO } from './dto/genre.dto';
 import { GenreService } from './genre.service';
 
 @Controller('genres')
-@ApiTags('Genres')
+@ApiTags('genres')
 export class GenreController {
   constructor(private genreService: GenreService) {}
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Create a new genre' })
-  @ApiBody({ type: GenreDTO, description: 'Genre payload' })
-  @ApiInternalServerErrorResponse({ description: 'Server error' })
-  @ApiConflictResponse({ description: 'Genre already exists' })
-  @ApiCreatedResponse({ description: 'Genre created successfully' })
-  @ApiBadRequestResponse({ description: 'Invalid input' })
+  @ApiOperation({})
+  @ApiBody({ type: GenreDTO, description: '' })
+  @ApiInternalServerErrorResponse({ description: '' })
+  @ApiConflictResponse({ description: '' })
+  @ApiCreatedResponse({ description: '' })
+  @ApiBadRequestResponse({ description: '' })
   async createGenre(@Body() genreDto: GenreDTO) {
     return this.genreService.createGenre(genreDto);
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all genres' })
+  @ApiOperation({})
   @HttpCode(HttpStatus.OK)
-  @ApiOkResponse({ description: 'List of genres fetched successfully' })
-  @ApiInternalServerErrorResponse({ description: 'Server error' })
+  @ApiOkResponse({ description: '' })
+  @ApiInternalServerErrorResponse({ description: '' })
   async getAll() {
     return this.genreService.getAll();
   }
 
   @Get(':id')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Get a genre by ID' })
-  @ApiParam({ name: 'id', description: 'Genre ID' })
-  @ApiNotFoundResponse({ description: 'Genre not found' })
-  @ApiInternalServerErrorResponse({ description: 'Server error' })
-  @ApiOkResponse({ description: 'Genre fetched successfully' })
+  @ApiOperation({})
+  @ApiParam({ name: 'id' })
+  @ApiNotFoundResponse({ description: '' })
+  @ApiInternalServerErrorResponse({ description: '' })
+  @ApiOkResponse({ description: '' })
   async detail(@Param('id') id: string) {
     return this.genreService.detailGenre(id);
   }
 
   @Put(':id')
-  @ApiBody({ type: GenreDTO, description: 'Genre payload' })
-  @ApiOperation({ summary: 'Update a genre' })
+  @ApiBody({ type: GenreDTO })
+  @ApiOperation({})
   @HttpCode(HttpStatus.OK)
-  @ApiNotFoundResponse({ description: 'Genre not found' })
-  @ApiOkResponse({ description: 'Genre updated successfully' })
-  @ApiInternalServerErrorResponse({ description: 'Server error' })
-  @ApiParam({ name: 'id', description: 'Genre ID' })
+  @ApiNotFoundResponse({ description: '' })
+  @ApiOkResponse({ description: '' })
+  @ApiInternalServerErrorResponse({ description: '' })
+  @ApiParam({ name: 'id' })
   async editGenre(@Param('id') id: string, @Body() genreDto: GenreDTO) {
     return this.genreService.editGenre({ id, genreDto });
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Delete a genre' })
+  @ApiOperation({})
   @HttpCode(HttpStatus.OK)
-  @ApiParam({ name: 'id', description: 'Genre ID' })
-  @ApiNotFoundResponse({ description: 'Genre not found' })
-  @ApiInternalServerErrorResponse({ description: 'Server error' })
-  @ApiOkResponse({ description: 'Genre deleted successfully' })
+  @ApiParam({ name: 'id' })
+  @ApiNotFoundResponse({ description: '' })
+  @ApiInternalServerErrorResponse({ description: '' })
+  @ApiOkResponse({ description: '' })
   async deleteGenre(@Param('id') id: string) {
     return this.genreService.deleteGenre(id);
   }
