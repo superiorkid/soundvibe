@@ -26,6 +26,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { useMainMenu } from "@/hooks/use-main-menu";
 import { authClient } from "@/lib/auth-client";
+import { getQueryClient } from "@/lib/query-client";
 import {
   AudioLinesIcon,
   ChevronDownIcon,
@@ -40,6 +41,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 const MainNavigation = () => {
+  const queryClient = getQueryClient();
   const router = useRouter();
   const menus = useMainMenu();
 
@@ -255,6 +257,7 @@ const MainNavigation = () => {
                       authClient.signOut({
                         fetchOptions: {
                           onSuccess: () => {
+                            queryClient.clear();
                             router.push("/logout");
                           },
                         },
