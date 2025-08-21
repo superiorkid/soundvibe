@@ -2,12 +2,12 @@
 
 import { useAudio } from "@/context/audio-context";
 import { formatTime } from "@/lib/utils";
-import { TTrack } from "@/types/track.type";
+import { TAudio } from "@/types/audio.type";
 import { useEffect, useRef, useState } from "react";
 import WaveSurfer from "wavesurfer.js";
 
 interface TrackVisualizerProps {
-  audio: TTrack;
+  audio: TAudio;
   height?: number;
   barWidth?: number;
   barGap?: number;
@@ -91,13 +91,31 @@ const TrackVisualizer = ({
       cursorColor,
       normalize: true,
       interact: true,
+      // Use WebAudio backend for better performance
+      backend: "WebAudio",
+      hideScrollbar: true,
+      fetchParams: {
+        credentials: "include",
+      },
     });
 
     setLoading(true);
-    ws.load(audio.audioSrc);
+
+    if (audio.streamUrl) {
+      ws.load(`http://localhost:8000${audio.streamUrl}`);
+    } else {
+      console.error("No streamUrl provided for audio:", audio.id);
+      setLoading(false);
+      return;
+    }
 
     ws.on("ready", () => {
       setDuration(ws.getDuration());
+      setLoading(false);
+    });
+
+    ws.on("error", (error) => {
+      console.error("WaveSurfer loading error:", error);
       setLoading(false);
     });
 
@@ -107,7 +125,8 @@ const TrackVisualizer = ({
       ws.destroy();
     };
   }, [
-    audio.audioSrc,
+    audio.streamUrl,
+    audio.id,
     height,
     barWidth,
     barGap,
@@ -122,11 +141,15 @@ const TrackVisualizer = ({
     const audioEl = audioRef.current;
 
     const updateProgress = () => {
-      if (currentTrack?.audioSrc === audio.audioSrc) {
+      if (currentTrack?.id === audio.id) {
         const progress = audioEl.currentTime / audioEl.duration || 0;
         setCurrentTime(audioEl.currentTime);
         setGlobalCurrentTime(audioEl.currentTime);
-        wavesurfer.seekTo(progress);
+
+        // Only update wavesurfer if it's not currently interacting
+        if (!wavesurfer.isSeeking) {
+          wavesurfer.seekTo(progress);
+        }
       }
     };
 
@@ -143,40 +166,38 @@ const TrackVisualizer = ({
       audioEl.removeEventListener("timeupdate", updateProgress);
       audioEl.removeEventListener("ended", handleEnded);
     };
-  }, [
-    wavesurfer,
-    audioRef,
-    currentTrack,
-    audio.audioSrc,
-    setGlobalCurrentTime,
-  ]);
+  }, [wavesurfer, audioRef, currentTrack, audio.id, setGlobalCurrentTime]);
 
   // Reset when track changes
   useEffect(() => {
-    if (currentTrack?.audioSrc !== audio.audioSrc) {
+    if (currentTrack?.id !== audio.id) {
       setCurrentTime(0);
       wavesurfer?.seekTo(0);
     }
-  }, [currentTrack, audio.audioSrc, wavesurfer]);
+  }, [currentTrack, audio.id, wavesurfer]);
 
   // Click-to-seek + play
   useEffect(() => {
     if (!wavesurfer) return;
 
-    const handleSeekAndPlay = () => {
-      const newTime = wavesurfer.getCurrentTime();
+    const handleInteraction = () => {
+      const currentTime = wavesurfer.getCurrentTime();
 
-      if (currentTrack?.audioSrc !== audio.audioSrc) {
-        playTrack(audio, newTime);
-      } else if (audioRef.current) {
-        audioRef.current.currentTime = newTime;
-        if (audioRef.current.paused) audioRef.current.play();
+      if (currentTrack?.id === audio.id) {
+        // If this is the current track, just seek
+        if (audioRef.current) {
+          audioRef.current.currentTime = currentTime;
+        }
+      } else {
+        // If this is a different track, play it from the clicked position
+        playTrack(audio, currentTime);
       }
     };
 
-    wavesurfer.on("interaction", handleSeekAndPlay);
+    wavesurfer.on("interaction", handleInteraction);
+
     return () => {
-      wavesurfer.un("interaction", handleSeekAndPlay);
+      wavesurfer.un("interaction", handleInteraction);
     };
   }, [wavesurfer, audioRef, currentTrack, audio, playTrack]);
 
@@ -185,7 +206,9 @@ const TrackVisualizer = ({
     if (!hoverRef.current || !containerRef.current) return;
 
     const handlePointerMove = (e: PointerEvent) => {
-      hoverRef.current!.style.width = `${e.offsetX}px`;
+      const rect = containerRef.current!.getBoundingClientRect();
+      const offsetX = e.clientX - rect.left;
+      hoverRef.current!.style.width = `${offsetX}px`;
       hoverRef.current!.style.opacity = "1";
     };
 

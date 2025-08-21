@@ -148,11 +148,24 @@ export class AudioService {
     try {
       const audios = await this.audioRepository.findAll({
         orderBy: { createdAt: 'desc' },
+        include: {
+          audioFile: true,
+          user: true,
+          genre: true,
+          tags: true,
+          coverFile: true,
+        },
       });
+
+      const enrichedAudios = audios.map((audio) => ({
+        ...audio,
+        streamUrl: `/api/audio/stream/${audio.id}`,
+      }));
+
       return {
         success: true,
         message: '',
-        data: audios,
+        data: enrichedAudios,
       };
     } catch {
       throw new InternalServerErrorException('');
@@ -218,11 +231,13 @@ export class AudioService {
         const chunkSize = end - start + 1;
 
         const file = createReadStream(filePath, { start, end });
+
         res.writeHead(206, {
           'Content-Range': `bytes ${start}-${end}/${fileSize}`,
           'Accept-Ranges': 'bytes',
           'Content-Length': chunkSize,
           'Content-Type': 'audio/mpeg',
+          'Cache-Control': 'no-cache',
         });
 
         file.pipe(res);
@@ -230,11 +245,13 @@ export class AudioService {
         res.writeHead(200, {
           'Content-Length': fileSize,
           'Content-Type': 'audio/mpeg',
+          'Accept-Ranges': 'bytes',
+          'Cache-Control': 'no-cache',
         });
         createReadStream(filePath).pipe(res);
       }
     } catch (e) {
-      console.error(e);
+      console.error('Streaming error:', e);
       throw new InternalServerErrorException('Failed to stream audio');
     }
   }

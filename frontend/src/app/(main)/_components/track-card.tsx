@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { useAudio } from "@/context/audio-context";
-import { TTrack } from "@/types/track.type";
+import { TAudio } from "@/types/audio.type";
 import { PauseIcon, PlayIcon } from "lucide-react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
@@ -16,17 +16,17 @@ const TrackVisualizer = dynamic(() => import("./track-visualizer"), {
 });
 
 interface TrackCardProps {
-  audio: TTrack;
+  audio: TAudio;
 }
 
 const TrackCard = ({ audio }: TrackCardProps) => {
   const { currentTrack, isPlaying, playTrack, togglePlay } = useAudio();
 
   const isThisTrackPlaying =
-    currentTrack?.audioSrc === audio.audioSrc && isPlaying;
+    currentTrack?.audioFile.url === audio.audioFile.url && isPlaying;
 
   const handlePlay = () => {
-    if (currentTrack?.audioSrc === audio.audioSrc) {
+    if (currentTrack?.audioFile.url === audio.audioFile.url) {
       togglePlay();
     } else {
       playTrack(audio);
@@ -42,7 +42,7 @@ const TrackCard = ({ audio }: TrackCardProps) => {
         </Avatar>
 
         <Label className="font-medium">
-          {audio.trackArtist}{" "}
+          {audio.user.name}{" "}
           <span className="text-muted-foreground">
             Posted a track 5 minutes ago
           </span>
@@ -82,10 +82,10 @@ const TrackCard = ({ audio }: TrackCardProps) => {
               </div>
               <div className="-space-y-0.5">
                 <h2 className="font-semibold text-muted-foreground">
-                  <Link href="/username">{audio.trackArtist}</Link>
+                  <Link href="/username">{audio.user.name}</Link>
                 </h2>
                 <p className="font-semibold tracking-tight">
-                  <Link href="/username/track-title">{audio.trackTitle}</Link>
+                  <Link href="/username/track-title">{audio.title}</Link>
                 </p>
               </div>
             </div>

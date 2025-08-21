@@ -1,6 +1,6 @@
 "use client";
 
-import { TTrack } from "@/types/track.type";
+import { TAudio } from "@/types/audio.type";
 import React, {
   createContext,
   useContext,
@@ -11,11 +11,11 @@ import React, {
 
 interface AudioState {
   audioRef: React.MutableRefObject<HTMLAudioElement | null>;
-  currentTrack: TTrack | null;
+  currentTrack: TAudio | null;
   isPlaying: boolean;
   currentTime: number;
   duration: number;
-  playTrack: (track: TTrack | null, startTime?: number) => void;
+  playTrack: (track: TAudio | null, startTime?: number) => void;
   togglePlay: () => void;
   seekTo: (time: number) => void;
   setCurrentTime: (time: number) => void;
@@ -26,7 +26,7 @@ const AudioContext = createContext<AudioState | null>(null);
 
 export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const [currentTrack, setCurrentTrack] = useState<TTrack | null>(null);
+  const [currentTrack, setCurrentTrack] = useState<TAudio | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, _setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -63,7 +63,7 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
     };
   }, [setCurrentTime]);
 
-  const playTrack = (track: TTrack | null, startTime = 0) => {
+  const playTrack = (track: TAudio | null, startTime = 0) => {
     if (track === null) {
       if (audioRef.current) {
         audioRef.current.pause();
@@ -75,10 +75,12 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
       return;
     }
 
+    const streamUrl = `http://localhost:8000${track.streamUrl}`;
+
     if (!audioRef.current) {
-      audioRef.current = new Audio(track.audioSrc);
-    } else if (audioRef.current.src !== track.audioSrc) {
-      audioRef.current.src = track.audioSrc;
+      audioRef.current = new Audio(streamUrl);
+    } else if (audioRef.current.src !== streamUrl) {
+      audioRef.current.src = streamUrl;
     }
 
     setCurrentTrack(track);
@@ -93,7 +95,7 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
     if (!audioRef.current) {
       const storedTrack = localStorage.getItem("lastTrack");
       if (storedTrack) {
-        const parsedTrack: TTrack = JSON.parse(storedTrack);
+        const parsedTrack: TAudio = JSON.parse(storedTrack);
         playTrack(parsedTrack, currentTime || 0);
       }
       return;
@@ -122,7 +124,7 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       const stored = localStorage.getItem("lastTrack");
       if (stored) {
-        setCurrentTrack(JSON.parse(stored) as TTrack);
+        setCurrentTrack(JSON.parse(stored) as TAudio);
       }
     } catch (error) {
       console.error("Failed to parse lastTrack from localStorage", error);

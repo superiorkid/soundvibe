@@ -1,3 +1,5 @@
+"use server";
+
 import { getAxios } from "@/lib/axios";
 import { TSession } from "@/types/session.type";
 

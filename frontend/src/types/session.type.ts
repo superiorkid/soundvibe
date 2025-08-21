@@ -1,3 +1,5 @@
+import { TUser } from "./user.type";
+
 export type TSession = {
   session: {
     id: string;
@@ -9,13 +11,5 @@ export type TSession = {
     userAgent: string;
     userId: string;
   };
-  user: {
-    id: string;
-    name: string;
-    email: string;
-    emailVerified: Date;
-    image: string;
-    createdAt: Date;
-    updatedAt: Date;
-  };
+  user: TUser;
 };
