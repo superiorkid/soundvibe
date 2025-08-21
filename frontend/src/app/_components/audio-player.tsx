@@ -42,6 +42,7 @@ const AudioPlayer = () => {
   const [tempTime, setTempTime] = useState(0);
   const [isMuted, setIsMuted] = useState(false);
   const [volume, setVolume] = useState(1); // 0.0 - 1.0
+
   const [hasLastTrackPlayed, setHasLastTrackPlayed] = useState<string | null>(
     null
   );
@@ -84,12 +85,15 @@ const AudioPlayer = () => {
     return <Volume2Icon size={16} />;
   };
 
+  const lastTrack = localStorage.getItem("lastTrack");
+
   useEffect(() => {
-    const lastTrack = localStorage.getItem("lastTrack");
     if (lastTrack) {
       setHasLastTrackPlayed(lastTrack);
+    } else {
+      setHasLastTrackPlayed(null);
     }
-  }, []);
+  }, [lastTrack]);
 
   if (hasLastTrackPlayed) {
     return (
@@ -165,7 +169,9 @@ const AudioPlayer = () => {
                 <div className="relative w-9 h-10">
                   <Image
                     fill
-                    src="https://images.unsplash.com/photo-1588260692987-01360da8185b?q=80&w=826&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                    src={
+                      currentTrack.user.image ?? "https://github.com/shadcn.png"
+                    }
                     alt="track image"
                     className="object-cover"
                     loading="lazy"
@@ -174,10 +180,10 @@ const AudioPlayer = () => {
                 </div>
                 <div className="text-sm max-w-[172px] space-y-0.5">
                   <h2 className="font-bold text-muted-foreground line-clamp-1">
-                    {currentTrack.trackArtist}
+                    {currentTrack.user.name}
                   </h2>
                   <p className="font-semibold text-xs tracking-wide line-clamp-1">
-                    {currentTrack.trackTitle}
+                    {currentTrack.title}
                   </p>
                 </div>
               </div>

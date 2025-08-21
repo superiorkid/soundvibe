@@ -18,6 +18,8 @@ interface AudioState {
   playTrack: (track: TAudio | null, startTime?: number) => void;
   togglePlay: () => void;
   seekTo: (time: number) => void;
+  pauseTrack: () => void;
+  stopTrack: () => void;
   setCurrentTime: (time: number) => void;
   resetTrack: () => void;
 }
@@ -120,6 +122,22 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
     playTrack(null);
   };
 
+  const pauseTrack = () => {
+    if (audioRef.current && !audioRef.current.paused) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+    }
+  };
+
+  const stopTrack = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
+    setIsPlaying(false);
+    setCurrentTime(0);
+  };
+
   useEffect(() => {
     try {
       const stored = localStorage.getItem("lastTrack");
@@ -144,6 +162,8 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
         seekTo,
         setCurrentTime,
         resetTrack,
+        pauseTrack,
+        stopTrack,
       }}
     >
       {children}

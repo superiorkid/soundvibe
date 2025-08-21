@@ -24,6 +24,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useAudio } from "@/context/audio-context";
 import { useMainMenu } from "@/hooks/use-main-menu";
 import { authClient } from "@/lib/auth-client";
 import { getQueryClient } from "@/lib/query-client";
@@ -42,8 +43,11 @@ import { useRouter } from "next/navigation";
 
 const MainNavigation = () => {
   const queryClient = getQueryClient();
+
   const router = useRouter();
   const menus = useMainMenu();
+
+  const { stopTrack } = useAudio();
 
   const { data: session, isPending } = authClient.useSession();
 
@@ -258,6 +262,8 @@ const MainNavigation = () => {
                         fetchOptions: {
                           onSuccess: () => {
                             queryClient.clear();
+                            stopTrack();
+                            localStorage.removeItem("lastTrack");
                             router.push("/logout");
                           },
                         },
