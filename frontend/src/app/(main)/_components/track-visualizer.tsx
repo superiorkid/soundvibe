@@ -146,10 +146,7 @@ const TrackVisualizer = ({
         setCurrentTime(audioEl.currentTime);
         setGlobalCurrentTime(audioEl.currentTime);
 
-        // Only update wavesurfer if it's not currently interacting
-        if (!wavesurfer.isSeeking) {
-          wavesurfer.seekTo(progress);
-        }
+        wavesurfer.seekTo(progress);
       }
     };
 
