@@ -68,6 +68,7 @@ export class AudioController {
   @ApiInternalServerErrorResponse({})
   @ApiOkResponse({})
   async allTracks() {
+    // TODO: findall audio by following user
     return this.audioService.allAudios();
   }
 
@@ -99,6 +100,7 @@ export class AudioController {
     return this.audioService.detailAudioBySlug(slug);
   }
 
+  @Public()
   @Get('stream/:id')
   @ApiParam({ name: 'id' })
   async streamAudio(
