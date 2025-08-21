@@ -24,7 +24,8 @@ export class AudioService {
   ) {}
 
   async uploadTrack(uploadAudioDto: UploadAudioDTO, session: UserSession) {
-    const audioSlug = slugify(uploadAudioDto.title);
+    const audioSlug = slugify(uploadAudioDto.title, { lower: true });
+    const userId = session.user.id;
 
     const audio = await this.audioRepository.findOne({
       where: { slug: audioSlug },
@@ -35,28 +36,35 @@ export class AudioService {
     let savedAudioFile: string | null = null;
     let savedCoverFile: string | null = null;
 
+    const trackFolder = `${userId}/${audioSlug}`;
+
     try {
       return await this.databaseService.$transaction(async (trx) => {
+        // Upload audio
         const audioExtension =
           path.extname(uploadAudioDto.audioFile.originalName) || '.mp3';
         savedAudioFile = await this.fileUploadService.upload(
           uploadAudioDto.audioFile.buffer,
           `${audioSlug}${audioExtension}`,
+          trackFolder,
         );
 
         const duration = await this.getAudioDuration(
           uploadAudioDto.audioFile.buffer,
         );
 
+        // Upload cover if exists
         if (uploadAudioDto.cover) {
           const coverExtension =
             path.extname(uploadAudioDto.cover.originalName) || '.png';
           savedCoverFile = await this.fileUploadService.upload(
             uploadAudioDto.cover.buffer,
             `${audioSlug}-cover${coverExtension}`,
+            trackFolder, // pass folder
           );
         }
 
+        // Save audio & cover in database
         const newAudio = await trx.audio.create({
           data: {
             duration,
@@ -87,26 +95,14 @@ export class AudioService {
           });
         }
 
-        // if (uploadAudioDto.additionalTags?.length) {
-        //   const tagsData = uploadAudioDto.additionalTags.map((tag) => ({
-        //     name: tag,
-        //     audioId: newAudio.id,
-        //   }));
-
-        //   await trx.tag.createMany({ data: tagsData });
-        // }
-
-        return {
-          success: true,
-          message: 'upload track successfully',
-        };
+        return { success: true, message: 'Upload track successfully' };
       });
     } catch (error) {
       if (savedAudioFile) await this.fileUploadService.remove(savedAudioFile);
       if (savedCoverFile) await this.fileUploadService.remove(savedCoverFile);
 
       throw new InternalServerErrorException(
-        'Something went wrong ::',
+        'Something went wrong',
         (error as Error).message,
       );
     }
@@ -253,6 +249,34 @@ export class AudioService {
     } catch (e) {
       console.error('Streaming error:', e);
       throw new InternalServerErrorException('Failed to stream audio');
+    }
+  }
+
+  async getCover(params: { id: string; res: Response }) {
+    const { id, res } = params;
+    const audio = await this.audioRepository.findOne({
+      where: { id },
+      include: { coverFile: true },
+    });
+
+    if (!audio || !audio.coverFile)
+      throw new NotFoundException('Cover not found');
+
+    const filePath = join(process.cwd(), 'public', audio.coverFile.url);
+    try {
+      const stat = statSync(filePath);
+      const fileSize = stat.size;
+
+      res.writeHead(200, {
+        'Content-Length': fileSize,
+        'Content-Type': 'image/jpeg',
+        'Cache-Control': 'no-cache',
+      });
+
+      createReadStream(filePath).pipe(res);
+    } catch (err) {
+      console.error(err);
+      throw new NotFoundException('Cover file not accessible');
     }
   }
 

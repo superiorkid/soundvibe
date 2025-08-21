@@ -18,20 +18,30 @@ export class FileUploadService {
     this.logger.log(`Upload directory: ${this.uploadDirectory}`);
   }
 
-  async upload(buffer: Buffer, filename: string): Promise<string> {
+  async upload(
+    buffer: Buffer,
+    filename: string,
+    subFolder?: string,
+  ): Promise<string> {
     if (!buffer || !filename) {
       throw new BadRequestException('Invalid file upload');
     }
 
-    const filePath = join(this.uploadDirectory, filename);
+    const folderPath = subFolder
+      ? join(this.uploadDirectory, subFolder)
+      : this.uploadDirectory;
+
+    if (!existsSync(folderPath)) mkdirSync(folderPath, { recursive: true });
+
+    const filePath = join(folderPath, filename);
 
     try {
-      this.createUploadDir();
-
       await writeFile(filePath, buffer);
       this.logger.log(`File saved successfully: ${filePath}`);
 
-      return `uploads/${filename}`;
+      return subFolder
+        ? `uploads/${subFolder}/${filename}`
+        : `uploads/${filename}`;
     } catch (error) {
       this.logger.error(`Failed to upload file: ${error.message}`, error.stack);
       throw new InternalServerErrorException('Failed to upload file');
@@ -39,10 +49,7 @@ export class FileUploadService {
   }
 
   async remove(relativePath: string): Promise<void> {
-    const filePath = join(
-      this.uploadDirectory,
-      relativePath.replace(/^uploads\//, ''),
-    );
+    const filePath = join(process.cwd(), 'public', relativePath);
 
     if (!existsSync(filePath)) {
       this.logger.warn(`File not found: ${filePath}`);

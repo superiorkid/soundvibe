@@ -1,4 +1,4 @@
-import { Session, type UserSession } from '@mguay/nestjs-better-auth';
+import { Public, Session, type UserSession } from '@mguay/nestjs-better-auth';
 import {
   Body,
   Controller,
@@ -107,5 +107,11 @@ export class AudioController {
     @Res() res: Response,
   ) {
     return this.audioService.streamAudio({ id, req, res });
+  }
+
+  @Public()
+  @Get('cover/:id')
+  async getCover(@Param('id') id: string, @Res() res: Response) {
+    return this.audioService.getCover({ id, res });
   }
 }

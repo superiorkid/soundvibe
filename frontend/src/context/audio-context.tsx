@@ -75,7 +75,7 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
       return;
     }
 
-    const streamUrl = `http://localhost:8000${track.streamUrl}`;
+    const streamUrl = `${process.env.NEXT_PUBLIC_BACKEND_URL}${track.streamUrl}`;
 
     if (!audioRef.current) {
       audioRef.current = new Audio(streamUrl);

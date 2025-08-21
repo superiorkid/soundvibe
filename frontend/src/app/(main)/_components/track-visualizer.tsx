@@ -102,7 +102,7 @@ const TrackVisualizer = ({
     setLoading(true);
 
     if (audio.streamUrl) {
-      ws.load(`http://localhost:8000${audio.streamUrl}`);
+      ws.load(`${process.env.NEXT_PUBLIC_BACKEND_URL}${audio.streamUrl}`);
     } else {
       console.error("No streamUrl provided for audio:", audio.id);
       setLoading(false);

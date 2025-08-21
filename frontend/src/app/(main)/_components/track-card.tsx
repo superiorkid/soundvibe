@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { useAudio } from "@/context/audio-context";
 import { TAudio } from "@/types/audio.type";
+import { formatDistance } from "date-fns";
 import { PauseIcon, PlayIcon } from "lucide-react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
@@ -37,14 +38,19 @@ const TrackCard = ({ audio }: TrackCardProps) => {
     <div className="space-y-2.5">
       <div className="flex gap-2 items-center">
         <Avatar className="size-8">
-          <AvatarImage src="https://github.com/shadcn.png" />
+          <AvatarImage
+            src={audio.user.image ?? "https://github.com/shadcn.png"}
+          />
           <AvatarFallback>CN</AvatarFallback>
         </Avatar>
 
         <Label className="font-medium">
           {audio.user.name}{" "}
           <span className="text-muted-foreground">
-            Posted a track 5 minutes ago
+            Posted a track{" "}
+            {formatDistance(new Date(audio.createdAt), new Date(), {
+              addSuffix: true,
+            })}
           </span>
         </Label>
       </div>
@@ -52,7 +58,7 @@ const TrackCard = ({ audio }: TrackCardProps) => {
         <div className="relative size-38 rounded-lg overflow-hidden">
           <Image
             fill
-            src="https://images.unsplash.com/photo-1723961617032-ef69c454cb31?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+            src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/audio/cover/${audio.id}`}
             alt="track image"
             className="object-cover"
             loading="lazy"
@@ -85,16 +91,15 @@ const TrackCard = ({ audio }: TrackCardProps) => {
                   <Link href="/username">{audio.user.name}</Link>
                 </h2>
                 <p className="font-semibold tracking-tight">
-                  <Link href="/username/track-title">{audio.title}</Link>
+                  <Link href={`/${audio.user.id}/${audio.slug}`}>
+                    {audio.title}
+                  </Link>
                 </p>
               </div>
             </div>
-            <div className="flex flex-col justify-center text-sm space-y-0.5">
-              <span className="font-medium text-muted-foreground">
-                8 years ago
-              </span>
-              <Badge variant="secondary" className="tracking-wide">
-                #Electronic
+            <div>
+              <Badge variant="secondary" className="tracking-wide text-sm">
+                #{audio.genre.name}
               </Badge>
             </div>
           </div>
