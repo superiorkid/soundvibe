@@ -47,7 +47,7 @@ const MainNavigation = () => {
   const router = useRouter();
   const menus = useMainMenu();
 
-  const { stopTrack } = useAudio();
+  const { clearTrack } = useAudio();
 
   const { data: session, isPending } = authClient.useSession();
 
@@ -262,8 +262,7 @@ const MainNavigation = () => {
                         fetchOptions: {
                           onSuccess: () => {
                             queryClient.clear();
-                            stopTrack();
-                            localStorage.removeItem("lastTrack");
+                            clearTrack();
                             router.push("/logout");
                           },
                         },

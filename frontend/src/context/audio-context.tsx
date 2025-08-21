@@ -1,5 +1,6 @@
 "use client";
 
+import { useLocalStorage } from "@/hooks/use-local-storage";
 import { TAudio } from "@/types/audio.type";
 import React, {
   createContext,
@@ -22,11 +23,14 @@ interface AudioState {
   stopTrack: () => void;
   setCurrentTime: (time: number) => void;
   resetTrack: () => void;
+  clearTrack: () => void;
 }
 
 const AudioContext = createContext<AudioState | null>(null);
 
 export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
+  const [lastTrack, setLastTrack] = useLocalStorage("lastTrack");
+
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [currentTrack, setCurrentTrack] = useState<TAudio | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -90,14 +94,13 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
     setCurrentTime(startTime);
     audioRef.current.play();
     setIsPlaying(true);
-    localStorage.setItem("lastTrack", JSON.stringify(track));
+    setLastTrack(JSON.stringify(track));
   };
 
   const togglePlay = () => {
     if (!audioRef.current) {
-      const storedTrack = localStorage.getItem("lastTrack");
-      if (storedTrack) {
-        const parsedTrack: TAudio = JSON.parse(storedTrack);
+      if (lastTrack) {
+        const parsedTrack: TAudio = JSON.parse(lastTrack);
         playTrack(parsedTrack, currentTime || 0);
       }
       return;
@@ -138,16 +141,27 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
     setCurrentTime(0);
   };
 
+  const clearTrack = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      audioRef.current.src = "";
+    }
+    setIsPlaying(false);
+    setCurrentTime(0);
+    setCurrentTrack(null);
+    setLastTrack(null);
+  };
+
   useEffect(() => {
     try {
-      const stored = localStorage.getItem("lastTrack");
-      if (stored) {
-        setCurrentTrack(JSON.parse(stored) as TAudio);
+      if (lastTrack) {
+        setCurrentTrack(JSON.parse(lastTrack) as TAudio);
       }
     } catch (error) {
       console.error("Failed to parse lastTrack from localStorage", error);
     }
-  }, []);
+  }, [lastTrack]);
 
   return (
     <AudioContext.Provider
@@ -164,6 +178,7 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
         resetTrack,
         pauseTrack,
         stopTrack,
+        clearTrack,
       }}
     >
       {children}
