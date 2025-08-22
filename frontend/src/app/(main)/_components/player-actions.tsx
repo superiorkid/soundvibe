@@ -4,6 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 import {
   CopyIcon,
@@ -25,6 +26,8 @@ export function PlayerActions({
   showComment = true,
   containerClassName,
 }: PlayerActionsProps) {
+  const { data: session } = authClient.useSession();
+
   return (
     <div
       className={cn(
@@ -35,7 +38,9 @@ export function PlayerActions({
       {showComment && (
         <div className="flex space-x-4 items-center">
           <Avatar>
-            <AvatarImage src="https://github.com/shadcn.png" />
+            <AvatarImage
+              src={session?.user.image ?? "https://github.com/shadcn.png"}
+            />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
           <Input

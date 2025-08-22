@@ -1,60 +1,82 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
-import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { useAudioBySlug } from "@/hooks/tanstack/audio";
+import { TAudio } from "@/types/audio.type";
+import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
-const TrackDescription = () => {
-  const [expanded, setExpanded] = useState(false);
-  const [tagsExpanded, setTagsExpanded] = useState(false);
+interface TrackDescriptionProps {
+  audio: TAudio;
+}
 
-  const fullText = `Artists: Vanotek, Eneli, N.O.A.H
-Label: Global Records
-Remix Composer: N.O.A.H
-Year: 2018
-Genre: Deep House
+const TrackDescription = ({ audio }: TrackDescriptionProps) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [needsToggle, setNeedsToggle] = useState(false);
+  const contentRef = useRef<HTMLDivElement>(null);
 
-Download for free on The Artist Union:
-theartistunion.com/tracks/c7d12b`;
+  useEffect(() => {
+    if (contentRef.current) {
+      const contentHeight = contentRef.current.scrollHeight;
+      setNeedsToggle(contentHeight > 50);
+    }
+  }, [audio?.description]);
 
-  const previewText =
-    fullText.length > 100 ? fullText.slice(0, 100) + "..." : fullText;
-
-  const tags = Array.from({ length: 16 }).map((_, index) => `#tag${index}`);
+  const toggleExpand = () => {
+    setIsExpanded(!isExpanded);
+  };
 
   return (
-    <div className="space-y-3.5">
-      {/* Description */}
-      <p className="whitespace-pre-line leading-relaxed">
-        {expanded ? fullText : previewText}
-      </p>
-
-      <button
-        className="text-blue-600 text-sm font-medium hover:underline"
-        onClick={() => setExpanded((prev) => !prev)}
+    <div className="relative">
+      <div
+        ref={contentRef}
+        className={`relative overflow-hidden transition-all duration-300 ${
+          isExpanded ? "h-auto" : "max-h-[50px]"
+        }`}
       >
-        {expanded ? "Show less" : "Show more"}
-      </button>
+        <div className="space-y-3.5">
+          <p className="whitespace-pre-line leading-relaxed text-foreground">
+            {audio?.description || "No description provided"}
+          </p>
 
-      {/* Tags */}
-      <div className="flex flex-wrap gap-2">
-        {(tagsExpanded ? tags : tags.slice(0, 5)).map((tag, index) => (
-          <Badge
-            key={index}
-            className="text-sm font-medium"
-            variant="secondary"
-          >
-            {tag}
-          </Badge>
-        ))}
+          <div className="flex flex-wrap gap-2">
+            {Array.from({ length: 25 }).map((_, index) => (
+              <Badge
+                key={index}
+                className="text-sm font-medium"
+                variant="secondary"
+              >
+                #lo-fi
+              </Badge>
+            ))}
+          </div>
+        </div>
+
+        {!isExpanded && needsToggle && (
+          <div className="absolute inset-x-0 bottom-0 h-6 bg-gradient-to-t from-background to-transparent pointer-events-none" />
+        )}
       </div>
 
-      {tags.length > 5 && (
-        <button
-          className="text-blue-600 text-sm font-medium hover:underline"
-          onClick={() => setTagsExpanded((prev) => !prev)}
+      {needsToggle && (
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={toggleExpand}
+          className="mt-2 h-8 px-2 text-sm text-muted-foreground hover:text-foreground"
         >
-          {tagsExpanded ? "Show less tags" : "Show more tags"}
-        </button>
+          {isExpanded ? (
+            <>
+              Show less
+              <ChevronUpIcon className="ml-1 h-3 w-3" />
+            </>
+          ) : (
+            <>
+              Show more
+              <ChevronDownIcon className="ml-1 h-3 w-3" />
+            </>
+          )}
+        </Button>
       )}
     </div>
   );

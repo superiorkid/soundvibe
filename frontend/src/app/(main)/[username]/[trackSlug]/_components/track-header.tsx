@@ -4,7 +4,6 @@ import TrackVisualizer from "@/app/(main)/_components/track-visualizer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useAudio } from "@/context/audio-context";
-import { useAudioBySlug } from "@/hooks/tanstack/audio";
 import { randomGradient } from "@/lib/random-gradient";
 import { TAudio } from "@/types/audio.type";
 import { formatDistance } from "date-fns";
@@ -14,34 +13,24 @@ import { useState } from "react";
 import { H2 } from "shadcn-typography";
 
 interface TrackHeaderProps {
-  slug: string;
+  audio: TAudio;
 }
 
-const TrackHeader = ({ slug }: TrackHeaderProps) => {
-  const { audio, isPending } = useAudioBySlug(slug);
-
-  const [bgGradient, _setBgGradient] = useState(randomGradient());
+const TrackHeader = ({ audio }: TrackHeaderProps) => {
+  const [bgGradient] = useState(randomGradient());
 
   const { currentTrack, isPlaying, playTrack, togglePlay } = useAudio();
 
   const isThisTrackPlaying =
-    currentTrack?.audioFile.url === audio?.data?.audioFile.url && isPlaying;
+    currentTrack?.audioFile.url === audio?.audioFile.url && isPlaying;
 
   const handlePlay = () => {
-    if (currentTrack?.audioFile.url === audio?.data?.audioFile.url) {
+    if (currentTrack?.audioFile.url === audio?.audioFile.url) {
       togglePlay();
     } else {
-      playTrack(audio?.data as TAudio);
+      playTrack(audio);
     }
   };
-
-  if (isPending && slug) {
-    return (
-      <div>
-        <p>Loading...</p>
-      </div>
-    );
-  }
 
   return (
     <div
@@ -65,33 +54,29 @@ const TrackHeader = ({ slug }: TrackHeaderProps) => {
             </Button>
             <div>
               <H2 className="border-none font-bold max-w-xl text-4xl bg-foreground text-background inline-block px-2">
-                {audio?.data?.title}
+                {audio?.title}
               </H2>
               <br />
               <h3 className="font-medium text-lg bg-foreground text-background inline-block px-2">
-                {audio?.data?.user.name}
+                {audio?.user.name}
               </h3>
             </div>
           </div>
           <div className="space-y-1.5 text-end">
             <h5 className="font-medium text-muted-foreground">
-              {formatDistance(
-                new Date(audio?.data?.createdAt as Date),
-                new Date(),
-                {
-                  addSuffix: true,
-                }
-              )}
+              {formatDistance(new Date(audio?.createdAt as Date), new Date(), {
+                addSuffix: true,
+              })}
             </h5>
             <Badge className="px-2 py-1 bg-gray-200 rounded text-sm text-foreground">
-              #{audio?.data?.genre.name}
+              #{audio?.genre.name}
             </Badge>
           </div>
         </div>
 
         <div className="mb-12">
           <TrackVisualizer
-            audio={audio?.data as TAudio}
+            audio={audio}
             height={95}
             barGap={1}
             hoverOverlayColor="rgba(0,0,255,0.3)"
@@ -100,15 +85,36 @@ const TrackHeader = ({ slug }: TrackHeaderProps) => {
       </div>
 
       <div className="relative aspect-square rounded-md overflow-hidden">
-        <Image
-          fill
-          src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/audio/cover/${audio?.data?.id}`}
-          alt="music cover"
-          className="object-cover"
-          loading="lazy"
-          decoding="async"
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-        />
+        {audio.coverFile ? (
+          <Image
+            fill
+            src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/audio/cover/${audio?.id}`}
+            alt="music cover"
+            className="object-cover"
+            loading="lazy"
+            decoding="async"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          />
+        ) : (
+          <div className="absolute inset-0 bg-gradient-to-br from-amber-600/70 to-yellow-400/70 flex items-center justify-center">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="80"
+              height="80"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="white"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="opacity-80"
+            >
+              <path d="M9 18V5l12-2v13" />
+              <circle cx="6" cy="18" r="3" />
+              <circle cx="18" cy="16" r="3" />
+            </svg>
+          </div>
+        )}
       </div>
     </div>
   );
