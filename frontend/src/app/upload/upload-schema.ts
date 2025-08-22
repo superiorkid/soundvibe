@@ -23,6 +23,7 @@ export const uploadSchema = z.object({
     .refine((file) => ACCEPTED_AUDIO_TYPES.includes(file.type), {
       error: "Invalid audio format. Allowed: WAV, FLAC, AIFF, ALAC, MP3",
     }),
+  artist: z.string().min(1).min(1, { error: "Artist is required" }),
   title: z.string().min(1, { error: "Title is required" }),
   genre: z
     .string()

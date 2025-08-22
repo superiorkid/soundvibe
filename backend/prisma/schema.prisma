@@ -26,7 +26,11 @@ model User {
   audios        Audio[]
   likedTracks   Like[]
 
+  username        String?
+  displayUsername String?
+
   @@unique([email])
+  @@unique([username])
   @@index([email])
   @@map("user")
 }
@@ -104,6 +108,7 @@ model Genre {
 
 model Audio {
   id          String     @id @default(cuid())
+  artist      String?
   title       String
   slug        String     @unique
   description String?    @db.Text

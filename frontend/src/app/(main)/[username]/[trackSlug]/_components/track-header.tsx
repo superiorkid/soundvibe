@@ -58,7 +58,7 @@ const TrackHeader = ({ audio }: TrackHeaderProps) => {
               </H2>
               <br />
               <h3 className="font-medium text-lg bg-foreground text-background inline-block px-2">
-                {audio?.user.name}
+                {audio?.artist ?? "Unknown Artist"}
               </h3>
             </div>
           </div>

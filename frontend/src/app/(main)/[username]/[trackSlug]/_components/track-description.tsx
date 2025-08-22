@@ -2,7 +2,6 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useAudioBySlug } from "@/hooks/tanstack/audio";
 import { TAudio } from "@/types/audio.type";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
@@ -41,13 +40,13 @@ const TrackDescription = ({ audio }: TrackDescriptionProps) => {
           </p>
 
           <div className="flex flex-wrap gap-2">
-            {Array.from({ length: 25 }).map((_, index) => (
+            {(audio.tags || []).map((tag, index) => (
               <Badge
                 key={index}
                 className="text-sm font-medium"
                 variant="secondary"
               >
-                #lo-fi
+                #{tag.name}
               </Badge>
             ))}
           </div>

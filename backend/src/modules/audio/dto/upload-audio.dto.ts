@@ -60,6 +60,15 @@ export class UploadAudioDTO {
   title: string;
 
   @ApiProperty({
+    description:
+      'The artist(s) responsible for the audio track. For multiple artists, separate with commas.',
+    example: 'Martin Garrix, Kygo',
+  })
+  @IsString()
+  @IsNotEmpty()
+  artist: string;
+
+  @ApiProperty({
     description: 'Genre ID of the track (cuid)',
     example: 'ckv8z1o1a0000r4d7h8f7xj9w',
   })
@@ -70,15 +79,15 @@ export class UploadAudioDTO {
   })
   genreId: string;
 
-  // @ApiPropertyOptional({
-  //   description: 'Additional tags for the track',
-  //   example: ['study', 'chill', 'instrumental'],
-  //   type: [String],
-  // })
-  // @IsString({ each: true })
-  // @IsArray()
-  // @IsOptional()
-  // additionalTags?: string[];
+  @ApiPropertyOptional({
+    description: 'Additional tags for the track',
+    example: ['study', 'chill', 'instrumental'],
+    type: [String],
+  })
+  @IsString({ each: true })
+  @IsArray()
+  @IsOptional()
+  additionalTags?: string[];
 
   @ApiPropertyOptional({
     description: 'Description of the track',

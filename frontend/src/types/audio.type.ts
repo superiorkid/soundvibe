@@ -1,11 +1,13 @@
 import { TAudioFile } from "./audio-file.type";
 import { TCoverFile } from "./cover-file.type";
 import { TGenre } from "./genre.type";
+import { TTag } from "./tag.type";
 import { TUser } from "./user.type";
 
 export type TAudio = {
   id: string;
   title: string;
+  artist: string;
   slug: string;
   description: string;
   duration: number;
@@ -18,4 +20,5 @@ export type TAudio = {
   genre: TGenre;
   coverFile: TCoverFile;
   streamUrl?: string;
+  tags?: TTag[];
 };

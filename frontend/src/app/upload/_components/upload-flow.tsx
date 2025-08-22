@@ -10,6 +10,7 @@ import {
   StepperTrigger,
 } from "@/components/ui/stepper";
 import { UploadStepEnum } from "@/enums/upload-step-enum";
+import { useUploadAudio } from "@/hooks/tanstack/audio";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2Icon } from "lucide-react";
 import { parseAsStringEnum, useQueryState } from "nuqs";
@@ -19,7 +20,6 @@ import { TUploadSchema, uploadSchema } from "../upload-schema";
 import Step1 from "./step-1";
 import Step2 from "./step-2";
 import Step3 from "./step-3";
-import { useUploadAudio } from "@/hooks/tanstack/audio";
 
 const stepList = Object.keys(UploadStepEnum).map((key, index) => ({
   index,
@@ -44,6 +44,7 @@ const UploadFlow = () => {
       audio: undefined,
       cover: undefined,
       title: "",
+      artist: "",
       genre: "0",
       description: "",
       additionalTags: [],
@@ -75,9 +76,16 @@ const UploadFlow = () => {
 
     formData.append("audioFile", values.audio);
     formData.append("title", values.title);
+    formData.append("artist", values.artist);
     formData.append("genreId", values.genre);
+
     if (values.description) formData.append("description", values.description);
     if (values.cover) formData.append("cover", values.cover);
+    if (values.additionalTags && values.additionalTags.length) {
+      values.additionalTags.forEach((tag, index) => {
+        formData.append(`additionalTags[${index}]`, tag.text);
+      });
+    }
 
     uploadAudioMutation(formData);
   };
@@ -160,11 +168,19 @@ const UploadFlow = () => {
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 mt-5">
-          {step === UploadStepEnum.upload_audio && <Step1 onNext={nextStep} />}
-          {step === UploadStepEnum.basic_information && (
-            <Step2 onNext={nextStep} onBack={prevStep} />
+          {step === UploadStepEnum.upload_audio && (
+            <Step1 onNext={nextStep} isSubmitting={isPending} />
           )}
-          {step === UploadStepEnum.confirm && <Step3 onBack={prevStep} />}
+          {step === UploadStepEnum.basic_information && (
+            <Step2
+              onNext={nextStep}
+              onBack={prevStep}
+              isSubmitting={isPending}
+            />
+          )}
+          {step === UploadStepEnum.confirm && (
+            <Step3 onBack={prevStep} isSubmitting={isPending} />
+          )}
         </form>
       </Form>
     </div>

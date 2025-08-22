@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import {
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -17,10 +18,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { useGenres } from "@/hooks/tanstack/genre";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useFileUpload } from "@/hooks/use-file-upload";
 import { TagInput } from "emblor";
-import { AlertCircleIcon, CameraIcon, XIcon } from "lucide-react";
+import {
+  AlertCircleIcon,
+  CameraIcon,
+  GlobeIcon,
+  InfoIcon,
+  XIcon,
+} from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
@@ -29,19 +37,17 @@ import {
   MAX_COVER_SIZE,
   TUploadSchema,
 } from "../upload-schema";
-import { useGenres } from "@/hooks/tanstack/genre";
 
 interface Step2Props {
   onNext: () => void;
   onBack: () => void;
+  isSubmitting: boolean;
 }
 
-const Step2 = ({ onNext, onBack }: Step2Props) => {
+const Step2 = ({ onNext, onBack, isSubmitting }: Step2Props) => {
   const [activeTagIndex, setActiveTagIndex] = useState<number | null>(null);
 
   const form = useFormContext<TUploadSchema>();
-  const { isSubmitting } = form.formState;
-
   const { genres, isPending: isGenrePending } = useGenres();
 
   const [
@@ -141,7 +147,10 @@ const Step2 = ({ onNext, onBack }: Step2Props) => {
                   <Button
                     size="lg"
                     type="button"
-                    onClick={openFileDialog}
+                    onClick={(e) => {
+                      e.stopPropagation(); // ✅ prevent bubbling to parent
+                      openFileDialog();
+                    }}
                     disabled={isSubmitting}
                   >
                     <CameraIcon size={18} strokeWidth={2} className="mr-1" />
@@ -155,7 +164,10 @@ const Step2 = ({ onNext, onBack }: Step2Props) => {
                 <button
                   type="button"
                   className="focus-visible:border-ring focus-visible:ring-ring/50 z-50 flex size-8 cursor-pointer items-center justify-center rounded-full bg-black/60 text-white transition-[color,box-shadow] outline-none hover:bg-black/80 focus-visible:ring-[3px]"
-                  onClick={() => removeFile(files[0]?.id)}
+                  onClick={(e) => {
+                    e.stopPropagation(); // ✅ prevent re-triggering drop area
+                    removeFile(files[0]?.id);
+                  }}
                   aria-label="Remove image"
                   disabled={isSubmitting}
                 >
@@ -177,32 +189,67 @@ const Step2 = ({ onNext, onBack }: Step2Props) => {
         </div>
 
         <div className="flex-1 space-y-8">
-          <div className="space-y-2">
-            <FormField
-              control={form.control}
-              name="title"
-              disabled={isSubmitting}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    Title
-                    <span className="text-rose-500">*</span>
-                  </FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter title" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          {/* Artist Field */}
+          <FormField
+            control={form.control}
+            name="artist"
+            disabled={isSubmitting}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  Artist
+                  <span className="text-rose-500">*</span>
+                </FormLabel>
+                <FormControl>
+                  <Input placeholder="Enter artists" {...field} />
+                </FormControl>
+                <FormDescription className="flex flex-col gap-2">
+                  <div className="flex items-start gap-1">
+                    <div className="mt-0.5">
+                      <InfoIcon className="h-4 w-4 text-muted-foreground" />
+                    </div>
+                    <p>Separate multiple artists with commas</p>
+                  </div>
+                  <div className="bg-muted rounded-md px-3 py-2 text-sm">
+                    <p className="font-medium text-foreground">Example:</p>
+                    <p className="text-muted-foreground">
+                      Martin Garrix, Kygo, David Guetta
+                    </p>
+                  </div>
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-            <div className="flex justify-between items-center">
-              <p className="text-muted-foreground select-none">
-                soundcloud.com/schelpcenter/{slugPreview || "(no slug)"}
-              </p>
-            </div>
-          </div>
+          {/* Title Field */}
+          <FormField
+            control={form.control}
+            name="title"
+            disabled={isSubmitting}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  Title
+                  <span className="text-rose-500">*</span>
+                </FormLabel>
+                <FormControl>
+                  <Input placeholder="Enter title" {...field} />
+                </FormControl>
+                <FormDescription className="flex flex-col gap-2 py-1">
+                  <div className="flex items-center gap-1.5">
+                    <GlobeIcon className="h-3.5 w-3.5 text-muted-foreground" />
+                    <span className="text-muted-foreground select-none text-sm font-mono bg-muted px-2 py-1 rounded">
+                      soundcloud.com/schelpcenter/{slugPreview || "(no slug)"}
+                    </span>
+                  </div>
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
+          {/* Genre Field */}
           <FormField
             control={form.control}
             name="genre"
@@ -276,6 +323,7 @@ const Step2 = ({ onNext, onBack }: Step2Props) => {
             )}
           />
 
+          {/* Additional Tags */}
           <FormField
             control={form.control}
             name="additionalTags"
@@ -314,6 +362,7 @@ const Step2 = ({ onNext, onBack }: Step2Props) => {
             )}
           />
 
+          {/* Description */}
           <FormField
             control={form.control}
             name="description"

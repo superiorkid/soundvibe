@@ -68,6 +68,7 @@ export class AudioService {
         const newAudio = await trx.audio.create({
           data: {
             duration,
+            artist: uploadAudioDto.artist,
             title: uploadAudioDto.title,
             slug: audioSlug,
             description: uploadAudioDto.description,
@@ -92,6 +93,16 @@ export class AudioService {
               alt: `${uploadAudioDto.title} cover`,
               audioId: newAudio.id,
             },
+          });
+        }
+
+        if (uploadAudioDto.additionalTags?.length) {
+          await trx.tag.createMany({
+            data: uploadAudioDto.additionalTags.map((tag) => ({
+              name: tag,
+              audioId: newAudio.id,
+            })),
+            skipDuplicates: true,
           });
         }
 

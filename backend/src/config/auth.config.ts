@@ -1,7 +1,7 @@
 import { ConfigService } from '@nestjs/config';
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
-import { bearer, openAPI } from 'better-auth/plugins';
+import { bearer, openAPI, username } from 'better-auth/plugins';
 import { DatabaseService } from 'src/shared/database/database.service';
 
 export function createAuthConfig(
@@ -11,7 +11,7 @@ export function createAuthConfig(
   return {
     auth: betterAuth({
       database: prismaAdapter(database, { provider: 'postgresql' }),
-      plugins: [openAPI(), bearer()],
+      plugins: [openAPI(), bearer(), username()],
       emailAndPassword: {
         enabled: false,
       },

@@ -13,12 +13,12 @@ import {
 
 interface Step1Props {
   onNext: () => void;
+  isSubmitting: boolean;
 }
 
-const Step1 = ({ onNext }: Step1Props) => {
+const Step1 = ({ onNext, isSubmitting }: Step1Props) => {
   const router = useRouter();
   const form = useFormContext<TUploadSchema>();
-  const { isSubmitting } = form.formState;
 
   const onCancel = () => {
     const confirmed = window.confirm(

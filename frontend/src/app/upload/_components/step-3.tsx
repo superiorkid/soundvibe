@@ -7,12 +7,11 @@ import { TUploadSchema } from "../upload-schema";
 
 interface Step3Props {
   onBack: () => void;
+  isSubmitting: boolean;
 }
 
-const Step3 = ({ onBack }: Step3Props) => {
-  const { getValues, formState } = useFormContext<TUploadSchema>();
-  const { isSubmitting } = formState;
-
+const Step3 = ({ onBack, isSubmitting }: Step3Props) => {
+  const { getValues } = useFormContext<TUploadSchema>();
   const values = getValues();
 
   return (
@@ -103,7 +102,7 @@ const Step3 = ({ onBack }: Step3Props) => {
               <p
                 className={
                   values.description
-                    ? "text-sm"
+                    ? "text-sm whitespace-pre-line"
                     : "text-muted-foreground italic"
                 }
               >
