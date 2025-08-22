@@ -1,10 +1,11 @@
+import { Toaster } from "@/components/ui/sonner";
 import { AudioProvider } from "@/context/audio-context";
 import { cn } from "@/lib/utils";
 import QueryClientProvider from "@/providers/query-client-provider";
+import { ReactLenis } from "lenis/react";
 import { type Metadata } from "next";
 import { Geist } from "next/font/google";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
-import { Toaster } from "@/components/ui/sonner";
 
 import "./globals.css";
 
@@ -34,6 +35,18 @@ export default function RootLayout({
           <div className="max-w-7xl mx-auto px-5 2xl:px-0">
             <QueryClientProvider>
               <NuqsAdapter>
+                <ReactLenis
+                  root
+                  options={{
+                    lerp: 0.1,
+                    duration: 1.2,
+                    smoothWheel: true,
+                    syncTouch: true,
+                    syncTouchLerp: 0.075,
+                    wheelMultiplier: 1,
+                    touchMultiplier: 1.5,
+                  }}
+                />
                 {children}
                 <Toaster richColors expand />
               </NuqsAdapter>
