@@ -126,10 +126,7 @@ export class AudioService {
       return {
         data: {
           ...audio,
-          audioFile: {
-            ...audio.audioFile,
-            streamUrl: `/api/audio/stream/${audio.id}`,
-          },
+          streamUrl: `/api/audio/stream/${audio.id}`,
         },
         success: true,
         message: 'get detail audio successfully',
@@ -186,10 +183,7 @@ export class AudioService {
       return {
         data: {
           ...audio,
-          audioFile: {
-            ...audio.audioFile,
-            streamUrl: `/api/audio/stream/${audio.id}`,
-          },
+          streamUrl: `/api/audio/stream/${audio.id}`,
         },
         success: true,
         message: 'get detail audio successfully',

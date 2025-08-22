@@ -15,3 +15,15 @@ export async function findAllAudio() {
     throw new Error("Failed to get audios");
   }
 }
+
+export async function findOneBySlug(slug: string) {
+  const axiosInstance = await getAxios();
+
+  try {
+    const response = await axiosInstance.get(`/api/audio/slug/${slug}`);
+    return response.data as TApiResponse<TAudio>;
+  } catch (error) {
+    console.error("Failed to fetch audio detail:", error);
+    throw new Error("Failed to get audio detail");
+  }
+}

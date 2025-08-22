@@ -72,18 +72,9 @@ export class AudioController {
     return this.audioService.allAudios();
   }
 
-  @Get(':id')
-  @HttpCode(HttpStatus.OK)
-  @ApiParam({ description: '', name: 'id' })
-  @ApiOkResponse({ description: '' })
-  @ApiInternalServerErrorResponse({ description: '' })
-  @ApiNotFoundResponse({ description: '' })
-  async detailTrack(@Param('id') id: string) {
-    return this.audioService.detailAudio(id);
-  }
-
   @Get('slug/:slug')
   @HttpCode(HttpStatus.OK)
+  @Public()
   @ApiOperation({
     summary: 'Get audio by slug',
     description:
@@ -102,7 +93,10 @@ export class AudioController {
 
   @Public()
   @Get('stream/:id')
-  @ApiParam({ name: 'id' })
+  @ApiParam({
+    name: 'id',
+    description: 'The ID of the audio file to stream',
+  })
   async streamAudio(
     @Param('id') id: string,
     @Req() req: Request,
@@ -113,7 +107,25 @@ export class AudioController {
 
   @Public()
   @Get('cover/:id')
+  @ApiParam({
+    name: 'id',
+    description: 'The ID of the audio cover to retrieve',
+  })
   async getCover(@Param('id') id: string, @Res() res: Response) {
     return this.audioService.getCover({ id, res });
+  }
+
+  // Generic parameter routes should come last
+  @Get(':id')
+  @HttpCode(HttpStatus.OK)
+  @ApiParam({
+    name: 'id',
+    description: 'The ID of the audio track to retrieve',
+  })
+  @ApiOkResponse({ description: '' })
+  @ApiInternalServerErrorResponse({ description: '' })
+  @ApiNotFoundResponse({ description: '' })
+  async detailTrack(@Param('id') id: string) {
+    return this.audioService.detailAudio(id);
   }
 }

@@ -4,33 +4,44 @@ import TrackVisualizer from "@/app/(main)/_components/track-visualizer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useAudio } from "@/context/audio-context";
+import { useAudioBySlug } from "@/hooks/tanstack/audio";
 import { randomGradient } from "@/lib/random-gradient";
+import { TAudio } from "@/types/audio.type";
+import { formatDistance } from "date-fns";
 import { PauseIcon, PlayIcon } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import { H2 } from "shadcn-typography";
 
-const TrackHeader = () => {
+interface TrackHeaderProps {
+  slug: string;
+}
+
+const TrackHeader = ({ slug }: TrackHeaderProps) => {
+  const { audio, isPending } = useAudioBySlug(slug);
+
   const [bgGradient, _setBgGradient] = useState(randomGradient());
 
   const { currentTrack, isPlaying, playTrack, togglePlay } = useAudio();
 
-  const track = {
-    trackArtist: "K391",
-    trackTitle: "Summertime",
-    audioSrc: "/music/audio2.mp3",
-  };
-
   const isThisTrackPlaying =
-    currentTrack?.audioSrc === track.audioSrc && isPlaying;
+    currentTrack?.audioFile.url === audio?.data?.audioFile.url && isPlaying;
 
   const handlePlay = () => {
-    if (currentTrack?.audioSrc === track.audioSrc) {
+    if (currentTrack?.audioFile.url === audio?.data?.audioFile.url) {
       togglePlay();
     } else {
-      playTrack(track);
+      playTrack(audio?.data as TAudio);
     }
   };
+
+  if (isPending && slug) {
+    return (
+      <div>
+        <p>Loading...</p>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -54,25 +65,33 @@ const TrackHeader = () => {
             </Button>
             <div>
               <H2 className="border-none font-bold max-w-xl text-4xl bg-foreground text-background inline-block px-2">
-                {track.trackTitle}
+                {audio?.data?.title}
               </H2>
               <br />
               <h3 className="font-medium text-lg bg-foreground text-background inline-block px-2">
-                {track.trackArtist}
+                {audio?.data?.user.name}
               </h3>
             </div>
           </div>
           <div className="space-y-1.5 text-end">
-            <h5 className="font-medium text-muted-foreground">4 years ago</h5>
+            <h5 className="font-medium text-muted-foreground">
+              {formatDistance(
+                new Date(audio?.data?.createdAt as Date),
+                new Date(),
+                {
+                  addSuffix: true,
+                }
+              )}
+            </h5>
             <Badge className="px-2 py-1 bg-gray-200 rounded text-sm text-foreground">
-              # Deep House
+              #{audio?.data?.genre.name}
             </Badge>
           </div>
         </div>
 
         <div className="mb-12">
           <TrackVisualizer
-            audio={track}
+            audio={audio?.data as TAudio}
             height={95}
             barGap={1}
             hoverOverlayColor="rgba(0,0,255,0.3)"
@@ -83,7 +102,7 @@ const TrackHeader = () => {
       <div className="relative aspect-square rounded-md overflow-hidden">
         <Image
           fill
-          src="https://images.unsplash.com/photo-1723924995430-b74c76bbcdfd?q=80&w=880&auto=format&fit=crop"
+          src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/audio/cover/${audio?.data?.id}`}
           alt="music cover"
           className="object-cover"
           loading="lazy"
