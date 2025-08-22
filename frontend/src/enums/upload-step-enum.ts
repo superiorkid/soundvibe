@@ -1,5 +1,5 @@
 export enum UploadStepEnum {
-  upload_audio = "UPLOAD_AUDIO",
-  basic_information = "BASIC_INFORMATION",
-  confirm = "CONFIRM",
+  upload_audio = "upload_audio",
+  basic_information = "basic_information",
+  confirm = "confirm",
 }
