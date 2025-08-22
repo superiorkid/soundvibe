@@ -160,6 +160,7 @@ const AudioPlayer = () => {
                   className="object-cover"
                   loading="lazy"
                   decoding="async"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 />
               </div>
               <div className="text-sm max-w-[172px] space-y-0.5">

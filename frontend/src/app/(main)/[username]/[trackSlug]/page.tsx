@@ -185,6 +185,7 @@ const DetailTrackPage = async ({ params }: DetailTrackPageProps) => {
                     width={60}
                     height={60}
                     alt="Avatar 01"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   />
                 ))}
               </div>
@@ -212,6 +213,7 @@ const DetailTrackPage = async ({ params }: DetailTrackPageProps) => {
                     width={60}
                     height={60}
                     alt="Avatar 01"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   />
                 ))}
               </div>

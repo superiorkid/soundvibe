@@ -20,6 +20,7 @@ const TrackStatsLayout = ({ children }: TrackStatsLayoutProps) => {
             loading="lazy"
             decoding="async"
             className="object-cover rounded-lg"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
         </div>
         <H2 className="border-none hover:opacity-80">

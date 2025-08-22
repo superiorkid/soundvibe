@@ -63,6 +63,7 @@ const TrackCard = ({ audio }: TrackCardProps) => {
             className="object-cover"
             loading="lazy"
             decoding="async"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
         </div>
         <div className="flex-1 space-y-4">

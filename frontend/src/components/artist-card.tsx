@@ -18,6 +18,7 @@ export const ArtistCardImage = ({ src, alt }: { src: string; alt: string }) => {
         alt={alt}
         decoding="async"
         loading="lazy"
+        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
       />
     </div>
   );

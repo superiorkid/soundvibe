@@ -1,9 +1,9 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 import { useFormContext } from "react-hook-form";
 import { TUploadSchema } from "../upload-schema";
-import Image from "next/image";
 
 interface Step3Props {
   onBack: () => void;
@@ -86,6 +86,9 @@ const Step3 = ({ onBack }: Step3Props) => {
                   src={URL.createObjectURL(values.cover)}
                   alt="Cover preview"
                   className="w-32 h-32 object-cover rounded"
+                  decoding="async"
+                  loading="lazy"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 />
               ) : (
                 <span className="text-gray-500 italic">No cover provided</span>

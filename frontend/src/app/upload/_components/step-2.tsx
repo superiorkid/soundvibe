@@ -129,6 +129,7 @@ const Step2 = ({ onNext, onBack }: Step2Props) => {
                     src={previewUrl}
                     alt={files[0]?.file?.name || "Uploaded image"}
                     className="size-full object-cover"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   />
                 </div>
               ) : (
