@@ -24,6 +24,7 @@ model User {
   sessions      Session[]
   accounts      Account[]
   audios        Audio[]
+  likedTracks   Like[]
 
   @@unique([email])
   @@index([email])
@@ -114,10 +115,12 @@ model Audio {
   genre       Genre      @relation(fields: [genreId], references: [id])
   audioFile   AudioFile?
   coverFile   CoverFile?
+  likes       Like[]
+  likesCount  Int        @default(0)
   createdAt   DateTime   @default(now()) @map("created_at")
   updatedAt   DateTime   @updatedAt @map("updated_at")
 
-  @@index([duration, slug])
+  @@index([duration, slug, likesCount])
   @@map("audio")
 }
 
@@ -144,4 +147,15 @@ model CoverFile {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("cover_file")
+}
+
+model Like {
+  userId    String   @map("user_id")
+  user      User     @relation(fields: [userId], references: [id])
+  audioId   String   @map("audio_id")
+  audio     Audio    @relation(fields: [audioId], references: [id])
+  createdAt DateTime @map("created_at")
+
+  @@id([userId, audioId])
+  @@map("like")
 }
