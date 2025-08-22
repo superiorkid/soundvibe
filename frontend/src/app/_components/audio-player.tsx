@@ -81,7 +81,7 @@ const AudioPlayer = () => {
   if (!currentTrack && !lastTrack) return null;
 
   return (
-    <div className="fixed bottom-0 left-0 w-full h-13 border-t px-5 2xl:px-0 bg-zinc-100 border-zinc-300">
+    <div className="fixed bottom-0 left-0 w-full h-13 border-t px-5 2xl:px-0 bg-zinc-100 border-zinc-300 z-50">
       <div className="max-w-7xl mx-auto h-full flex items-center gap-8">
         {/* Playback Controls */}
         <div className="flex items-center gap-5">
@@ -151,17 +151,36 @@ const AudioPlayer = () => {
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-4">
               <div className="relative w-9 h-10">
-                <Image
-                  fill
-                  src={
-                    currentTrack.user.image ?? "https://github.com/shadcn.png"
-                  }
-                  alt="track image"
-                  className="object-cover"
-                  loading="lazy"
-                  decoding="async"
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                />
+                {currentTrack.coverFile ? (
+                  <Image
+                    fill
+                    src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/audio/cover/${currentTrack.id}`}
+                    alt="track image"
+                    className="object-cover"
+                    loading="lazy"
+                    decoding="async"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  />
+                ) : (
+                  <div className="absolute inset-0 bg-gradient-to-br from-amber-600/70 to-yellow-400/70 flex items-center justify-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="15"
+                      height="15"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="white"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="opacity-80"
+                    >
+                      <path d="M9 18V5l12-2v13" />
+                      <circle cx="6" cy="18" r="3" />
+                      <circle cx="18" cy="16" r="3" />
+                    </svg>
+                  </div>
+                )}
               </div>
               <div className="text-sm max-w-[172px] space-y-0.5">
                 <h2 className="font-bold text-muted-foreground line-clamp-1">

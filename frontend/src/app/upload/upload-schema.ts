@@ -24,11 +24,14 @@ export const uploadSchema = z.object({
       error: "Invalid audio format. Allowed: WAV, FLAC, AIFF, ALAC, MP3",
     }),
   title: z.string().min(1, { error: "Title is required" }),
-  genre: z.string().min(1, { error: "Genre is required" }),
+  genre: z
+    .string()
+    .min(1, { error: "Genre is required" })
+    .refine((value) => value !== "0", { error: "Please select a valid genre" }),
   additionalTags: z
     .array(z.object({ id: z.string().min(1), text: z.string().min(1) }))
     .optional(),
-  description: z.string().min(1, { error: "Description is required" }),
+  description: z.string().optional(),
   cover: z
     .instanceof(File)
     .optional()

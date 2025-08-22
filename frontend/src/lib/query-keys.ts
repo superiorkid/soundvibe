@@ -7,3 +7,7 @@ export const audioKeys = {
   detailById: (audioId: string) => [...audioKeys.all, { audioId }],
   detailBySlug: (slug: string) => [...audioKeys.all, { slug }],
 };
+
+export const genreKeys = {
+  all: ["genre"] as const,
+};

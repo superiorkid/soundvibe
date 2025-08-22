@@ -10,102 +10,146 @@ interface Step3Props {
 }
 
 const Step3 = ({ onBack }: Step3Props) => {
-  const { getValues } = useFormContext<TUploadSchema>();
+  const { getValues, formState } = useFormContext<TUploadSchema>();
+  const { isSubmitting } = formState;
+
   const values = getValues();
 
   return (
-    <div className="space-y-6">
-      <h2 className="text-2xl font-bold">Confirm Your Details</h2>
-      <p className="text-muted-foreground">
-        Please review the details below before confirming.
-      </p>
+    <div className="space-y-8">
+      <div>
+        <h2 className="text-2xl font-semibold tracking-tight">
+          Review Your Track
+        </h2>
+        <p className="text-muted-foreground mt-2">
+          Confirm your details before uploading
+        </p>
+      </div>
 
-      <div className="bg-background">
-        <dl className="divide-y divide-gray-100">
-          {/* Audio */}
-          <div className="px-4 py-3 grid grid-cols-3 gap-4">
-            <dt className="font-medium">Audio</dt>
-            <dd className="col-span-2">
-              {values.audio ? (
-                <audio
-                  controls
-                  src={URL.createObjectURL(values.audio)}
-                  className="w-full"
+      <div>
+        <div className="space-y-6">
+          {/* Audio Preview */}
+          <div className="flex flex-col gap-3">
+            <h3 className="text-sm font-medium text-muted-foreground">
+              Audio Preview
+            </h3>
+            {values.audio ? (
+              <audio
+                controls
+                src={URL.createObjectURL(values.audio)}
+                className="w-full h-10"
+              />
+            ) : (
+              <p className="text-sm text-muted-foreground italic">
+                No audio provided
+              </p>
+            )}
+          </div>
+
+          <div className="flex flex-col gap-3">
+            <h3 className="text-sm font-medium text-muted-foreground">
+              Cover Art
+            </h3>
+            {values.cover ? (
+              <div className="flex">
+                <Image
+                  src={URL.createObjectURL(values.cover)}
+                  alt="Cover preview"
+                  className="w-40 h-40 object-cover rounded-lg shadow-sm"
+                  decoding="async"
+                  loading="lazy"
+                  width={40}
+                  height={40}
                 />
-              ) : (
-                <span className="text-gray-500 italic">No audio provided</span>
-              )}
-            </dd>
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground italic">
+                No cover provided
+              </p>
+            )}
           </div>
 
-          {/* Title */}
-          <div className="px-4 py-3 grid grid-cols-3 gap-4">
-            <dt className="font-medium">Title</dt>
-            <dd className="col-span-2">{values.title || "-"}</dd>
-          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-3">
+              <h3 className="text-sm font-medium text-muted-foreground">
+                Title
+              </h3>
+              <p
+                className={
+                  values.title ? "font-medium" : "text-muted-foreground italic"
+                }
+              >
+                {values.title || "No title provided"}
+              </p>
+            </div>
 
-          {/* Genre */}
-          <div className="px-4 py-3 grid grid-cols-3 gap-4">
-            <dt className="font-medium">Genre</dt>
-            <dd className="col-span-2">{values.genre || "-"}</dd>
-          </div>
+            <div className="space-y-3">
+              <h3 className="text-sm font-medium text-muted-foreground">
+                Genre
+              </h3>
+              <p
+                className={
+                  values.genre ? "font-medium" : "text-muted-foreground italic"
+                }
+              >
+                {values.genre || "No genre selected"}
+              </p>
+            </div>
 
-          {/* Additional Tags */}
-          <div className="px-4 py-3 grid grid-cols-3 gap-4">
-            <dt className="font-medium">Additional Tags</dt>
-            <dd className="col-span-2">
+            <div className="space-y-3 md:col-span-2">
+              <h3 className="text-sm font-medium text-muted-foreground">
+                Description
+              </h3>
+              <p
+                className={
+                  values.description
+                    ? "text-sm"
+                    : "text-muted-foreground italic"
+                }
+              >
+                {values.description || "No description provided"}
+              </p>
+            </div>
+
+            <div className="space-y-3 md:col-span-2">
+              <h3 className="text-sm font-medium text-muted-foreground">
+                Tags
+              </h3>
               {values.additionalTags?.length ? (
                 <div className="flex flex-wrap gap-2">
                   {values.additionalTags.map((tag, idx) => (
                     <span
                       key={idx}
-                      className="px-2 py-1 bg-gray-100 rounded text-sm"
+                      className="px-2.5 py-1 bg-muted rounded-full text-xs font-medium"
                     >
                       {tag.text}
                     </span>
                   ))}
                 </div>
               ) : (
-                <span className="text-gray-500 italic">No tags</span>
+                <p className="text-muted-foreground italic text-sm">
+                  No tags added
+                </p>
               )}
-            </dd>
+            </div>
           </div>
-
-          {/* Description */}
-          <div className="px-4 py-3 grid grid-cols-3 gap-4">
-            <dt className="font-medium">Description</dt>
-            <dd className="col-span-2">{values.description || "-"}</dd>
-          </div>
-
-          {/* Cover Image */}
-          <div className="px-4 py-3 grid grid-cols-3 gap-4">
-            <dt className="font-medium">Cover</dt>
-            <dd className="col-span-2">
-              {values.cover ? (
-                <Image
-                  src={URL.createObjectURL(values.cover)}
-                  alt="Cover preview"
-                  className="w-32 h-32 object-cover rounded"
-                  decoding="async"
-                  loading="lazy"
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                />
-              ) : (
-                <span className="text-gray-500 italic">No cover provided</span>
-              )}
-            </dd>
-          </div>
-        </dl>
+        </div>
       </div>
 
-      <div className="flex justify-between">
-        <Button variant="outline" onClick={onBack} type="button">
+      <div className="flex justify-between pt-4">
+        <Button
+          variant="outline"
+          onClick={onBack}
+          type="button"
+          disabled={isSubmitting}
+        >
           Back
         </Button>
-        <Button type="submit">Confirm & Upload</Button>
+        <Button type="submit" className="px-6" disabled={isSubmitting}>
+          {isSubmitting ? "Processing..." : "Confirm & Upload"}
+        </Button>
       </div>
     </div>
   );
 };
-
 export default Step3;

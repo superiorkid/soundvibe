@@ -5,7 +5,6 @@ import { useFileUpload } from "@/hooks/use-file-upload";
 import { AlertCircleIcon, AudioLinesIcon, UploadIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useFormContext } from "react-hook-form";
-import { H3, P } from "shadcn-typography";
 import {
   ACCEPTED_AUDIO_TYPES,
   MAX_AUDIO_SIZE,
@@ -19,6 +18,7 @@ interface Step1Props {
 const Step1 = ({ onNext }: Step1Props) => {
   const router = useRouter();
   const form = useFormContext<TUploadSchema>();
+  const { isSubmitting } = form.formState;
 
   const onCancel = () => {
     const confirmed = window.confirm(
@@ -53,12 +53,14 @@ const Step1 = ({ onNext }: Step1Props) => {
 
   return (
     <div className="space-y-8">
-      <div className="space-y-3">
-        <H3 className="text-3xl font-bold">Upload your audio files.</H3>
-        <P className="text-muted-foreground tracking-wide font-medium">
+      <div>
+        <h2 className="text-2xl font-semibold tracking-tight">
+          Upload your audio files.
+        </h2>
+        <p className="text-muted-foreground mt-2">
           For best quality, use WAV, FLAC, AIFF, or ALAC. The maximum file size
           is 100MB uncompressed.
-        </P>
+        </p>
       </div>
 
       <div className="relative">
@@ -75,6 +77,7 @@ const Step1 = ({ onNext }: Step1Props) => {
             {...getInputProps()}
             className="sr-only"
             aria-label="Upload audio file"
+            disabled={isSubmitting}
           />
 
           {fileName ? (
@@ -87,6 +90,7 @@ const Step1 = ({ onNext }: Step1Props) => {
                 {fileName}
               </p>
               <button
+                disabled={isSubmitting}
                 type="button"
                 onClick={() => removeFile(files[0]?.id)}
                 className="text-destructive underline"
@@ -103,8 +107,9 @@ const Step1 = ({ onNext }: Step1Props) => {
               <Button
                 type="button"
                 size="lg"
-                className="text-lg"
+                className="text-base"
                 onClick={openFileDialog}
+                disabled={isSubmitting}
               >
                 Choose file
               </Button>
@@ -124,10 +129,14 @@ const Step1 = ({ onNext }: Step1Props) => {
       )}
 
       <div className="flex justify-end gap-3 items-center">
-        <Button type="button" onClick={onCancel}>
+        <Button type="button" onClick={onCancel} disabled={isSubmitting}>
           Cancel
         </Button>
-        <Button type="button" onClick={onNext} disabled={!fileName}>
+        <Button
+          type="button"
+          onClick={onNext}
+          disabled={!fileName || isSubmitting}
+        >
           Next
         </Button>
       </div>

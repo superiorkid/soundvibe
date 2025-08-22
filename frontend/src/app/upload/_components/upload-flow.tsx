@@ -19,6 +19,7 @@ import { TUploadSchema, uploadSchema } from "../upload-schema";
 import Step1 from "./step-1";
 import Step2 from "./step-2";
 import Step3 from "./step-3";
+import { useUploadAudio } from "@/hooks/tanstack/audio";
 
 const stepList = Object.keys(UploadStepEnum).map((key, index) => ({
   index,
@@ -28,6 +29,7 @@ const stepList = Object.keys(UploadStepEnum).map((key, index) => ({
 
 const UploadFlow = () => {
   const [loading, setLoading] = useState(true);
+  const { isPending, uploadAudioMutation } = useUploadAudio();
 
   const [step, setStep] = useQueryState(
     "step",
@@ -69,7 +71,15 @@ const UploadFlow = () => {
   }, [step, setStep, form]);
 
   const onSubmit = (values: TUploadSchema) => {
-    console.log(values);
+    const formData = new FormData();
+
+    formData.append("audioFile", values.audio);
+    formData.append("title", values.title);
+    formData.append("genreId", values.genre);
+    if (values.description) formData.append("description", values.description);
+    if (values.cover) formData.append("cover", values.cover);
+
+    uploadAudioMutation(formData);
   };
 
   const nextStep = async () => {

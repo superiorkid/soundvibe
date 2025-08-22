@@ -4,6 +4,7 @@ import QueryClientProvider from "@/providers/query-client-provider";
 import { type Metadata } from "next";
 import { Geist } from "next/font/google";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
+import { Toaster } from "@/components/ui/sonner";
 
 import "./globals.css";
 
@@ -32,7 +33,10 @@ export default function RootLayout({
         <AudioProvider>
           <div className="max-w-7xl mx-auto px-5 2xl:px-0">
             <QueryClientProvider>
-              <NuqsAdapter>{children}</NuqsAdapter>
+              <NuqsAdapter>
+                {children}
+                <Toaster richColors expand />
+              </NuqsAdapter>
             </QueryClientProvider>
           </div>
         </AudioProvider>

@@ -1,14 +1,25 @@
 import { buttonVariants } from "@/components/ui/button";
+import { getQueryClient } from "@/lib/query-client";
+import { genreKeys } from "@/lib/query-keys";
 import { cn } from "@/lib/utils";
+import { findAllGenre } from "@/server/genre";
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { XIcon } from "lucide-react";
 import Link from "next/link";
+import { Suspense } from "react";
 import { AppBrand } from "../_components/app-brand";
 import UploadFlow from "./_components/upload-flow";
-import { Suspense } from "react";
 
-const UploadPage = () => {
+const UploadPage = async () => {
+  const queryClient = getQueryClient();
+
+  await queryClient.prefetchQuery({
+    queryKey: genreKeys.all,
+    queryFn: async () => findAllGenre(),
+  });
+
   return (
-    <>
+    <HydrationBoundary state={dehydrate(queryClient)}>
       <header className="fixed left-0 top-0 flex w-full justify-between px-12 bg-background items-center h-16 z-50">
         <AppBrand>
           <AppBrand.Icon size={25} strokeWidth={2.5} />
@@ -36,7 +47,7 @@ const UploadPage = () => {
           <UploadFlow />
         </Suspense>
       </div>
-    </>
+    </HydrationBoundary>
   );
 };
 

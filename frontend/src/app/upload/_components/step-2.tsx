@@ -24,12 +24,12 @@ import { AlertCircleIcon, CameraIcon, XIcon } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
-import { H3, P } from "shadcn-typography";
 import {
   ACCEPTED_IMAGE_TYPES,
   MAX_COVER_SIZE,
   TUploadSchema,
 } from "../upload-schema";
+import { useGenres } from "@/hooks/tanstack/genre";
 
 interface Step2Props {
   onNext: () => void;
@@ -40,6 +40,9 @@ const Step2 = ({ onNext, onBack }: Step2Props) => {
   const [activeTagIndex, setActiveTagIndex] = useState<number | null>(null);
 
   const form = useFormContext<TUploadSchema>();
+  const { isSubmitting } = form.formState;
+
+  const { genres, isPending: isGenrePending } = useGenres();
 
   const [
     { files, isDragging, errors },
@@ -95,12 +98,12 @@ const Step2 = ({ onNext, onBack }: Step2Props) => {
 
   return (
     <div className="space-y-8">
-      <div className="space-y-3">
-        <H3 className="text-3xl font-bold">Basic Info</H3>
-        <P className="text-muted-foreground tracking-wide font-medium">
+      <div>
+        <h2 className="text-2xl font-semibold tracking-tight">Basic Info</h2>
+        <p className="text-muted-foreground mt-2">
           Lorem ipsum dolor sit amet consectetur, adipisicing elit. Aut id
           pariatur deleniti.
-        </P>
+        </p>
       </div>
 
       <div className="flex space-x-6">
@@ -121,6 +124,7 @@ const Step2 = ({ onNext, onBack }: Step2Props) => {
                 {...getInputProps()}
                 className="sr-only"
                 aria-label="Upload file"
+                disabled={isSubmitting}
               />
               {previewUrl ? (
                 <div className="absolute inset-0">
@@ -134,7 +138,12 @@ const Step2 = ({ onNext, onBack }: Step2Props) => {
                 </div>
               ) : (
                 <div className="flex flex-col justify-end px-4 py-3 text-center h-full">
-                  <Button size="lg" type="button" onClick={openFileDialog}>
+                  <Button
+                    size="lg"
+                    type="button"
+                    onClick={openFileDialog}
+                    disabled={isSubmitting}
+                  >
                     <CameraIcon size={18} strokeWidth={2} className="mr-1" />
                     Update image
                   </Button>
@@ -148,6 +157,7 @@ const Step2 = ({ onNext, onBack }: Step2Props) => {
                   className="focus-visible:border-ring focus-visible:ring-ring/50 z-50 flex size-8 cursor-pointer items-center justify-center rounded-full bg-black/60 text-white transition-[color,box-shadow] outline-none hover:bg-black/80 focus-visible:ring-[3px]"
                   onClick={() => removeFile(files[0]?.id)}
                   aria-label="Remove image"
+                  disabled={isSubmitting}
                 >
                   <XIcon className="size-4" aria-hidden="true" />
                 </button>
@@ -171,6 +181,7 @@ const Step2 = ({ onNext, onBack }: Step2Props) => {
             <FormField
               control={form.control}
               name="title"
+              disabled={isSubmitting}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
@@ -195,35 +206,72 @@ const Step2 = ({ onNext, onBack }: Step2Props) => {
           <FormField
             control={form.control}
             name="genre"
+            disabled={isSubmitting}
             render={({ field }) => (
               <FormItem>
-                <FormLabel>
+                <FormLabel className="flex items-center gap-1">
                   Genre <span className="text-rose-500">*</span>
                 </FormLabel>
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}
+                  value={field.value}
+                  disabled={
+                    isGenrePending ||
+                    field.disabled ||
+                    (genres?.data || []).length < 1
+                  }
                 >
                   <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a genre" />
+                    <SelectTrigger className="w-full">
+                      {isGenrePending ? (
+                        <div className="flex items-center gap-2">
+                          <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                          <span>Loading genres...</span>
+                        </div>
+                      ) : (
+                        <SelectValue placeholder="Select a genre" />
+                      )}
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="0" disabled>
-                      Select Genre
-                    </SelectItem>
-                    <SelectItem value="pop">Pop</SelectItem>
-                    <SelectItem value="rock">Rock</SelectItem>
-                    <SelectItem value="hip-hop">Hip Hop</SelectItem>
-                    <SelectItem value="electronic">Electronic</SelectItem>
-                    <SelectItem value="jazz">Jazz</SelectItem>
-                    <SelectItem value="classical">Classical</SelectItem>
-                    <SelectItem value="country">Country</SelectItem>
-                    <SelectItem value="reggae">Reggae</SelectItem>
+                    {isGenrePending ? (
+                      <div className="flex items-center justify-center py-2 text-muted-foreground">
+                        <div className="flex items-center gap-2">
+                          <div className="h-3 w-3 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                          <span className="text-sm">Loading genres...</span>
+                        </div>
+                      </div>
+                    ) : (genres?.data || []).length < 1 ? (
+                      <div className="py-2 text-center text-sm text-muted-foreground">
+                        No genres available
+                      </div>
+                    ) : (
+                      <>
+                        <SelectItem value="0" disabled className="hidden">
+                          Select Genre
+                        </SelectItem>
+                        {(genres?.data || []).map((genre) => (
+                          <SelectItem
+                            key={genre.id}
+                            value={genre.id}
+                            className="capitalize transition-colors hover:bg-accent"
+                          >
+                            {genre.name}
+                          </SelectItem>
+                        ))}
+                      </>
+                    )}
                   </SelectContent>
                 </Select>
                 <FormMessage />
+
+                {!isGenrePending && (genres?.data || []).length < 1 && (
+                  <p className="text-sm text-amber-600 mt-2">
+                    No genres available. Please try again later or contact
+                    support.
+                  </p>
+                )}
               </FormItem>
             )}
           />
@@ -231,6 +279,7 @@ const Step2 = ({ onNext, onBack }: Step2Props) => {
           <FormField
             control={form.control}
             name="additionalTags"
+            disabled={isSubmitting}
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Additional Tags</FormLabel>
@@ -257,6 +306,7 @@ const Step2 = ({ onNext, onBack }: Step2Props) => {
                     setActiveTagIndex={setActiveTagIndex}
                     inlineTags={false}
                     inputFieldPosition="top"
+                    disabled={field.disabled}
                   />
                 </FormControl>
                 <FormMessage />
@@ -267,14 +317,12 @@ const Step2 = ({ onNext, onBack }: Step2Props) => {
           <FormField
             control={form.control}
             name="description"
+            disabled={isSubmitting}
             render={({ field }) => (
               <FormItem>
-                <FormLabel>
-                  Description
-                  <span className="text-rose-500">*</span>
-                </FormLabel>
+                <FormLabel>Description</FormLabel>
                 <FormControl>
-                  <Textarea placeholder="Enter title" {...field} />
+                  <Textarea placeholder="Enter Description" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -284,10 +332,15 @@ const Step2 = ({ onNext, onBack }: Step2Props) => {
       </div>
 
       <div className="flex justify-between">
-        <Button variant="outline" onClick={onBack} type="button">
+        <Button
+          variant="outline"
+          onClick={onBack}
+          type="button"
+          disabled={isSubmitting}
+        >
           Back
         </Button>
-        <Button type="button" onClick={onNext}>
+        <Button type="button" onClick={onNext} disabled={isSubmitting}>
           Next
         </Button>
       </div>

@@ -27,3 +27,19 @@ export async function findOneBySlug(slug: string) {
     throw new Error("Failed to get audio detail");
   }
 }
+
+export async function uploadAudio(formData: FormData) {
+  const axiosInstance = await getAxios();
+
+  try {
+    const response = await axiosInstance.post("/api/audio", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data as TApiResponse;
+  } catch (error) {
+    console.error("Failed to upload audio:", error);
+    throw new Error("Failed to upload audio");
+  }
+}
