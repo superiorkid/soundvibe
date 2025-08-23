@@ -9,7 +9,10 @@ import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { useAudio } from "@/context/audio-context";
 import { useLastTrack } from "@/context/last-track-context";
-import { formatTime } from "@/lib/utils";
+import { useAudioBySlug, useLike } from "@/hooks/tanstack/audio";
+import { authClient } from "@/lib/auth-client";
+import { cn, formatTime } from "@/lib/utils";
+import { TAudio } from "@/types/audio.type";
 import {
   HeartIcon,
   ListPlusIcon,
@@ -38,6 +41,14 @@ const AudioPlayer = () => {
     currentTrack,
     audioRef,
   } = useAudio();
+
+  const { data: session } = authClient.useSession();
+
+  const { audio } = useAudioBySlug(currentTrack?.slug || "");
+  const { hasLiked, toggleLikeMutation, isPending } = useLike(
+    audio?.data as TAudio,
+    session?.user.id as string
+  );
 
   const { lastTrack } = useLastTrack();
 
@@ -192,8 +203,22 @@ const AudioPlayer = () => {
               </div>
             </div>
             <div className="flex items-center gap-7">
-              <button>
-                <HeartIcon size={17} strokeWidth={2} />
+              <button
+                disabled={isPending}
+                onClick={() => toggleLikeMutation()}
+                className="hover:cursor-pointer"
+              >
+                <HeartIcon
+                  size={17}
+                  strokeWidth={2}
+                  className={cn(
+                    "hover:fill-zinc-400/70",
+                    hasLiked && "fill-red-500 stroke-red-500 hover:fill-red-600"
+                  )}
+                />
+                <span className="sr-only">
+                  {hasLiked ? "Dislike" : "Like"} Track
+                </span>
               </button>
               <button>
                 <UserPlusIcon size={17} strokeWidth={2} />

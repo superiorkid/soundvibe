@@ -1,6 +1,7 @@
 import { TAudioFile } from "./audio-file.type";
 import { TCoverFile } from "./cover-file.type";
 import { TGenre } from "./genre.type";
+import { TLike } from "./like.type";
 import { TTag } from "./tag.type";
 import { TUser } from "./user.type";
 
@@ -21,4 +22,6 @@ export type TAudio = {
   coverFile: TCoverFile;
   streamUrl?: string;
   tags?: TTag[];
+  likesCount: number;
+  likes: TLike[];
 };

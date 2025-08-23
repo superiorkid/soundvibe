@@ -36,19 +36,15 @@ export function createAuthConfig(
       hooks: {
         after: createAuthMiddleware(async (ctx) => {
           const session = ctx.context.session;
-          console.log('session', JSON.stringify(session));
-
           if (
             session?.user &&
             (!session.user.username || !session.user.displayUsername)
           ) {
-            console.log('inside session execute');
-
             const {
               user: { name, id },
             } = session;
 
-            let baseUsername = slugify(name || 'random-user', {
+            const baseUsername = slugify(name, {
               lower: true,
               strict: true,
             }).replace(/-/g, '');
@@ -64,7 +60,6 @@ export function createAuthConfig(
             }
             const user = await database.user.findUnique({ where: { id } });
             if (user) {
-              console.log('username / displayUsername execute');
               await database.user.update({
                 where: { id: user.id },
                 data: {

@@ -11,6 +11,7 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 import { PlayerActions } from "./player-actions";
+import UserTooltip from "@/components/user-tooltip";
 
 const TrackVisualizer = dynamic(() => import("./track-visualizer"), {
   ssr: false,
@@ -45,7 +46,11 @@ const TrackCard = ({ audio }: TrackCardProps) => {
         </Avatar>
 
         <Label className="font-medium">
-          {audio.user.name}{" "}
+          <UserTooltip user={audio.user}>
+            <span className="hover:cursor-pointer hover:opacity-50">
+              {audio.user.name}
+            </span>
+          </UserTooltip>
           <span className="text-muted-foreground">
             Posted a track{" "}
             {formatDistance(new Date(audio.createdAt), new Date(), {
@@ -108,12 +113,15 @@ const TrackCard = ({ audio }: TrackCardProps) => {
                   )}
                 </button>
               </div>
-              <div className="-space-y-0.5">
-                <h2 className="font-semibold text-muted-foreground capitalize">
-                  <Link href="/username">
-                    {audio.artist ?? "Unknown Artist"}
-                  </Link>
-                </h2>
+              <div>
+                <UserTooltip user={audio.user}>
+                  <h2 className="font-semibold text-sm text-muted-foreground capitalize hover:opacity-50">
+                    <Link href="/username">
+                      {audio.artist ?? "Unknown Artist"}
+                    </Link>
+                  </h2>
+                </UserTooltip>
+
                 <p className="font-semibold tracking-tight capitalize">
                   <Link href={`/${audio.user.displayUsername}/${audio.slug}`}>
                     {audio.title}
@@ -128,7 +136,7 @@ const TrackCard = ({ audio }: TrackCardProps) => {
             </div>
           </div>
           <TrackVisualizer audio={audio} />
-          <PlayerActions showComment={isThisTrackPlaying} />
+          <PlayerActions showComment={isThisTrackPlaying} audio={audio} />
         </div>
       </div>
     </div>

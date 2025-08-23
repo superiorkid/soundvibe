@@ -39,7 +39,7 @@ const DetailTrack = ({ slug }: DetailTrackProps) => {
       <TrackHeader audio={audio?.data as TAudio} />
       <div className="flex gap-6 mt-5">
         <div className="flex-1 space-y-6">
-          <PlayerActions />
+          <PlayerActions audio={audio?.data as TAudio} />
           <div className="flex gap-6">
             <UserCard user={audio?.data?.user as TUser} />
             <div className="flex-1 space-y-8">

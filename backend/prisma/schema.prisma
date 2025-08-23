@@ -159,7 +159,7 @@ model Like {
   user      User     @relation(fields: [userId], references: [id])
   audioId   String   @map("audio_id")
   audio     Audio    @relation(fields: [audioId], references: [id])
-  createdAt DateTime @map("created_at")
+  createdAt DateTime @map("created_at") @default(now())
 
   @@id([userId, audioId])
   @@map("like")

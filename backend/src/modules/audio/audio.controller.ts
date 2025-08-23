@@ -2,6 +2,7 @@ import { Public, Session, type UserSession } from '@mguay/nestjs-better-auth';
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -115,7 +116,28 @@ export class AudioController {
     return this.audioService.getCover({ id, res });
   }
 
-  // Generic parameter routes should come last
+  @Post(':id/like')
+  async likeAudio(@Param('id') id: string, @Session() session: UserSession) {
+    const userId = session.user.id;
+    return this.audioService.likeAudio({ userId, audioId: id });
+  }
+
+  @Delete(':id/like')
+  async unlikeAudio(@Param('id') id: string, @Session() session: UserSession) {
+    const userId = session.user.id;
+    return this.audioService.unlikeAudio({ audioId: id, userId });
+  }
+
+  @Post(':id/repost')
+  async repostAudio() {
+    return this.audioService.repostAudio();
+  }
+
+  @Delete(':id/repost')
+  async undoRepostAudio() {
+    return this.audioService.undoRepostAudio();
+  }
+
   @Get(':id')
   @HttpCode(HttpStatus.OK)
   @ApiParam({

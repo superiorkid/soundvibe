@@ -43,3 +43,27 @@ export async function uploadAudio(formData: FormData) {
     throw new Error("Failed to upload audio");
   }
 }
+
+export async function likeAudio(audioId: string) {
+  const axiosInstance = await getAxios();
+
+  try {
+    const response = await axiosInstance.post(`/api/audio/${audioId}/like`);
+    return response.data as TApiResponse;
+  } catch (error) {
+    console.error("Failed to like audio track:", error);
+    throw new Error("Could not like the audio track. Please try again.");
+  }
+}
+
+export async function unlikeAudio(audioId: string) {
+  const axiosInstance = await getAxios();
+
+  try {
+    const response = await axiosInstance.delete(`/api/audio/${audioId}/like`);
+    return response.data as TApiResponse;
+  } catch (error) {
+    console.error("Failed to unlike audio track:", error);
+    throw new Error("Could not unlike the audio track. Please try again.");
+  }
+}

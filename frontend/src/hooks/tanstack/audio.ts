@@ -1,6 +1,13 @@
 import { getQueryClient } from "@/lib/query-client";
 import { audioKeys } from "@/lib/query-keys";
-import { findAllAudio, findOneBySlug, uploadAudio } from "@/server/audio";
+import {
+  findAllAudio,
+  findOneBySlug,
+  likeAudio,
+  unlikeAudio,
+  uploadAudio,
+} from "@/server/audio";
+import { TAudio } from "@/types/audio.type";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -46,4 +53,62 @@ export function useUploadAudio() {
   });
 
   return { uploadAudioMutation: mutate, isPending };
+}
+
+export function useLike(audio: TAudio, userId: string) {
+  const queryClient = getQueryClient();
+  const hasLiked = !!audio?.likes?.some((like) => like.userId === userId);
+  const { mutate, isPending } = useMutation({
+    mutationFn: async () => {
+      if (hasLiked) {
+        return unlikeAudio(audio.id);
+      }
+      return likeAudio(audio.id);
+    },
+    onMutate: async () => {
+      await queryClient.cancelQueries({
+        queryKey: audioKeys.detailById(audio.id),
+      });
+
+      const prevData = queryClient.getQueryData<TAudio>(
+        audioKeys.detailById(audio.id)
+      );
+      if (prevData) {
+        queryClient.setQueryData<TAudio>(audioKeys.detailById(audio.id), {
+          ...prevData,
+          likesCount: hasLiked
+            ? prevData.likesCount - 1
+            : prevData.likesCount + 1,
+          likes: hasLiked
+            ? prevData.likes.filter((like) => like.userId !== userId)
+            : [
+                ...prevData.likes,
+                { userId, audioId: audio.id, created_at: new Date() },
+              ],
+        });
+      }
+
+      return { prevData };
+    },
+    // rollback on error
+    onError: (_error, _variables, context) => {
+      if (context?.prevData) {
+        queryClient.setQueryData(
+          audioKeys.detailById(audio.id),
+          context.prevData
+        );
+      }
+    },
+    // referch after success/failure
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: audioKeys.detailById(audio.id),
+      });
+      queryClient.invalidateQueries({
+        queryKey: audioKeys.all,
+      });
+    },
+  });
+
+  return { hasLiked, isPending, toggleLikeMutation: mutate };
 }

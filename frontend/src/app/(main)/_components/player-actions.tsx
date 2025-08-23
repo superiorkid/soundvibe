@@ -4,8 +4,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import UserTooltip from "@/components/user-tooltip";
+import { useLike } from "@/hooks/tanstack/audio";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
+import { TAudio } from "@/types/audio.type";
 import {
   CopyIcon,
   EllipsisIcon,
@@ -20,13 +23,19 @@ import {
 type PlayerActionsProps = {
   showComment?: boolean;
   containerClassName?: string;
+  audio: TAudio;
 };
 
 export function PlayerActions({
   showComment = true,
   containerClassName,
+  audio,
 }: PlayerActionsProps) {
   const { data: session } = authClient.useSession();
+  const { toggleLikeMutation, isPending, hasLiked } = useLike(
+    audio,
+    session?.user.id as string
+  );
 
   return (
     <div
@@ -55,9 +64,22 @@ export function PlayerActions({
 
       <div className="flex justify-between items-center">
         <div className="flex space-x-3.5 items-center">
-          <Button variant="secondary" size="sm">
-            <HeartIcon strokeWidth={2} size={16} className="mr-1" />
-            518
+          <Button
+            variant="secondary"
+            size="sm"
+            disabled={isPending}
+            className="hover:cursor-pointer"
+            onClick={() => toggleLikeMutation()}
+          >
+            <HeartIcon
+              strokeWidth={2}
+              size={16}
+              className={cn("mr-1", hasLiked && "fill-red-500 stroke-red-500")}
+            />
+            {audio.likesCount > 0 && audio.likesCount}
+            <span className="sr-only">
+              {hasLiked ? "Dislike" : "Like"} Track
+            </span>
           </Button>
           <Button variant="secondary" size="sm">
             <Repeat2Icon strokeWidth={2} size={16} className="mr-1" />

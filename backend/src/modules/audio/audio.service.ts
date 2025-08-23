@@ -4,6 +4,7 @@ import {
   ConflictException,
   Injectable,
   InternalServerErrorException,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import type { Request, Response } from 'express';
@@ -14,13 +15,17 @@ import { DatabaseService } from 'src/shared/database/database.service';
 import { FileUploadService } from 'src/shared/file-upload/file-upload.service';
 import { AudioRepository } from './audio.repository';
 import { UploadAudioDTO } from './dto/upload-audio.dto';
+import { LikeRepository } from './like.repository';
 
 @Injectable()
 export class AudioService {
+  protected readonly logger = new Logger(AudioService.name);
+
   constructor(
     private audioRepository: AudioRepository,
     private fileUploadService: FileUploadService,
     private databaseService: DatabaseService,
+    private likeRepository: LikeRepository,
   ) {}
 
   async uploadTrack(uploadAudioDto: UploadAudioDTO, session: UserSession) {
@@ -129,6 +134,7 @@ export class AudioService {
           audioFile: true,
           coverFile: true,
           genre: true,
+          likes: true,
           _count: true,
         },
       });
@@ -158,6 +164,7 @@ export class AudioService {
           genre: true,
           tags: true,
           coverFile: true,
+          likes: true,
         },
       });
 
@@ -186,6 +193,7 @@ export class AudioService {
           audioFile: true,
           coverFile: true,
           genre: true,
+          likes: true,
           _count: true,
         },
       });
@@ -283,6 +291,100 @@ export class AudioService {
       console.error(err);
       throw new NotFoundException('Cover file not accessible');
     }
+  }
+
+  async likeAudio(params: { audioId: string; userId: string }) {
+    const { audioId, userId } = params;
+    const alreadyLiked = await this.likeRepository.exists({
+      userId_audioId: {
+        userId: userId,
+        audioId: audioId,
+      },
+    });
+    if (alreadyLiked) {
+      throw new ConflictException('You have already liked this audio track');
+    }
+
+    try {
+      await Promise.all([
+        this.likeRepository.create({
+          data: {
+            audio: { connect: { id: audioId } },
+            user: { connect: { id: userId } },
+          },
+        }),
+        this.audioRepository.update({
+          where: { id: audioId },
+          data: { likesCount: { increment: 1 } },
+        }),
+      ]);
+
+      return {
+        success: true,
+        message: '',
+      };
+    } catch (error) {
+      this.logger.error(
+        `Failed to like audio ${audioId} by user ${userId}`,
+        (error as Error).stack,
+      );
+      throw new InternalServerErrorException(
+        'Failed to like audio track. Please try again later.',
+      );
+    }
+  }
+
+  async unlikeAudio(params: { audioId: string; userId: string }) {
+    const { audioId, userId } = params;
+
+    const alreadyLiked = await this.likeRepository.exists({
+      userId_audioId: {
+        userId: userId,
+        audioId: audioId,
+      },
+    });
+
+    if (!alreadyLiked) {
+      throw new NotFoundException('You have not liked this audio track yet');
+    }
+
+    try {
+      await Promise.all([
+        this.likeRepository.delete({
+          where: {
+            userId_audioId: {
+              userId: userId,
+              audioId: audioId,
+            },
+          },
+        }),
+        this.audioRepository.update({
+          where: { id: audioId },
+          data: { likesCount: { decrement: 1 } },
+        }),
+      ]);
+
+      return {
+        success: true,
+        message: 'Audio track unliked successfully',
+      };
+    } catch (error) {
+      this.logger.error(
+        `Failed to unlike audio ${audioId} by user ${userId}`,
+        (error as Error).stack,
+      );
+      throw new InternalServerErrorException(
+        'Failed to unlike audio track. Please try again later.',
+      );
+    }
+  }
+
+  async repostAudio() {
+    // Implement repost functionality
+  }
+
+  async undoRepostAudio() {
+    // Implement undo repost functionality
   }
 
   private async getAudioDuration(buffer: Buffer): Promise<number> {
