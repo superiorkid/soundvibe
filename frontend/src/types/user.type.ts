@@ -1,3 +1,5 @@
+import { TLike } from "./like.type";
+
 export type TUser = {
   id: string;
   name: string;
@@ -8,4 +10,5 @@ export type TUser = {
   displayUsername: string;
   createdAt: Date;
   updatedAt: Date;
+  likedTracks: TLike[];
 };

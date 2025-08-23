@@ -6,6 +6,7 @@ export const audioKeys = {
   all: ["audio"] as const,
   detailById: (audioId: string) => [...audioKeys.all, { audioId }],
   detailBySlug: (slug: string) => [...audioKeys.all, { slug }],
+  recentLiked: (limit: number) => [...audioKeys.all, { limit }],
 };
 
 export const genreKeys = {

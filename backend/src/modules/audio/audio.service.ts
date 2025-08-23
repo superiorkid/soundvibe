@@ -379,6 +379,54 @@ export class AudioService {
     }
   }
 
+  async getRecentLikedTracks(params: { userId: string; limit: number }) {
+    const { userId, limit } = params;
+
+    try {
+      const [recentLiked, total] = await Promise.all([
+        this.likeRepository.findAll({
+          where: { userId },
+          take: limit,
+          orderBy: { createdAt: 'desc' },
+          include: {
+            audio: {
+              include: {
+                genre: true,
+                coverFile: true,
+                user: true,
+                audioFile: true,
+                likes: true,
+              },
+            },
+          },
+        }),
+        this.likeRepository.count({ where: { userId } }),
+      ]);
+
+      return {
+        success: true,
+        message:
+          recentLiked.length > 0
+            ? 'Recent liked tracks retrieved successfully.'
+            : 'No liked tracks found.',
+        data: {
+          total,
+          recent: recentLiked.map((track) => ({
+            ...track,
+            audio: {
+              ...track.audio,
+              streamUrl: `/api/audio/stream/${track.audioId}`,
+            },
+          })),
+        },
+      };
+    } catch {
+      throw new InternalServerErrorException(
+        'Failed to retrieve recent liked tracks.',
+      );
+    }
+  }
+
   async repostAudio() {
     // Implement repost functionality
   }

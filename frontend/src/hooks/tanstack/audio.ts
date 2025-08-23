@@ -4,6 +4,7 @@ import {
   findAllAudio,
   findOneBySlug,
   likeAudio,
+  recentLike,
   unlikeAudio,
   uploadAudio,
 } from "@/server/audio";
@@ -111,4 +112,13 @@ export function useLike(audio: TAudio, userId: string) {
   });
 
   return { hasLiked, isPending, toggleLikeMutation: mutate };
+}
+
+export function useRecentLiked(limit: number = 3) {
+  const { data: likedTracks, isPending } = useQuery({
+    queryKey: audioKeys.recentLiked(limit),
+    queryFn: async () => recentLike(limit),
+  });
+
+  return { likedTracks, isPending };
 }

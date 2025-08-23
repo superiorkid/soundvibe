@@ -9,6 +9,7 @@ import {
   Logger,
   Param,
   Post,
+  Query,
   Req,
   Res,
 } from '@nestjs/common';
@@ -71,6 +72,15 @@ export class AudioController {
   async allTracks() {
     // TODO: findall audio by following user
     return this.audioService.allAudios();
+  }
+
+  @Get('liked/recent')
+  async recentLikedTracks(
+    @Query('limit') limit: number,
+    @Session() session: UserSession,
+  ) {
+    const userId = session.user.id;
+    return this.audioService.getRecentLikedTracks({ userId, limit });
   }
 
   @Get('slug/:slug')

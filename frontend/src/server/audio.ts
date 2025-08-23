@@ -3,6 +3,7 @@
 import { getAxios } from "@/lib/axios";
 import { TApiResponse } from "@/types/api-response.type";
 import { TAudio } from "@/types/audio.type";
+import { TLike } from "@/types/like.type";
 
 export async function findAllAudio() {
   const axiosInstance = await getAxios();
@@ -65,5 +66,21 @@ export async function unlikeAudio(audioId: string) {
   } catch (error) {
     console.error("Failed to unlike audio track:", error);
     throw new Error("Could not unlike the audio track. Please try again.");
+  }
+}
+
+export async function recentLike(limit: number) {
+  const axiosInstance = await getAxios();
+
+  try {
+    const response = await axiosInstance.get("/api/audio/liked/recent", {
+      params: { limit },
+    });
+    return response.data as TApiResponse<{ total: number; recent: TLike[] }>;
+  } catch (error) {
+    console.error("Failed to fetch recent liked tracks:", error);
+    throw new Error(
+      "Unable to retrieve your recent liked tracks right now. Please check your connection or try again later."
+    );
   }
 }

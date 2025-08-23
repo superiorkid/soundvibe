@@ -5,6 +5,7 @@ import React from "react";
 import { Button } from "./ui/button";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "./ui/hover-card";
 import { TUser } from "@/types/user.type";
+import { getInitials } from "@/lib/utils";
 
 interface UserTooltipProps {
   children: React.ReactNode;
@@ -16,9 +17,9 @@ const UserTooltip = ({ children, user }: UserTooltipProps) => {
     <HoverCard>
       <HoverCardTrigger asChild>{children}</HoverCardTrigger>
       <HoverCardContent className="w-[199px] space-y-5 flex flex-col items-center">
-        <Avatar className="size-31">
+        <Avatar className="size-28">
           <AvatarImage src={user?.image ?? "https://github.com/shadcn.png"} />
-          <AvatarFallback>CN</AvatarFallback>
+          <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
         </Avatar>
         <div className="flex flex-col text-center space-y-1">
           <Link href="#" className="font-medium text-sm">

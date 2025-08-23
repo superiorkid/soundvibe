@@ -4,6 +4,7 @@ import { prismaAdapter } from 'better-auth/adapters/prisma';
 import {
   bearer,
   createAuthMiddleware,
+  customSession,
   openAPI,
   username,
 } from 'better-auth/plugins';
@@ -17,7 +18,24 @@ export function createAuthConfig(
   return {
     auth: betterAuth({
       database: prismaAdapter(database, { provider: 'postgresql' }),
-      plugins: [openAPI(), bearer(), username()],
+      plugins: [
+        openAPI(),
+        bearer(),
+        username(),
+        customSession(async ({ user, session }) => {
+          const userData = await database.user.findFirst({
+            where: { id: user.id },
+            include: { likedTracks: true },
+          });
+          return {
+            session,
+            user: {
+              ...user,
+              likedTracks: userData?.likedTracks,
+            },
+          };
+        }),
+      ],
       emailAndPassword: {
         enabled: false,
       },
