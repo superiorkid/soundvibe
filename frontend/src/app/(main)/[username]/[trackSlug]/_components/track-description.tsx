@@ -34,8 +34,8 @@ const TrackDescription = ({ audio }: TrackDescriptionProps) => {
           isExpanded ? "h-auto" : "max-h-[50px]"
         }`}
       >
-        <div className="space-y-3.5">
-          <p className="whitespace-pre-line leading-relaxed text-foreground">
+        <div className="space-y-4">
+          <p className="whitespace-pre-line leading-relaxed text-sm text-muted-foreground">
             {audio?.description || "No description provided"}
           </p>
 
