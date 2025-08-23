@@ -109,13 +109,13 @@ const TrackCard = ({ audio }: TrackCardProps) => {
                 </button>
               </div>
               <div className="-space-y-0.5">
-                <h2 className="font-semibold text-muted-foreground">
+                <h2 className="font-semibold text-muted-foreground capitalize">
                   <Link href="/username">
                     {audio.artist ?? "Unknown Artist"}
                   </Link>
                 </h2>
-                <p className="font-semibold tracking-tight">
-                  <Link href={`/${audio.user.id}/${audio.slug}`}>
+                <p className="font-semibold tracking-tight capitalize">
+                  <Link href={`/${audio.user.displayUsername}/${audio.slug}`}>
                     {audio.title}
                   </Link>
                 </p>

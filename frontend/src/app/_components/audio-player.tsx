@@ -183,10 +183,10 @@ const AudioPlayer = () => {
                 )}
               </div>
               <div className="text-sm max-w-[172px] space-y-0.5">
-                <h2 className="font-medium text-xs text-muted-foreground line-clamp-1">
+                <h2 className="font-medium text-xs text-muted-foreground line-clamp-1 capitalize">
                   {currentTrack.artist ?? "Unknown Artist"}
                 </h2>
-                <p className="font-semibold text-xs tracking-wide line-clamp-1">
+                <p className="font-semibold text-xs tracking-wide line-clamp-1 capitalize">
                   {currentTrack.title}
                 </p>
               </div>

@@ -3,7 +3,6 @@
 import { Button } from "@/components/ui/button";
 import {
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -21,6 +20,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { useGenres } from "@/hooks/tanstack/genre";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useFileUpload } from "@/hooks/use-file-upload";
+import { authClient } from "@/lib/auth-client";
+import { TUser } from "@/types/user.type";
 import { TagInput } from "emblor";
 import {
   AlertCircleIcon,
@@ -45,6 +46,7 @@ interface Step2Props {
 }
 
 const Step2 = ({ onNext, onBack, isSubmitting }: Step2Props) => {
+  const { data: session, isPending } = authClient.useSession();
   const [activeTagIndex, setActiveTagIndex] = useState<number | null>(null);
 
   const form = useFormContext<TUploadSchema>();
@@ -189,7 +191,6 @@ const Step2 = ({ onNext, onBack, isSubmitting }: Step2Props) => {
         </div>
 
         <div className="flex-1 space-y-8">
-          {/* Artist Field */}
           <FormField
             control={form.control}
             name="artist"
@@ -203,7 +204,7 @@ const Step2 = ({ onNext, onBack, isSubmitting }: Step2Props) => {
                 <FormControl>
                   <Input placeholder="Enter artists" {...field} />
                 </FormControl>
-                <FormDescription className="flex flex-col gap-2">
+                <div className="flex flex-col gap-2">
                   <div className="flex items-start gap-1">
                     <div className="mt-0.5">
                       <InfoIcon className="h-4 w-4 text-muted-foreground" />
@@ -216,13 +217,12 @@ const Step2 = ({ onNext, onBack, isSubmitting }: Step2Props) => {
                       Martin Garrix, Kygo, David Guetta
                     </p>
                   </div>
-                </FormDescription>
+                </div>
                 <FormMessage />
               </FormItem>
             )}
           />
 
-          {/* Title Field */}
           <FormField
             control={form.control}
             name="title"
@@ -236,20 +236,24 @@ const Step2 = ({ onNext, onBack, isSubmitting }: Step2Props) => {
                 <FormControl>
                   <Input placeholder="Enter title" {...field} />
                 </FormControl>
-                <FormDescription className="flex flex-col gap-2 py-1">
+                <div className="flex flex-col gap-2 py-1">
                   <div className="flex items-center gap-1.5">
                     <GlobeIcon className="h-3.5 w-3.5 text-muted-foreground" />
                     <span className="text-muted-foreground select-none text-sm font-mono bg-muted px-2 py-1 rounded">
-                      soundcloud.com/schelpcenter/{slugPreview || "(no slug)"}
+                      soundcloud.com/
+                      {isPending
+                        ? "loading..."
+                        : (session?.user as TUser)?.displayUsername ??
+                          "unknown"}
+                      /{slugPreview || "(no slug)"}
                     </span>
                   </div>
-                </FormDescription>
+                </div>
                 <FormMessage />
               </FormItem>
             )}
           />
 
-          {/* Genre Field */}
           <FormField
             control={form.control}
             name="genre"
@@ -323,7 +327,6 @@ const Step2 = ({ onNext, onBack, isSubmitting }: Step2Props) => {
             )}
           />
 
-          {/* Additional Tags */}
           <FormField
             control={form.control}
             name="additionalTags"
@@ -362,7 +365,6 @@ const Step2 = ({ onNext, onBack, isSubmitting }: Step2Props) => {
             )}
           />
 
-          {/* Description */}
           <FormField
             control={form.control}
             name="description"

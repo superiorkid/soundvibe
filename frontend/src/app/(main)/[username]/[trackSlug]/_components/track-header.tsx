@@ -53,11 +53,11 @@ const TrackHeader = ({ audio }: TrackHeaderProps) => {
               <span className="sr-only">Play button</span>
             </Button>
             <div>
-              <H2 className="border-none font-bold max-w-xl text-4xl bg-foreground text-background inline-block px-2">
+              <H2 className="border-none font-bold max-w-xl text-4xl bg-foreground text-background inline-block px-2 capitalize">
                 {audio?.title}
               </H2>
               <br />
-              <h3 className="font-medium text-lg bg-foreground text-background inline-block px-2">
+              <h3 className="font-medium text-lg bg-foreground text-background inline-block px-2 capitalize">
                 {audio?.artist ?? "Unknown Artist"}
               </h3>
             </div>
