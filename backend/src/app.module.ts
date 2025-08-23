@@ -14,6 +14,7 @@ import { FileUploadModule } from './shared/file-upload/file-upload.module';
 
 @Module({
   imports: [
+    DatabaseModule,
     ConfigModule.forRoot({ isGlobal: true }),
     AuthModule.forRootAsync({
       imports: [DatabaseModule, ConfigModule],
