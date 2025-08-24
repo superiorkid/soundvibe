@@ -15,7 +15,7 @@ import {
   Repeat2Icon,
 } from "lucide-react";
 import Image from "next/image";
-import React from "react";
+import Link from "next/link";
 
 interface TrackCardMiniProps {
   audio: TAudio;
@@ -23,7 +23,7 @@ interface TrackCardMiniProps {
 
 const TrackCardMini = ({ audio }: TrackCardMiniProps) => {
   const { data: session } = authClient.useSession();
-  const { hasLiked, isPending, toggleLikeMutation } = useLike(
+  const { hasLiked, toggleLikeMutation } = useLike(
     audio,
     session?.user.id as string
   );
@@ -73,20 +73,26 @@ const TrackCardMini = ({ audio }: TrackCardMiniProps) => {
           <p className="font-medium line-clamp-1 capitalize">{audio?.title}</p>
         </div>
         <div className="flex items-center space-x-2.5 text-muted-foreground">
-          <button className="flex items-center gap-0.5">
-            <PlayIcon
-              size={12}
-              className="fill-muted-foreground stroke-muted-foreground"
-            />
-            3.15M
-          </button>
-          <button className="flex items-center gap-0.5">
+          {audio?.playsCount > 0 && (
+            <button className="flex items-center gap-0.5">
+              <PlayIcon
+                size={12}
+                className="fill-muted-foreground stroke-muted-foreground mr-0.5"
+              />
+              {audio.playsCount}
+            </button>
+          )}
+
+          <Link
+            href={`/${audio.user.displayUsername}/${audio.slug}/likes`}
+            className="flex items-center gap-0.5 hover:cursor-pointer hover:opacity-50"
+          >
             <HeartIcon
               size={12}
-              className="fill-muted-foreground stroke-muted-foreground"
+              className="fill-muted-foreground stroke-muted-foreground mr-0.5"
             />
-            {audio?.likesCount}
-          </button>
+            {audio?.likesCount > 0 && audio.likesCount}
+          </Link>
           <button className="flex items-center gap-0.5">
             <Repeat2Icon size={14} strokeWidth={3} />
             12.2K

@@ -121,7 +121,8 @@ model Audio {
   audioFile   AudioFile?
   coverFile   CoverFile?
   likes       Like[]
-  likesCount  Int        @default(0)
+  likesCount  Int        @default(0) @map("likes_count")
+  playsCount  Int        @default(0) @map("plays_count")
   createdAt   DateTime   @default(now()) @map("created_at")
   updatedAt   DateTime   @updatedAt @map("updated_at")
 
@@ -159,7 +160,7 @@ model Like {
   user      User     @relation(fields: [userId], references: [id])
   audioId   String   @map("audio_id")
   audio     Audio    @relation(fields: [audioId], references: [id])
-  createdAt DateTime @map("created_at") @default(now())
+  createdAt DateTime @default(now()) @map("created_at")
 
   @@id([userId, audioId])
   @@map("like")

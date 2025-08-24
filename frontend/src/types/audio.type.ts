@@ -24,4 +24,5 @@ export type TAudio = {
   tags?: TTag[];
   likesCount: number;
   likes: TLike[];
+  playsCount: number;
 };

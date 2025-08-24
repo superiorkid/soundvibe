@@ -164,7 +164,7 @@ export class AudioService {
           genre: true,
           tags: true,
           coverFile: true,
-          likes: true,
+          likes: { include: { user: true } },
         },
       });
 
@@ -193,7 +193,7 @@ export class AudioService {
           audioFile: true,
           coverFile: true,
           genre: true,
-          likes: true,
+          likes: { include: { user: true } },
           _count: true,
         },
       });
@@ -433,6 +433,76 @@ export class AudioService {
 
   async undoRepostAudio() {
     // Implement undo repost functionality
+  }
+
+  async incrementPlay(audioId: string) {
+    const audioExist = await this.audioRepository.exists({ id: audioId });
+    if (!audioExist)
+      throw new NotFoundException(`Audio with ID "${audioId}" not found.`);
+
+    try {
+      await this.audioRepository.update({
+        where: { id: audioId },
+        data: {
+          playsCount: { increment: 1 },
+        },
+      });
+
+      return {
+        success: true,
+        message: `Play count incremented for audio ID "${audioId}".`,
+      };
+    } catch (error) {
+      throw new InternalServerErrorException(
+        `Failed to increment play count for audio ID "${audioId}". Error: ${(error as Error).message}`,
+      );
+    }
+  }
+
+  async getUsersWhoLikedAudio(params: { slug: string; limit: number }) {
+    const { slug, limit } = params;
+    const audio = await this.audioRepository.findOne({
+      where: { slug },
+      select: { id: true },
+    });
+
+    if (!audio) {
+      throw new NotFoundException(`Audio track with slug "${slug}" not found.`);
+    }
+
+    try {
+      const [result, total] = await Promise.all([
+        this.likeRepository.findAll({
+          where: { audioId: audio.id },
+          include: { user: true },
+          orderBy: { createdAt: 'desc' },
+          take: limit,
+        }),
+        this.likeRepository.count({ where: { audioId: audio.id } }),
+      ]);
+
+      if (result.length === 0) {
+        return {
+          success: true,
+          message: 'No users have liked this audio track yet.',
+          data: [],
+        };
+      }
+
+      return {
+        success: true,
+        message: `Found ${result.length} user(s) who liked the audio track.`,
+        data: {
+          total,
+          result,
+        },
+      };
+    } catch (error) {
+      console.error('Error fetching users who liked audio:', error);
+      throw new InternalServerErrorException(
+        'Failed to retrieve users who liked the audio track. Please try again later.',
+      );
+    }
   }
 
   private async getAudioDuration(buffer: Buffer): Promise<number> {

@@ -1,21 +1,21 @@
 "use client";
 
-import Image from "next/image";
-import React from "react";
-import TrackHeader from "./track-header";
 import { PlayerActions } from "@/app/(main)/_components/player-actions";
-import UserCard from "./user-card";
-import TrackDescription from "./track-description";
-import CommentsEmpty from "./comments-empty";
-import Comments from "./commets";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import Link from "next/link";
-import { HeartIcon } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAudioBySlug } from "@/hooks/tanstack/audio";
 import { TAudio } from "@/types/audio.type";
 import { TUser } from "@/types/user.type";
+import { HeartIcon } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import CommentsEmpty from "./comments-empty";
+import Comments from "./commets";
+import LikeSummaryPanel from "./like-summary-panel";
+import TrackDescription from "./track-description";
+import TrackHeader from "./track-header";
+import UserCard from "./user-card";
 
 interface DetailTrackProps {
   slug: string;
@@ -168,30 +168,10 @@ const DetailTrack = ({ slug }: DetailTrackProps) => {
           </div>
 
           {/* likes */}
-          <div className="space-y-5">
-            <div className="flex justify-between items-center">
-              <h1 className="font-semibold uppercase text-sm">14.3K likes</h1>
-              <Link
-                href="/username/track-title/likes"
-                className="text-xs text-muted-foreground tracking-wide"
-              >
-                View all
-              </Link>
-            </div>
-            <div className="flex -space-x-[1.4rem]">
-              {Array.from({ length: 9 }).map((_, index) => (
-                <Image
-                  key={index}
-                  className="ring-background rounded-full ring-2"
-                  src="https://images.unsplash.com/photo-1628157588553-5eeea00af15c?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                  width={60}
-                  height={60}
-                  alt="Avatar 01"
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                />
-              ))}
-            </div>
-          </div>
+          <LikeSummaryPanel
+            audioSlug={audio?.data?.slug as string}
+            username={audio?.data?.user.displayUsername as string}
+          />
 
           {/* reposts */}
           <div className="space-y-5">

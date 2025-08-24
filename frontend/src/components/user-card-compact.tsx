@@ -1,24 +1,31 @@
-import { cn } from "@/lib/utils";
+import { cn, getInitials } from "@/lib/utils";
 import { UserIcon } from "lucide-react";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Button, buttonVariants } from "./ui/button";
+import { TUser } from "@/types/user.type";
 
-const UserCardCompact = () => {
+interface UserCardCompactProps {
+  user: TUser;
+}
+
+const UserCardCompact = ({ user }: UserCardCompactProps) => {
   return (
     <div className="flex flex-col justify-center items-center space-y-3.5 group">
-      <Avatar className="size-43">
-        <AvatarImage src="https://github.com/shadcn.png" />
-        <AvatarFallback>CN</AvatarFallback>
+      <Avatar className="size-41">
+        <AvatarImage src={user.image ?? "https://github.com/shadcn.png"} />
+        <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
       </Avatar>
-      <div className="text-center">
-        <h3 className="font-semibold">Dean Cursor</h3>
+      <div className="text-center -space-y-1.5">
+        <h3 className="font-semibold hover:cursor-pointer hover:opacity-50 tracking-tight">
+          <Link href={`/${user.displayUsername}`}>{user.name}</Link>
+        </h3>
         <Link
-          href="#"
+          href={`/${user.displayUsername}/followers`}
           className={cn(
             buttonVariants({
               variant: "link",
-              className: cn("text-muted-foreground text-sm"),
+              className: cn("text-muted-foreground text-sm hover:opacity-50"),
             })
           )}
         >

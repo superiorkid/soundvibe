@@ -1,12 +1,26 @@
-import UserCardCompact from "@/components/user-card-compact";
+import { getQueryClient } from "@/lib/query-client";
+import { audioKeys } from "@/lib/query-keys";
+import { getUsersWhoLikedAudio } from "@/server/audio";
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+import UsersLikes from "./_components/users-likes";
 
-const TrackLikesPage = () => {
+interface TrackLikesPageProps {
+  params: Promise<{ username: string; trackSlug: string }>;
+}
+
+const TrackLikesPage = async ({ params }: TrackLikesPageProps) => {
+  const { trackSlug } = await params;
+  const queryClient = getQueryClient();
+
+  await queryClient.prefetchQuery({
+    queryKey: audioKeys.usersLikesAudio({ limit: 25, slug: trackSlug }),
+    queryFn: async () => getUsersWhoLikedAudio({ limit: 25, slug: trackSlug }),
+  });
+
   return (
-    <div className="grid grid-cols-6 gap-x-4 gap-y-6">
-      {Array.from({ length: 20 }).map((_, index) => (
-        <UserCardCompact key={index} />
-      ))}
-    </div>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <UsersLikes trackSlug={trackSlug} />
+    </HydrationBoundary>
   );
 };
 

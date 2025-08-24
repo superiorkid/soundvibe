@@ -31,9 +31,9 @@ export default function RootLayout({
           geist.className
         )}
       >
-        <AudioProvider>
-          <div className="max-w-7xl mx-auto px-5 2xl:px-0">
-            <QueryClientProvider>
+        <QueryClientProvider>
+          <AudioProvider>
+            <div className="max-w-7xl mx-auto px-5 2xl:px-0">
               <NuqsAdapter>
                 <ReactLenis
                   root
@@ -50,9 +50,9 @@ export default function RootLayout({
                 {children}
                 <Toaster richColors expand />
               </NuqsAdapter>
-            </QueryClientProvider>
-          </div>
-        </AudioProvider>
+            </div>
+          </AudioProvider>
+        </QueryClientProvider>
       </body>
     </html>
   );

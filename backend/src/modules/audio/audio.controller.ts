@@ -132,6 +132,23 @@ export class AudioController {
     return this.audioService.likeAudio({ userId, audioId: id });
   }
 
+  @Get(':id/like/users')
+  @ApiOperation({
+    summary: 'Get all users who liked an audio track',
+    description: 'Returns a list of users that liked the given audio track',
+  })
+  @ApiParam({
+    name: 'slug',
+    description: 'The slug of the audio track',
+  })
+  async getUsersWhoLiked(
+    @Param('slug') slug: string,
+    @Query('limit') limit: number,
+  ) {
+    const limitValue = limit || 25;
+    return this.audioService.getUsersWhoLikedAudio({ slug, limit: limitValue });
+  }
+
   @Delete(':id/like')
   async unlikeAudio(@Param('id') id: string, @Session() session: UserSession) {
     const userId = session.user.id;
@@ -146,6 +163,11 @@ export class AudioController {
   @Delete(':id/repost')
   async undoRepostAudio() {
     return this.audioService.undoRepostAudio();
+  }
+
+  @Post(':id/play')
+  async incrementPlay(@Param('id') id: string) {
+    return this.audioService.incrementPlay(id);
   }
 
   @Get(':id')

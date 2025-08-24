@@ -84,3 +84,33 @@ export async function recentLike(limit: number) {
     );
   }
 }
+
+export async function playIncrement(audioId: string) {
+  const axiosInstance = await getAxios();
+
+  try {
+    const response = await axiosInstance.post(`/api/audio/${audioId}/play`);
+    return response.data as TApiResponse;
+  } catch (error) {
+    console.error("Failed to increment play count:", error);
+    throw new Error("Could not increment play count. Please try again.");
+  }
+}
+
+export async function getUsersWhoLikedAudio(params: {
+  slug: string;
+  limit: number;
+}) {
+  const { slug, limit } = params;
+  const axiosInstance = await getAxios();
+
+  try {
+    const response = await axiosInstance.get(`/api/audio/${slug}/like/users`, {
+      params: { limit },
+    });
+    return response.data as TApiResponse<{ total: number; result: TLike[] }>;
+  } catch (error) {
+    console.error("Failed to increment play count:", error);
+    throw new Error("Could not increment play count. Please try again.");
+  }
+}

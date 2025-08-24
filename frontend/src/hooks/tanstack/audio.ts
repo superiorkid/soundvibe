@@ -3,7 +3,9 @@ import { audioKeys } from "@/lib/query-keys";
 import {
   findAllAudio,
   findOneBySlug,
+  getUsersWhoLikedAudio,
   likeAudio,
+  playIncrement,
   recentLike,
   unlikeAudio,
   uploadAudio,
@@ -12,6 +14,8 @@ import { TAudio } from "@/types/audio.type";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+
+const queryClient = getQueryClient();
 
 export function useAudio() {
   const { data: audios, isPending } = useQuery({
@@ -34,7 +38,6 @@ export function useAudioBySlug(slug: string) {
 
 export function useUploadAudio() {
   const router = useRouter();
-  const queryClient = getQueryClient();
 
   const { mutate, isPending } = useMutation({
     mutationFn: async (formData: FormData) => uploadAudio(formData),
@@ -57,7 +60,6 @@ export function useUploadAudio() {
 }
 
 export function useLike(audio: TAudio, userId: string) {
-  const queryClient = getQueryClient();
   const hasLiked = !!audio?.likes?.some((like) => like.userId === userId);
   const { mutate, isPending } = useMutation({
     mutationFn: async () => {
@@ -121,4 +123,32 @@ export function useRecentLiked(limit: number = 3) {
   });
 
   return { likedTracks, isPending };
+}
+
+export function useIncrementPlay() {
+  const { mutate, isPending } = useMutation({
+    mutationFn: async (audioId: string) => playIncrement(audioId),
+    onSuccess: (data) => {
+      console.log("Play count incremented successfully", data);
+      queryClient.invalidateQueries({ queryKey: audioKeys.all });
+    },
+    onError: (error: unknown) => {
+      console.error("Error incrementing play count:", error);
+    },
+  });
+
+  return {
+    incrementPlayMutation: mutate,
+    isPending,
+  };
+}
+
+export function useUsersWhoLikedAudio(params: { slug: string; limit: number }) {
+  const { data: usersWhoLiked, isPending } = useQuery({
+    queryKey: audioKeys.usersLikesAudio(params),
+    queryFn: async () => getUsersWhoLikedAudio(params),
+    enabled: !!params.slug,
+  });
+
+  return { usersWhoLiked, isPending };
 }

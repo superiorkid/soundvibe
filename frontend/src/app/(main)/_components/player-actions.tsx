@@ -97,11 +97,15 @@ export function PlayerActions({
 
         <div className="flex space-x-3 items-center text-xs text-muted-foreground">
           <Label>
-            <PlayIcon size={16} />
-            2,262
+            <PlayIcon
+              size={12}
+              className="fill-muted-foreground stroke-muted-foreground"
+              strokeWidth={2}
+            />
+            {audio.playsCount > 0 && audio.playsCount}
           </Label>
           <Label>
-            <MessageSquareTextIcon size={16} />
+            <MessageSquareTextIcon size={12} strokeWidth={3} />
             40
           </Label>
         </div>

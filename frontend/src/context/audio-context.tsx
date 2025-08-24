@@ -1,5 +1,6 @@
 "use client";
 
+import { useIncrementPlay } from "@/hooks/tanstack/audio";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { TAudio } from "@/types/audio.type";
 import React, {
@@ -30,12 +31,16 @@ const AudioContext = createContext<AudioState | null>(null);
 
 export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
   const [lastTrack, setLastTrack] = useLocalStorage("lastTrack");
+  const { incrementPlayMutation } = useIncrementPlay();
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [currentTrack, setCurrentTrack] = useState<TAudio | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, _setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+
+  // local flag for preventing multiple play counts
+  const hasCountedRef = useRef(false);
 
   const setCurrentTime = (time: number) => {
     _setCurrentTime(Math.max(0, Math.min(time, duration || 0)));
@@ -45,7 +50,16 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
     const audio = audioRef.current;
     if (!audio) return;
 
-    const updateTime = () => _setCurrentTime(audio.currentTime);
+    const updateTime = () => {
+      _setCurrentTime(audio.currentTime);
+
+      // trigger play count after 30 seconds
+      if (!hasCountedRef.current && audio.currentTime >= 30 && currentTrack) {
+        incrementPlayMutation(currentTrack.id);
+        hasCountedRef.current = true;
+      }
+    };
+
     const updateDuration = () => setDuration(audio.duration || 0);
     const handleEnded = () => {
       setIsPlaying(false);
@@ -67,7 +81,7 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
       audio.removeEventListener("durationchange", updateDuration);
       audio.removeEventListener("ended", handleEnded);
     };
-  }, [setCurrentTime]);
+  }, [setCurrentTime, currentTrack]);
 
   const playTrack = (track: TAudio | null, startTime = 0) => {
     if (track === null) {
@@ -88,6 +102,9 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
     } else if (audioRef.current.src !== streamUrl) {
       audioRef.current.src = streamUrl;
     }
+
+    // reset play count flag when a new track starts
+    hasCountedRef.current = false;
 
     setCurrentTrack(track);
     audioRef.current.currentTime = startTime;

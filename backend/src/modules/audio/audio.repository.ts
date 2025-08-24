@@ -22,7 +22,7 @@ export class AudioRepository extends BaseRepository<
     args: T,
   ): Promise<Prisma.AudioGetPayload<T> | null> {
     // @ts-expect-error - error
-    return await this.delegate.findUnique(args);
+    return await this.delegate.findFirst(args);
   }
 
   async findAll<T extends Prisma.AudioFindManyArgs>(
