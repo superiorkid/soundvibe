@@ -3,15 +3,7 @@
 import { AppBrand } from "@/app/_components/app-brand";
 import AppSearch from "@/app/_components/app-search";
 import AuthDialog from "@/app/_components/auth-dialog";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -24,30 +16,15 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useAudio } from "@/context/audio-context";
 import { useMainMenu } from "@/hooks/use-main-menu";
 import { authClient } from "@/lib/auth-client";
-import { getQueryClient } from "@/lib/query-client";
-import {
-  AudioLinesIcon,
-  ChevronDownIcon,
-  CopyIcon,
-  EllipsisIcon,
-  HeartIcon,
-  SearchIcon,
-  UserCheckIcon,
-  UserIcon,
-} from "lucide-react";
+import { SearchIcon } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import UserProfileDropdown from "./user-profile-dropdown";
+import { TUser } from "@/types/user.type";
 
 const MainNavigation = () => {
-  const queryClient = getQueryClient();
-
-  const router = useRouter();
   const menus = useMainMenu();
-
-  const { clearTrack } = useAudio();
 
   const { data: session, isPending } = authClient.useSession();
 
@@ -177,103 +154,7 @@ const MainNavigation = () => {
               </div>
             </div>
           ) : session?.user ? (
-            <div className="flex gap-2 items-center">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    className="h-auto p-0 hover:bg-transparent"
-                  >
-                    <Avatar>
-                      <AvatarImage src="./avatar.jpg" alt="Profile image" />
-                      <AvatarFallback>KK</AvatarFallback>
-                    </Avatar>
-                    <ChevronDownIcon
-                      size={16}
-                      className="opacity-60"
-                      aria-hidden="true"
-                    />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="max-w-64">
-                  <DropdownMenuGroup>
-                    <DropdownMenuItem>
-                      <UserIcon
-                        size={16}
-                        className="opacity-60 fill-foreground stroke-foreground"
-                        aria-hidden="true"
-                      />
-                      <span>Profile</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <HeartIcon
-                        size={16}
-                        className="opacity-60 fill-foreground stroke-foreground"
-                        aria-hidden="true"
-                      />
-                      <span>Likes</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <CopyIcon
-                        size={16}
-                        className="opacity-60 fill-foreground stroke-foreground"
-                        aria-hidden="true"
-                      />
-                      <span>Playlists</span>
-                    </DropdownMenuItem>
-                  </DropdownMenuGroup>
-                  <DropdownMenuGroup>
-                    <DropdownMenuItem>
-                      <UserCheckIcon
-                        size={16}
-                        className="opacity-60 stroke-foreground fill-foreground"
-                        aria-hidden="true"
-                      />
-                      <span>Following</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <AudioLinesIcon
-                        size={16}
-                        strokeWidth={3}
-                        className="opacity-60"
-                        aria-hidden="true"
-                      />
-                      <span>Tracks</span>
-                    </DropdownMenuItem>
-                  </DropdownMenuGroup>
-                </DropdownMenuContent>
-              </DropdownMenu>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    className="shadow-none"
-                    aria-label="Open edit menu"
-                  >
-                    <EllipsisIcon size={16} aria-hidden="true" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem>Settings</DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => {
-                      authClient.signOut({
-                        fetchOptions: {
-                          onSuccess: () => {
-                            queryClient.clear();
-                            clearTrack();
-                            router.push("/logout");
-                          },
-                        },
-                      });
-                    }}
-                  >
-                    Sign Out
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+            <UserProfileDropdown user={session.user as TUser} />
           ) : (
             <>
               <AuthDialog>

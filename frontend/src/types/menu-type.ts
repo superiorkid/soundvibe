@@ -1,5 +1,8 @@
+import { LucideIcon } from "lucide-react";
+
 export type TMenu = {
   href: string;
   label: string;
-  isActive: boolean;
+  isActive?: boolean;
+  icon?: LucideIcon;
 };
