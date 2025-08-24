@@ -2,12 +2,9 @@
 
 import TrackCard from "@/app/(main)/_components/track-card";
 import TrackCard2 from "@/components/track-card-2";
-import { Button } from "@/components/ui/button";
 import { ContentDisplayEnum } from "@/enums/content-display-enum";
 import { useRecentLiked } from "@/hooks/tanstack/audio";
 import { TAudio } from "@/types/audio.type";
-import { EllipsisIcon, HeartIcon, PlayIcon, UserCheckIcon } from "lucide-react";
-import Image from "next/image";
 import { parseAsStringEnum, useQueryState } from "nuqs";
 
 const RecentLikedTracks = () => {
