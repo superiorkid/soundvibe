@@ -1,6 +1,7 @@
 "use client";
 
 import { useUsersWhoLikedAudio } from "@/hooks/tanstack/audio";
+import { Loader2Icon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -19,8 +20,8 @@ const LikeSummaryPanel = ({ username, audioSlug }: LikeSummaryPanelProps) => {
 
   if (isPending) {
     return (
-      <div>
-        <p>Loading...</p>
+      <div className="flex items-center justify-center py-6">
+        <Loader2Icon className="animate-spin size-5 text-muted-foreground" />
       </div>
     );
   }
