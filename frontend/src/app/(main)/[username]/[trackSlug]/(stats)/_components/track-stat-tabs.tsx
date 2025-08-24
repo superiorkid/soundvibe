@@ -40,7 +40,7 @@ const TrackStatTabs = () => {
   );
 
   return (
-    <Tabs value={pathname}>
+    <Tabs value={pathname} className="pb-3.5">
       <TabsList className="text-foreground h-auto border-none gap-2 rounded-none border-b bg-transparent px-0 py-0.5 flex space-x-1">
         {tabMenus.map((menu) => (
           <TabsTrigger

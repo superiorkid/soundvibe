@@ -4,7 +4,6 @@ import { findOneBySlug } from "@/server/audio";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import React from "react";
 import TrackHeaderMini from "./_components/track-header-mini";
-import TrackStatTabs from "./_components/track-stat-tabs";
 
 interface TrackStatsLayoutProps {
   children: React.ReactNode;
@@ -27,10 +26,7 @@ const TrackStatsLayout = async ({
     <HydrationBoundary state={dehydrate(queryClient)}>
       <div className="mt-6 space-y-9">
         <TrackHeaderMini trackSlug={trackSlug} />
-        <div className="space-y-5">
-          <TrackStatTabs />
-          <div className="mt-7">{children}</div>
-        </div>
+        {children}
       </div>
     </HydrationBoundary>
   );
