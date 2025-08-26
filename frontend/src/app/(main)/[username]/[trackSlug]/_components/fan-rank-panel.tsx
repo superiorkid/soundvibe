@@ -60,7 +60,7 @@ const FanRankPanel = ({ audioId }: FanRankPanelProps) => {
             {(topFans?.data || []).map((fan, index) => (
               <div key={index} className="flex px-2 gap-2">
                 <div className="flex gap-3">
-                  <Label>{index + 1}</Label>
+                  <Label className="text-sm">{index + 1}</Label>
                   <Avatar className="size-9">
                     <AvatarImage
                       src={fan.user.image ?? "https://github.com/shadcn.png"}
@@ -71,7 +71,7 @@ const FanRankPanel = ({ audioId }: FanRankPanelProps) => {
                   </Avatar>
                 </div>
                 <div className="flex-1 flex justify-between items-center">
-                  <Label>{fan.user.name}</Label>
+                  <Label className="text-sm">{fan.user.name}</Label>
                   <Label className="text-zinc-500 text-xs tracking-wide">
                     {fan.plays} play{fan.plays > 1 && "s"}
                   </Label>
