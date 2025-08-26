@@ -29,30 +29,32 @@ const FanRankPanel = ({ audioId }: FanRankPanelProps) => {
   }
 
   return (
-    <div className="-space-y-0.5">
+    <div className="space-y-0.5">
       <h1 className="font-semibold uppercase text-sm">Fans</h1>
       <Tabs
         value={String(filter)}
         onValueChange={(val) => setFilter(Number(val))}
       >
-        <TabsList className="h-auto rounded-none border-b bg-transparent p-0 w-full">
+        <TabsList className="bg-background">
           <TabsTrigger
             value="0"
-            className="data-[state=active]:after:bg-primary relative rounded-none py-2 after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 data-[state=active]:bg-transparent data-[state=active]:shadow-none"
+            className="text-xs data-[state=active]:after:bg-primary relative rounded-none py-2 after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 data-[state=active]:bg-transparent data-[state=active]:shadow-none"
           >
             Top
           </TabsTrigger>
           <TabsTrigger
             value="7"
-            className="data-[state=active]:after:bg-primary relative rounded-none py-2 after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 data-[state=active]:bg-transparent data-[state=active]:shadow-none"
+            className="text-xs data-[state=active]:after:bg-primary relative rounded-none py-2 after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 data-[state=active]:bg-transparent data-[state=active]:shadow-none"
           >
             First
           </TabsTrigger>
         </TabsList>
 
         <div className="space-y-4">
-          <p className="text-xs tracking-wide text-muted-foreground">
-            Fans who have played this track the most:
+          <p className="tracking-wide text-muted-foreground text-xs">
+            {filter === 7
+              ? "Fans who played this track in the first 7 days:"
+              : "Fans who have played this track the most:"}
           </p>
           <div className="space-y-3">
             {(topFans?.data || []).map((fan, index) => (
@@ -70,7 +72,7 @@ const FanRankPanel = ({ audioId }: FanRankPanelProps) => {
                 </div>
                 <div className="flex-1 flex justify-between items-center">
                   <Label>{fan.user.name}</Label>
-                  <Label className="text-muted-foreground text-sm">
+                  <Label className="text-zinc-500 text-xs tracking-wide">
                     {fan.plays} play{fan.plays > 1 && "s"}
                   </Label>
                 </div>
