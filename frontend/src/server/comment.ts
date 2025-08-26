@@ -1,0 +1,63 @@
+"use server";
+
+import { TCommentSchema } from "@/app/(main)/[username]/[trackSlug]/comment-schema";
+import { getAxios } from "@/lib/axios";
+import { TApiResponse } from "@/types/api-response.type";
+import { TComment } from "@/types/comment.type";
+
+export async function getComments(audioId: string) {
+  const axiosInstance = await getAxios();
+
+  try {
+    const response = await axiosInstance.get(`/api/comments/${audioId}`);
+    return response.data as TApiResponse<{
+      total: number;
+      comments: TComment[];
+    }>;
+  } catch (error) {
+    console.error("Failed to fetch comments:", error);
+    throw new Error("Failed to get comments");
+  }
+}
+
+export async function createComment(params: {
+  audioId: string;
+  commentSchema: TCommentSchema;
+}) {
+  const { audioId, commentSchema } = params;
+  const axiosInstance = await getAxios();
+
+  try {
+    const response = await axiosInstance.post(
+      `/api/comments/${audioId}`,
+      commentSchema
+    );
+    return response.data as TApiResponse;
+  } catch (error) {
+    console.error("Failed to create comment:", error);
+    throw new Error("Failed to create comment");
+  }
+}
+
+export async function deleteComment(params: {
+  audioId: string;
+  commentId: string;
+}) {
+  const { audioId, commentId } = params;
+  const axiosInstance = await getAxios();
+
+  try {
+    const response = await axiosInstance.delete(
+      `/api/comments/${audioId}/${commentId}`
+    );
+    return response.data as TApiResponse;
+  } catch (error) {
+    console.error(
+      `Failed to delete comment ${commentId} for audio ${audioId}:`,
+      error
+    );
+    throw new Error(
+      `Failed to delete comment with ID ${commentId} for audio ${audioId}`
+    );
+  }
+}

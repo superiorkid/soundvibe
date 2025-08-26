@@ -21,3 +21,7 @@ export const audioKeys = {
 export const genreKeys = {
   all: ["genre"] as const,
 };
+
+export const commentKeys = {
+  all: (audioId: string) => ["comments", { audioId }],
+};

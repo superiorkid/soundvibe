@@ -11,7 +11,7 @@ export const formatTime = (seconds: number) => {
   return `${minutes}:${secs.toString().padStart(2, "0")}`;
 };
 
-export const getInitials = (name: string) => {
+export const getInitials = (name: string = "Default User") => {
   const parts = name.split(" ");
   let initials = "";
   for (let i = 0; i < parts.length; i++) {

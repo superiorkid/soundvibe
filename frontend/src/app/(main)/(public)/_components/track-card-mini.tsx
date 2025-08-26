@@ -35,7 +35,7 @@ const TrackCardMini = ({ audio }: TrackCardMiniProps) => {
           <Image
             fill
             src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/audio/cover/${audio.id}`}
-            alt="track image"
+            alt={`${audio.title} image`}
             className="object-cover rounded-md"
             loading="lazy"
             decoding="async"
@@ -70,7 +70,11 @@ const TrackCardMini = ({ audio }: TrackCardMiniProps) => {
               {audio?.artist}
             </h2>
           </UserTooltip>
-          <p className="font-medium line-clamp-1 capitalize">{audio?.title}</p>
+          <p className="font-medium line-clamp-1 capitalize hover:cursor-pointer hover:opacity-50">
+            <Link href={`/${audio.user.displayUsername}/${audio.slug}`}>
+              {audio?.title}
+            </Link>
+          </p>
         </div>
         <div className="flex items-center space-x-2.5 text-muted-foreground">
           {audio?.playsCount > 0 && (

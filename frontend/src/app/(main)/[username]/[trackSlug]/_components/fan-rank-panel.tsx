@@ -14,7 +14,6 @@ interface FanRankPanelProps {
 
 const FanRankPanel = ({ audioId }: FanRankPanelProps) => {
   const [filter, setFilter] = useState<number>(0);
-
   const { isPending, topFans } = useTopFans({
     audioId,
     days: filter,

@@ -11,6 +11,7 @@ import { UsersModule } from './modules/users/users.module';
 import { DatabaseModule } from './shared/database/database.module';
 import { DatabaseService } from './shared/database/database.service';
 import { FileUploadModule } from './shared/file-upload/file-upload.module';
+import { CommentModule } from './modules/comment/comment.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { FileUploadModule } from './shared/file-upload/file-upload.module';
     UsersModule,
     AudioModule,
     GenreModule,
+    CommentModule,
   ],
   providers: [
     {

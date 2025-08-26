@@ -1,9 +1,6 @@
 "use client";
 
 import { PlayerActions } from "@/app/(main)/_components/player-actions";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAudioBySlug } from "@/hooks/tanstack/audio";
 import { TAudio } from "@/types/audio.type";
 import { TUser } from "@/types/user.type";
@@ -11,12 +8,12 @@ import { HeartIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import CommentsEmpty from "./comments-empty";
-import Comments from "./commets";
+import Comments from "./comments";
+import FanRankPanel from "./fan-rank-panel";
 import LikeSummaryPanel from "./like-summary-panel";
 import TrackDescription from "./track-description";
 import TrackHeader from "./track-header";
 import UserCard from "./user-card";
-import FanRankPanel from "./fan-rank-panel";
 
 interface DetailTrackProps {
   slug: string;
@@ -45,7 +42,13 @@ const DetailTrack = ({ slug }: DetailTrackProps) => {
             <UserCard user={audio?.data?.user as TUser} />
             <div className="flex-1 space-y-8">
               <TrackDescription audio={audio?.data as TAudio} />
-              <div>{!hasComments ? <CommentsEmpty /> : <Comments />}</div>
+              <div>
+                {!hasComments ? (
+                  <CommentsEmpty />
+                ) : (
+                  <Comments audioId={audio?.data?.id as string} />
+                )}
+              </div>
             </div>
           </div>
         </div>
