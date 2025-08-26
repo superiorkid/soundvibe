@@ -126,6 +126,11 @@ export class AudioController {
     return this.audioService.getCover({ id, res });
   }
 
+  @Get(':id/fans')
+  async getTopFans(@Param('id') id: string, @Query('days') days: number) {
+    return this.audioService.getTopFans({ audioId: id, limit: 5, days });
+  }
+
   @Post(':id/like')
   async likeAudio(@Param('id') id: string, @Session() session: UserSession) {
     const userId = session.user.id;
@@ -166,8 +171,11 @@ export class AudioController {
   }
 
   @Post(':id/play')
-  async incrementPlay(@Param('id') id: string) {
-    return this.audioService.incrementPlay(id);
+  async incrementPlay(
+    @Param('id') id: string,
+    @Session() session: UserSession,
+  ) {
+    return this.audioService.incrementPlay(id, session.user.id);
   }
 
   @Get(':id')

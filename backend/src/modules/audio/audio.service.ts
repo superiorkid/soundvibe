@@ -13,6 +13,8 @@ import path, { join } from 'node:path';
 import slugify from 'slugify';
 import { DatabaseService } from 'src/shared/database/database.service';
 import { FileUploadService } from 'src/shared/file-upload/file-upload.service';
+import { UsersRepository } from '../users/users.repository';
+import { AudioPlaysRepository } from './audio-plays.repository';
 import { AudioRepository } from './audio.repository';
 import { UploadAudioDTO } from './dto/upload-audio.dto';
 import { LikeRepository } from './like.repository';
@@ -26,6 +28,8 @@ export class AudioService {
     private fileUploadService: FileUploadService,
     private databaseService: DatabaseService,
     private likeRepository: LikeRepository,
+    private audioPlaysRepository: AudioPlaysRepository,
+    private usersRepository: UsersRepository,
   ) {}
 
   async uploadTrack(uploadAudioDto: UploadAudioDTO, session: UserSession) {
@@ -435,24 +439,31 @@ export class AudioService {
     // Implement undo repost functionality
   }
 
-  async incrementPlay(audioId: string) {
+  async incrementPlay(audioId: string, userId: string) {
     const audioExist = await this.audioRepository.exists({ id: audioId });
     if (!audioExist)
       throw new NotFoundException(`Audio with ID "${audioId}" not found.`);
 
     try {
-      await this.audioRepository.update({
-        where: { id: audioId },
-        data: {
-          playsCount: { increment: 1 },
-        },
-      });
+      await Promise.all([
+        this.audioRepository.update({
+          where: { id: audioId },
+          data: { playsCount: { increment: 1 } },
+        }),
+        this.audioPlaysRepository.create({
+          data: {
+            audio: { connect: { id: audioId } },
+            user: { connect: { id: userId } },
+          },
+        }),
+      ]);
 
       return {
         success: true,
         message: `Play count incremented for audio ID "${audioId}".`,
       };
     } catch (error) {
+      console.error(error);
       throw new InternalServerErrorException(
         `Failed to increment play count for audio ID "${audioId}". Error: ${(error as Error).message}`,
       );
@@ -502,6 +513,62 @@ export class AudioService {
       throw new InternalServerErrorException(
         'Failed to retrieve users who liked the audio track. Please try again later.',
       );
+    }
+  }
+
+  async getTopFans(params: { audioId: string; days?: number; limit: number }) {
+    const { audioId, limit, days } = params;
+
+    const audioExist = await this.audioRepository.exists({
+      id: audioId,
+    });
+    if (!audioExist) throw new NotFoundException('Audio not found');
+
+    try {
+      const grouped = await this.audioPlaysRepository.groupBy({
+        by: ['userId'],
+        where: {
+          audioId,
+          playedAt: days
+            ? {
+                gte: new Date(Date.now() - days * 24 * 60 * 60 * 1000),
+              }
+            : undefined,
+        },
+        _count: {
+          userId: true,
+        },
+        orderBy: {
+          _count: {
+            userId: 'desc',
+          },
+        },
+      });
+
+      const top = grouped.slice(0, limit);
+
+      const fans = await Promise.all(
+        top.map(async (g) => {
+          const user = await this.usersRepository.findOne({
+            where: { id: g.userId },
+            select: { id: true, name: true, image: true },
+          });
+
+          return {
+            user,
+            plays: g._count.userId,
+          };
+        }),
+      );
+
+      return {
+        success: true,
+        message: 'Top fans retrieved successfully',
+        data: fans,
+      };
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException('Failed to retrieve top fans');
     }
   }
 

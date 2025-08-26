@@ -9,6 +9,7 @@ import { TAudio } from "@/types/audio.type";
 import { formatDistance } from "date-fns";
 import { PauseIcon, PlayIcon } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
 import { H2 } from "shadcn-typography";
 
@@ -52,18 +53,20 @@ const TrackHeader = ({ audio }: TrackHeaderProps) => {
 
               <span className="sr-only">Play button</span>
             </Button>
-            <div>
+            <div className="-space-y-2">
               <H2 className="border-none font-bold max-w-xl text-3xl bg-foreground text-background inline-block px-2 capitalize">
                 {audio?.title}
               </H2>
               <br />
-              <h3 className="font-medium text-zinc-400 text-lg bg-foreground inline-block px-2 capitalize">
-                {audio?.artist ?? "Unknown Artist"}
+              <h3 className="font-medium text-zinc-400 hover:text-zinc-600 text-lg bg-foreground inline-block px-2 capitalize hover:cursor-pointer">
+                <Link href={`/${audio.user.displayUsername}`}>
+                  {audio?.artist ?? "Unknown Artist"}
+                </Link>
               </h3>
             </div>
           </div>
           <div className="space-y-1.5 text-end">
-            <h5 className="font-medium text-muted-foreground">
+            <h5 className="font-medium text-foreground text-sm">
               {formatDistance(new Date(audio?.createdAt as Date), new Date(), {
                 addSuffix: true,
               })}

@@ -11,6 +11,11 @@ export const audioKeys = {
     ...audioKeys.all,
     { ...params, mode: "users-who-likes-audio" },
   ],
+  topFans: (audioId: string, days?: number) => [
+    ...audioKeys.all,
+    "top-fans",
+    { audioId, days: days ?? "all-time" },
+  ],
 };
 
 export const genreKeys = {

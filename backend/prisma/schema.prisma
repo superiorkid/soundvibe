@@ -28,6 +28,7 @@ model User {
 
   username        String?
   displayUsername String?
+  audioPlays      AudioPlay[]
 
   @@unique([email])
   @@unique([username])
@@ -107,24 +108,25 @@ model Genre {
 }
 
 model Audio {
-  id          String     @id @default(cuid())
+  id          String      @id @default(cuid())
   artist      String?
   title       String
-  slug        String     @unique
-  description String?    @db.Text
-  duration    Int        @default(0)
-  userId      String     @map("user_id")
-  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  slug        String      @unique
+  description String?     @db.Text
+  duration    Int         @default(0)
+  userId      String      @map("user_id")
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   tags        Tag[]
-  genreId     String     @map("genre_id")
-  genre       Genre      @relation(fields: [genreId], references: [id])
+  genreId     String      @map("genre_id")
+  genre       Genre       @relation(fields: [genreId], references: [id])
   audioFile   AudioFile?
   coverFile   CoverFile?
   likes       Like[]
-  likesCount  Int        @default(0) @map("likes_count")
-  playsCount  Int        @default(0) @map("plays_count")
-  createdAt   DateTime   @default(now()) @map("created_at")
-  updatedAt   DateTime   @updatedAt @map("updated_at")
+  likesCount  Int         @default(0) @map("likes_count")
+  playsCount  Int         @default(0) @map("plays_count")
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+  audioPlays  AudioPlay[]
 
   @@index([duration, slug, likesCount])
   @@map("audio")
@@ -157,11 +159,23 @@ model CoverFile {
 
 model Like {
   userId    String   @map("user_id")
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   audioId   String   @map("audio_id")
-  audio     Audio    @relation(fields: [audioId], references: [id])
+  audio     Audio    @relation(fields: [audioId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now()) @map("created_at")
 
   @@id([userId, audioId])
   @@map("like")
+}
+
+model AudioPlay {
+  id       String   @id @default(uuid())
+  userId   String   @map("user_id")
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  audioId  String   @map("audio_id")
+  audio    Audio    @relation(fields: [audioId], references: [id], onDelete: Cascade)
+  playedAt DateTime @default(now()) @map("played_at")
+
+  @@unique([userId, audioId, playedAt])
+  @@map("audio_play")
 }

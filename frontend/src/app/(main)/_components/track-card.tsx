@@ -122,7 +122,7 @@ const TrackCard = ({ audio }: TrackCardProps) => {
                   </h2>
                 </UserTooltip>
 
-                <p className="font-semibold tracking-tight capitalize">
+                <p className="font-semibold tracking-tight capitalize hover:opacity-50">
                   <Link href={`/${audio.user.displayUsername}/${audio.slug}`}>
                     {audio.title}
                   </Link>

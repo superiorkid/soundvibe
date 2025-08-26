@@ -3,6 +3,7 @@ import { audioKeys } from "@/lib/query-keys";
 import {
   findAllAudio,
   findOneBySlug,
+  getTopFans,
   getUsersWhoLikedAudio,
   likeAudio,
   playIncrement,
@@ -128,8 +129,7 @@ export function useRecentLiked(limit: number = 3) {
 export function useIncrementPlay() {
   const { mutate, isPending } = useMutation({
     mutationFn: async (audioId: string) => playIncrement(audioId),
-    onSuccess: (data) => {
-      console.log("Play count incremented successfully", data);
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: audioKeys.all });
     },
     onError: (error: unknown) => {
@@ -151,4 +151,14 @@ export function useUsersWhoLikedAudio(params: { slug: string; limit: number }) {
   });
 
   return { usersWhoLiked, isPending };
+}
+
+export function useTopFans(params: { audioId: string; days: number }) {
+  const { data: topFans, isPending } = useQuery({
+    queryKey: audioKeys.topFans(params.audioId, params.days),
+    queryFn: async () => getTopFans(params),
+    enabled: !!params.audioId,
+  });
+
+  return { topFans, isPending };
 }

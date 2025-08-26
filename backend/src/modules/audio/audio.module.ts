@@ -5,10 +5,17 @@ import { AudioController } from './audio.controller';
 import { AudioRepository } from './audio.repository';
 import { AudioService } from './audio.service';
 import { LikeRepository } from './like.repository';
+import { AudioPlaysRepository } from './audio-plays.repository';
+import { UsersModule } from '../users/users.module';
 
 @Module({
-  imports: [DatabaseModule, FileUploadModule],
-  providers: [AudioRepository, LikeRepository, AudioService],
+  imports: [DatabaseModule, FileUploadModule, UsersModule],
+  providers: [
+    AudioRepository,
+    LikeRepository,
+    AudioService,
+    AudioPlaysRepository,
+  ],
   controllers: [AudioController],
   exports: [AudioRepository],
 })
