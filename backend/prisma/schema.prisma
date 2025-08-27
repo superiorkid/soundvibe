@@ -30,7 +30,8 @@ model User {
   displayUsername String?
   audioPlays      AudioPlay[]
   comments        Comment[]
-  CommentLike     CommentLike[]
+  commentLikes    CommentLike[]
+  reposts         Repost[]
 
   @@unique([email])
   @@unique([username])
@@ -130,6 +131,7 @@ model Audio {
   updatedAt   DateTime    @updatedAt @map("updated_at")
   audioPlays  AudioPlay[]
   comments    Comment[]
+  reposts     Repost[]
 
   @@index([duration, slug, likesCount])
   @@map("audio")
@@ -215,4 +217,15 @@ model CommentLike {
 
   @@unique([userId, commentId])
   @@map("comment_like")
+}
+
+model Repost {
+  userId    String   @map("user_id")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  audioId   String   @map("audio_id")
+  audio     Audio    @relation(fields: [audioId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@id([userId, audioId])
+  @@map("repost")
 }
