@@ -1,3 +1,4 @@
+import { TAudio } from "./audio.type";
 import { TCommentLike } from "./comment-like.type";
 import { TUser } from "./user.type";
 
@@ -9,6 +10,7 @@ export type TComment = {
   updatedAt: Date;
   likesCount: number;
   audioId: string;
+  audio: TAudio;
   userId: string;
   parentId: number;
   replies: TComment[];

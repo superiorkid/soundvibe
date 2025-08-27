@@ -97,7 +97,7 @@ export function useCommentLike(
   );
 
   const hasLikedByAuthor = !!comment?.commentLikes?.some(
-    (like) => like.userId === comment.userId
+    (like) => like.userId === comment.audio.userId
   );
 
   const { mutate, isPending } = useMutation({

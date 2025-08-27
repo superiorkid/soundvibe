@@ -31,6 +31,7 @@ export class CommentService {
           include: {
             user: true,
             commentLikes: true,
+            audio: { include: { user: true } },
           },
         }),
         this.commentRepository.count({ where: { audioId } }),
