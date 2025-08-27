@@ -33,8 +33,8 @@ const DeleteCommentDropdown = ({
   return (
     <DropdownMenu open={openDropdown} onOpenChange={dropdownToggle}>
       <DropdownMenuTrigger asChild>
-        <Button size="icon" variant="ghost">
-          <Trash2Icon strokeWidth={3} size={16} />
+        <Button size="icon" variant="ghost" className="hover:cursor-pointer">
+          <Trash2Icon strokeWidth={2} size={16} />
           <span className="sr-only">remove comment</span>
         </Button>
       </DropdownMenuTrigger>

@@ -1,15 +1,11 @@
 "use client";
 
 import CommentInput from "@/components/comment-input";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useAudio } from "@/context/audio-context";
 import { useLike } from "@/hooks/tanstack/audio";
-import { useCreateComment } from "@/hooks/tanstack/comment";
 import { authClient } from "@/lib/auth-client";
-import { cn, getInitials } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { TAudio } from "@/types/audio.type";
 import {
   CopyIcon,
@@ -18,10 +14,8 @@ import {
   MessageSquareTextIcon,
   PlayIcon,
   Repeat2Icon,
-  SendIcon,
   UploadIcon,
 } from "lucide-react";
-import { useState } from "react";
 
 type PlayerActionsProps = {
   showComment?: boolean;
@@ -47,7 +41,7 @@ export function PlayerActions({
         showComment ? "space-y-4" : "space-y-0"
       )}
     >
-      {showComment && <CommentInput audioId={audio.id as string} />}
+      {showComment && <CommentInput audioId={audio.id} />}
 
       <div className="flex justify-between items-center">
         <div className="flex space-x-3.5 items-center">

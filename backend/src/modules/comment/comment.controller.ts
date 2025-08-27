@@ -9,6 +9,7 @@ import {
   Logger,
   Param,
   Post,
+  Query,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
@@ -19,10 +20,12 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiParam,
+  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 import { CommentDTO } from './comment.dto';
 import { CommentService } from './comment.service';
+import { CommentFilterEnum } from 'src/common/enums/comment-filter.enum';
 
 @Controller('comments/:audioId')
 @ApiTags('Comments')
@@ -34,26 +37,35 @@ export class CommentController {
   @Get()
   @ApiParam({
     name: 'audioId',
-    description: '',
+    description: 'Audio ID to retrieve comments for.',
   })
-  @ApiOperation({})
-  @ApiOkResponse({})
-  @ApiInternalServerErrorResponse({})
-  async getComments(@Param('audioId') audioId: string) {
-    return this.commentService.getComments(audioId);
+  @ApiOperation({ summary: 'Get comments for an audio' })
+  @ApiOkResponse({ description: 'Comments retrieved successfully' })
+  @ApiInternalServerErrorResponse({ description: 'Server error' })
+  @ApiQuery({
+    name: 'filter',
+    enum: CommentFilterEnum,
+    required: false,
+    description: 'Filter comments by enum (newest, oldest, trackTime)',
+  })
+  async getComments(
+    @Param('audioId') audioId: string,
+    @Query('filter') filter: CommentFilterEnum,
+  ) {
+    return this.commentService.getComments({ audioId, filter });
   }
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @ApiParam({
     name: 'audioId',
-    description: '',
+    description: 'The ID of the audio to add a comment to.',
   })
-  @ApiOperation({})
-  @ApiBody({})
-  @ApiCreatedResponse({})
-  @ApiInternalServerErrorResponse({})
-  @ApiBadRequestResponse({})
+  @ApiOperation({ summary: 'Create a new comment' })
+  @ApiBody({ description: 'The comment data to be created.' })
+  @ApiCreatedResponse({ description: 'Comment created successfully' })
+  @ApiInternalServerErrorResponse({ description: 'Internal server error' })
+  @ApiBadRequestResponse({ description: 'Invalid comment data provided' })
   async createComment(
     @Session() session: UserSession,
     @Body() commentDto: CommentDTO,
@@ -67,14 +79,16 @@ export class CommentController {
   @Delete(':commentId')
   @ApiParam({
     name: 'audioId',
-    description: '',
+    description: 'The ID of the audio containing the comment.',
   })
-  @ApiOperation({})
-  @ApiParam({ name: 'audioId' })
-  @ApiParam({ name: 'commentId' })
-  @ApiNotFoundResponse({})
-  @ApiOkResponse({})
-  @ApiInternalServerErrorResponse({})
+  @ApiOperation({ summary: 'Delete a comment' })
+  @ApiParam({
+    name: 'commentId',
+    description: 'The ID of the comment to delete.',
+  })
+  @ApiNotFoundResponse({ description: 'Audio or comment not found' })
+  @ApiOkResponse({ description: 'Comment deleted successfully' })
+  @ApiInternalServerErrorResponse({ description: 'Internal server error' })
   async deleteComment(
     @Param('audioId') audioId: string,
     @Param('commentId') commentId: string,

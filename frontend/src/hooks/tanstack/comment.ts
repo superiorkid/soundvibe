@@ -1,4 +1,7 @@
+"use client";
+
 import { TCommentSchema } from "@/app/(main)/[username]/[trackSlug]/comment-schema";
+import { CommentFilterEnum } from "@/enums/comment-filter-enum";
 import { getQueryClient } from "@/lib/query-client";
 import { commentKeys } from "@/lib/query-keys";
 import { createComment, deleteComment, getComments } from "@/server/comment";
@@ -7,10 +10,14 @@ import { toast } from "sonner";
 
 const queryClient = getQueryClient();
 
-export function useComments(audioId: string) {
+export function useComments(params: {
+  audioId: string;
+  filter: CommentFilterEnum;
+}) {
+  const { audioId, filter } = params;
   const { data: comments, isPending } = useQuery({
-    queryKey: commentKeys.all(audioId),
-    queryFn: async () => getComments(audioId),
+    queryKey: commentKeys.all(audioId, filter),
+    queryFn: async () => getComments({ audioId, filter }),
     enabled: !!audioId,
   });
 

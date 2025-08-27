@@ -1,3 +1,5 @@
+import { CommentFilterEnum } from "@/enums/comment-filter-enum";
+
 export const authKeys = {
   session: ["session"] as const,
 };
@@ -23,5 +25,8 @@ export const genreKeys = {
 };
 
 export const commentKeys = {
-  all: (audioId: string) => ["comments", { audioId }],
+  all: (audioId: string, filter?: CommentFilterEnum) => [
+    "comments",
+    { audioId, ...(filter && { filter }) },
+  ],
 };

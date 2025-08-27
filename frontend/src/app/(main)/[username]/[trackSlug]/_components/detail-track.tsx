@@ -7,8 +7,9 @@ import { TUser } from "@/types/user.type";
 import { HeartIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import CommentsEmpty from "./comments-empty";
+import { Suspense } from "react";
 import Comments from "./comments";
+import CommentsEmpty from "./comments-empty";
 import FanRankPanel from "./fan-rank-panel";
 import LikeSummaryPanel from "./like-summary-panel";
 import TrackDescription from "./track-description";
@@ -46,7 +47,9 @@ const DetailTrack = ({ slug }: DetailTrackProps) => {
                 {!hasComments ? (
                   <CommentsEmpty />
                 ) : (
-                  <Comments audioId={audio?.data?.id as string} />
+                  <Suspense>
+                    <Comments audioId={audio?.data?.id as string} />
+                  </Suspense>
                 )}
               </div>
             </div>

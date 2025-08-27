@@ -4,9 +4,10 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { CommentRepository } from './comment.repository';
-import { CommentDTO } from './comment.dto';
+import { CommentFilterEnum } from 'src/common/enums/comment-filter.enum';
 import { AudioRepository } from '../audio/audio.repository';
+import { CommentDTO } from './comment.dto';
+import { CommentRepository } from './comment.repository';
 
 @Injectable()
 export class CommentService {
@@ -17,7 +18,9 @@ export class CommentService {
     private audioRepository: AudioRepository,
   ) {}
 
-  async getComments(audioId: string) {
+  async getComments(params: { audioId: string; filter: CommentFilterEnum }) {
+    const { audioId, filter } = params;
+
     try {
       const [comments, total] = await Promise.all([
         this.commentRepository.findAll({
@@ -26,7 +29,6 @@ export class CommentService {
             user: true,
             commentLikes: true,
           },
-          orderBy: { createdAt: 'desc' },
         }),
         this.commentRepository.count({ where: { audioId } }),
       ]);
@@ -52,12 +54,28 @@ export class CommentService {
         }
       }
 
-      // recursive sort to ensure replies are also sorted
+      switch (filter) {
+        case CommentFilterEnum.oldest:
+          roots.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+          break;
+        case CommentFilterEnum.newest:
+          roots.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+          break;
+        default:
+          roots.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+      }
+
+      // Sort all replies by createdAt desc (newest first)
       const sortReplies = (nodes: CommentWithRelations[]) => {
-        nodes.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-        for (const n of nodes) {
-          if (n.replies.length > 0) {
-            sortReplies(n.replies);
+        for (const node of nodes) {
+          // Sort replies for this node
+          node.replies.sort(
+            (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
+          );
+
+          // Recursively sort replies of replies
+          if (node.replies.length > 0) {
+            sortReplies(node.replies);
           }
         }
       };
@@ -77,6 +95,7 @@ export class CommentService {
       throw new InternalServerErrorException('Failed to fetch comments');
     }
   }
+
   async createComment(params: {
     audioId: string;
     commentDto: CommentDTO;

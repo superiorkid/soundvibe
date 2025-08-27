@@ -1,15 +1,22 @@
 "use server";
 
 import { TCommentSchema } from "@/app/(main)/[username]/[trackSlug]/comment-schema";
+import { CommentFilterEnum } from "@/enums/comment-filter-enum";
 import { getAxios } from "@/lib/axios";
 import { TApiResponse } from "@/types/api-response.type";
 import { TComment } from "@/types/comment.type";
 
-export async function getComments(audioId: string) {
+export async function getComments(params: {
+  audioId: string;
+  filter: CommentFilterEnum;
+}) {
+  const { audioId, filter } = params;
   const axiosInstance = await getAxios();
 
   try {
-    const response = await axiosInstance.get(`/api/comments/${audioId}`);
+    const response = await axiosInstance.get(`/api/comments/${audioId}`, {
+      ...(filter && { params: { filter } }),
+    });
     return response.data as TApiResponse<{
       total: number;
       comments: TComment[];

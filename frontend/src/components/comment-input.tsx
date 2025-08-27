@@ -12,17 +12,22 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 
 interface CommentInputProps {
+  audioId: string;
   comment?: TComment;
   onSubmitSuccess?: () => void;
 }
 
-const CommentInput = ({ comment, onSubmitSuccess }: CommentInputProps) => {
+const CommentInput = ({
+  audioId,
+  comment,
+  onSubmitSuccess,
+}: CommentInputProps) => {
   const { data: session } = authClient.useSession();
   const [commentInput, setCommentInput] = useState<string | null>(null);
   const { currentTime } = useAudio();
   const { createCommentMutation, isPending: createCommentPending } =
     useCreateComment({
-      audioId: comment?.audioId as string,
+      audioId,
       onSuccess: () => {
         onSubmitSuccess?.();
         setCommentInput(null);
@@ -43,6 +48,7 @@ const CommentInput = ({ comment, onSubmitSuccess }: CommentInputProps) => {
         placeholder="Write a comment"
         className="bg-zinc-100 rounded-sm h-8"
         onChange={(event) => setCommentInput(event.target.value)}
+        value={commentInput || ""}
         disabled={createCommentPending}
       />
       <Button

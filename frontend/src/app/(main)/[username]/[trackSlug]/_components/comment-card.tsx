@@ -91,6 +91,7 @@ const CommentCard = ({ comment }: CommentCardProps) => {
 
             {isActive && (
               <CommentInput
+                audioId={comment.audioId}
                 comment={comment}
                 onSubmitSuccess={handleSubmitSuccess}
               />
