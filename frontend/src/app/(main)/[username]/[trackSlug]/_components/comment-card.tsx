@@ -3,15 +3,17 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import UserTooltip from "@/components/user-tooltip";
 import { useActiveCommentCard } from "@/context/active-comment-card-context";
-import { useDeleteComment } from "@/hooks/tanstack/comment";
 import { authClient } from "@/lib/auth-client";
 import { getInitials } from "@/lib/utils";
 import { TComment } from "@/types/comment.type";
 import { TUser } from "@/types/user.type";
 import { formatDistance } from "date-fns";
-import { HeartIcon } from "lucide-react";
 import Link from "next/link";
 import DeleteCommentDropdown from "./delete-comment-dropdown";
+import LikeCommentButton from "./like-comment-button";
+import { useCommentLike } from "@/hooks/tanstack/comment";
+import { Badge } from "@/components/ui/badge";
+import { HeartIcon } from "lucide-react";
 
 interface CommentCardProps {
   comment: TComment;
@@ -22,6 +24,12 @@ const CommentCard = ({ comment }: CommentCardProps) => {
   const user = session?.user as TUser;
   const { activeId, setActiveId } = useActiveCommentCard();
   const isActive = activeId === comment.id;
+
+  const { hasLikedByAuthor } = useCommentLike(
+    comment,
+    session?.user.id as string,
+    comment.audioId
+  );
 
   const handleReplyClick = () => {
     if (isActive) {
@@ -57,16 +65,21 @@ const CommentCard = ({ comment }: CommentCardProps) => {
                     {comment.user.name}
                   </Link>
                 </UserTooltip>{" "}
-                {/* at{" "}
-                <span className="text-muted-foreground font-medium">
-                  {comment.timestamp}
-                </span>{" "} */}
                 &#8226;{" "}
                 <span className="text-muted-foreground text-xs">
                   {formatDistance(new Date(comment.createdAt), new Date(), {
                     addSuffix: true,
                   })}
                 </span>
+                {hasLikedByAuthor && (
+                  <>
+                    {" "}
+                    &#8226;{" "}
+                    <span className="text-xs text-pink-500 font-medium">
+                      Liked by author
+                    </span>
+                  </>
+                )}
               </h3>
               <p className="text-sm">{comment.content}</p>
             </div>
@@ -98,13 +111,7 @@ const CommentCard = ({ comment }: CommentCardProps) => {
             )}
           </div>
         </div>
-        <button
-          type="button"
-          className="flex flex-col hover:cursor-pointer text-xs space-y-2 font-medium hover:opacity-50"
-        >
-          <HeartIcon strokeWidth={2} size={16} />
-          <span>2</span>
-        </button>
+        <LikeCommentButton comment={comment} />
       </div>
 
       {comment.replies?.length > 0 && (

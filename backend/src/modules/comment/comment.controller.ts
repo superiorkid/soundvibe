@@ -27,7 +27,7 @@ import { CommentDTO } from './comment.dto';
 import { CommentService } from './comment.service';
 import { CommentFilterEnum } from 'src/common/enums/comment-filter.enum';
 
-@Controller('comments/:audioId')
+@Controller('audio/:audioId/comments')
 @ApiTags('Comments')
 export class CommentController {
   protected logger = new Logger(CommentController.name);
@@ -37,16 +37,16 @@ export class CommentController {
   @Get()
   @ApiParam({
     name: 'audioId',
-    description: 'Audio ID to retrieve comments for.',
+    description: 'The ID of the audio to retrieve comments for.',
   })
   @ApiOperation({ summary: 'Get comments for an audio' })
-  @ApiOkResponse({ description: 'Comments retrieved successfully' })
-  @ApiInternalServerErrorResponse({ description: 'Server error' })
+  @ApiOkResponse({ description: 'Comments retrieved successfully.' })
+  @ApiInternalServerErrorResponse({ description: 'Server error.' })
   @ApiQuery({
     name: 'filter',
     enum: CommentFilterEnum,
     required: false,
-    description: 'Filter comments by enum (newest, oldest, trackTime)',
+    description: 'Filter comments by enum (newest, oldest, trackTime).',
   })
   async getComments(
     @Param('audioId') audioId: string,
@@ -63,9 +63,9 @@ export class CommentController {
   })
   @ApiOperation({ summary: 'Create a new comment' })
   @ApiBody({ description: 'The comment data to be created.' })
-  @ApiCreatedResponse({ description: 'Comment created successfully' })
-  @ApiInternalServerErrorResponse({ description: 'Internal server error' })
-  @ApiBadRequestResponse({ description: 'Invalid comment data provided' })
+  @ApiCreatedResponse({ description: 'Comment created successfully.' })
+  @ApiInternalServerErrorResponse({ description: 'Internal server error.' })
+  @ApiBadRequestResponse({ description: 'Invalid comment data provided.' })
   async createComment(
     @Session() session: UserSession,
     @Body() commentDto: CommentDTO,
@@ -81,18 +81,72 @@ export class CommentController {
     name: 'audioId',
     description: 'The ID of the audio containing the comment.',
   })
-  @ApiOperation({ summary: 'Delete a comment' })
   @ApiParam({
     name: 'commentId',
     description: 'The ID of the comment to delete.',
   })
-  @ApiNotFoundResponse({ description: 'Audio or comment not found' })
-  @ApiOkResponse({ description: 'Comment deleted successfully' })
-  @ApiInternalServerErrorResponse({ description: 'Internal server error' })
+  @ApiOperation({ summary: 'Delete a comment' })
+  @ApiNotFoundResponse({ description: 'Audio or comment not found.' })
+  @ApiOkResponse({ description: 'Comment deleted successfully.' })
+  @ApiInternalServerErrorResponse({ description: 'Internal server error.' })
   async deleteComment(
     @Param('audioId') audioId: string,
     @Param('commentId') commentId: string,
   ) {
     return this.commentService.deleteComment({ audioId, commentId });
+  }
+
+  @Post(':commentId/like')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiParam({
+    name: 'audioId',
+    description: 'The ID of the audio containing the comment.',
+  })
+  @ApiParam({
+    name: 'commentId',
+    description: 'The ID of the comment to like.',
+  })
+  @ApiOperation({ summary: 'Like a comment' })
+  @ApiCreatedResponse({ description: 'Comment liked successfully.' })
+  @ApiNotFoundResponse({ description: 'Audio or comment not found.' })
+  @ApiInternalServerErrorResponse({ description: 'Internal server error.' })
+  async likeComment(
+    @Param('audioId') audioId: string,
+    @Param('commentId') commentId: string,
+    @Session() session: UserSession,
+  ) {
+    console.log('audioId', audioId);
+    console.log('commentId', commentId);
+    return this.commentService.likeComment({
+      audioId,
+      commentId,
+      userId: session.user.id,
+    });
+  }
+
+  @Delete(':commentId/unlike')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiParam({
+    name: 'audioId',
+    description: 'The ID of the audio containing the comment.',
+  })
+  @ApiParam({
+    name: 'commentId',
+    description: 'The ID of the comment to unlike.',
+  })
+  @ApiOperation({ summary: 'Unlike a comment' })
+  @ApiOkResponse({ description: 'Comment unliked successfully.' })
+  @ApiNotFoundResponse({ description: 'Audio or comment not found.' })
+  @ApiInternalServerErrorResponse({ description: 'Internal server error.' })
+  async unlikeComment(
+    @Param('audioId') audioId: string,
+    @Param('commentId') commentId: string,
+    @Session() session: UserSession,
+  ) {
+    return this.commentService.unlikeComment({
+      audioId,
+      commentId,
+      userId: session.user.id,
+    });
   }
 }

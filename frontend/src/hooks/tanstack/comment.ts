@@ -4,8 +4,15 @@ import { TCommentSchema } from "@/app/(main)/[username]/[trackSlug]/comment-sche
 import { CommentFilterEnum } from "@/enums/comment-filter-enum";
 import { getQueryClient } from "@/lib/query-client";
 import { commentKeys } from "@/lib/query-keys";
-import { createComment, deleteComment, getComments } from "@/server/comment";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import {
+  createComment,
+  deleteComment,
+  getComments,
+  likeComment,
+  unlikeComment,
+} from "@/server/comment";
+import { TComment } from "@/types/comment.type";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 const queryClient = getQueryClient();
@@ -77,4 +84,71 @@ export function useDeleteComment({
   });
 
   return { deleteCommentMutation: mutate, isPending };
+}
+
+export function useCommentLike(
+  comment: TComment,
+  userId: string,
+  audioId: string
+) {
+  const queryClient = useQueryClient();
+  const hasLiked = !!comment?.commentLikes?.some(
+    (like) => like.userId === userId
+  );
+
+  const hasLikedByAuthor = !!comment?.commentLikes?.some(
+    (like) => like.userId === comment.userId
+  );
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: async () => {
+      if (hasLiked) {
+        return unlikeComment({ audioId, commentId: comment.id });
+      }
+      return likeComment({ audioId, commentId: comment.id });
+    },
+    onMutate: async () => {
+      await queryClient.cancelQueries({
+        queryKey: commentKeys.all(audioId),
+      });
+
+      const prevData = queryClient.getQueryData<TComment[]>(
+        commentKeys.all(audioId)
+      );
+
+      if (prevData) {
+        queryClient.setQueryData<TComment[]>(
+          commentKeys.all(audioId),
+          prevData.map((c) =>
+            c.id === comment.id
+              ? {
+                  ...c,
+                  likesCount: hasLiked ? c.likesCount - 1 : c.likesCount + 1,
+                  likes: hasLiked
+                    ? c.commentLikes.filter((like) => like.userId !== userId)
+                    : [
+                        ...c.commentLikes,
+                        { userId, commentId: c.id, created_at: new Date() },
+                      ],
+                }
+              : c
+          )
+        );
+      }
+
+      return { prevData };
+    },
+    onError: (_error, _variables, context) => {
+      if (context?.prevData) {
+        queryClient.setQueryData(commentKeys.all(audioId), context.prevData);
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: commentKeys.all(audioId),
+      });
+    },
+  });
+
+  return { hasLiked, hasLikedByAuthor, isPending, toggleLikeMutation: mutate };
 }

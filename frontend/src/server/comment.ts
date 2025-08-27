@@ -14,9 +14,12 @@ export async function getComments(params: {
   const axiosInstance = await getAxios();
 
   try {
-    const response = await axiosInstance.get(`/api/comments/${audioId}`, {
-      ...(filter && { params: { filter } }),
-    });
+    const response = await axiosInstance.get(
+      `/api/audio/${audioId}/comments/`,
+      {
+        ...(filter && { params: { filter } }),
+      }
+    );
     return response.data as TApiResponse<{
       total: number;
       comments: TComment[];
@@ -36,7 +39,7 @@ export async function createComment(params: {
 
   try {
     const response = await axiosInstance.post(
-      `/api/comments/${audioId}`,
+      `/api/audio/${audioId}/comments`,
       commentSchema
     );
     return response.data as TApiResponse;
@@ -55,7 +58,7 @@ export async function deleteComment(params: {
 
   try {
     const response = await axiosInstance.delete(
-      `/api/comments/${audioId}/${commentId}`
+      `/api/audio/${audioId}/comments/${commentId}`
     );
     return response.data as TApiResponse;
   } catch (error) {
@@ -66,5 +69,41 @@ export async function deleteComment(params: {
     throw new Error(
       `Failed to delete comment with ID ${commentId} for audio ${audioId}`
     );
+  }
+}
+
+export async function likeComment(params: {
+  audioId: string;
+  commentId: string;
+}) {
+  const { audioId, commentId } = params;
+  const axiosInstance = await getAxios();
+
+  try {
+    const response = await axiosInstance.post(
+      `/api/audio/${audioId}/comments/${commentId}/like`
+    );
+    return response.data as TApiResponse;
+  } catch (error) {
+    console.error("Failed to like comment:", error);
+    throw new Error("Failed to like comment");
+  }
+}
+
+export async function unlikeComment(params: {
+  audioId: string;
+  commentId: string;
+}) {
+  const { audioId, commentId } = params;
+  const axiosInstance = await getAxios();
+
+  try {
+    const response = await axiosInstance.delete(
+      `/api/audio/${audioId}/comments/${commentId}/unlike`
+    );
+    return response.data as TApiResponse;
+  } catch (error) {
+    console.error("Failed to unlike comment:", error);
+    throw new Error("Failed to unlike comment");
   }
 }
