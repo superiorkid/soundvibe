@@ -28,13 +28,18 @@ export function useAudio() {
 }
 
 export function useAudioBySlug(slug: string) {
-  const { data: audio, isPending } = useQuery({
+  const {
+    data: audio,
+    isPending,
+    error,
+    isError,
+  } = useQuery({
     queryKey: audioKeys.detailBySlug(slug),
     queryFn: async () => findOneBySlug(slug),
     enabled: !!slug,
   });
 
-  return { audio, isPending };
+  return { audio, isPending, error, isError };
 }
 
 export function useUploadAudio() {

@@ -139,6 +139,7 @@ export class AudioService {
           coverFile: true,
           genre: true,
           likes: true,
+          comments: true,
           _count: true,
         },
       });
@@ -169,6 +170,7 @@ export class AudioService {
           tags: true,
           coverFile: true,
           likes: { include: { user: true } },
+          comments: true,
         },
       });
 
@@ -198,6 +200,7 @@ export class AudioService {
           coverFile: true,
           genre: true,
           likes: { include: { user: true } },
+          comments: true,
           _count: true,
         },
       });

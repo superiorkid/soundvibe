@@ -3,7 +3,7 @@
 import { TCommentSchema } from "@/app/(main)/[username]/[trackSlug]/comment-schema";
 import { CommentFilterEnum } from "@/enums/comment-filter-enum";
 import { getQueryClient } from "@/lib/query-client";
-import { commentKeys } from "@/lib/query-keys";
+import { audioKeys, commentKeys } from "@/lib/query-keys";
 import {
   createComment,
   deleteComment,
@@ -44,6 +44,9 @@ export function useCreateComment({
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: commentKeys.all(audioId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: audioKeys.all,
       });
       onSuccess?.();
     },

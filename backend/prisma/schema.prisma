@@ -31,7 +31,6 @@ model User {
   audioPlays      AudioPlay[]
   comments        Comment[]
   commentLikes    CommentLike[]
-  reposts         Repost[]
 
   @@unique([email])
   @@unique([username])
@@ -111,27 +110,27 @@ model Genre {
 }
 
 model Audio {
-  id          String      @id @default(cuid())
-  artist      String?
-  title       String
-  slug        String      @unique
-  description String?     @db.Text
-  duration    Int         @default(0)
-  userId      String      @map("user_id")
-  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  tags        Tag[]
-  genreId     String      @map("genre_id")
-  genre       Genre       @relation(fields: [genreId], references: [id])
-  audioFile   AudioFile?
-  coverFile   CoverFile?
-  likes       Like[]
-  likesCount  Int         @default(0) @map("likes_count")
-  playsCount  Int         @default(0) @map("plays_count")
-  createdAt   DateTime    @default(now()) @map("created_at")
-  updatedAt   DateTime    @updatedAt @map("updated_at")
-  audioPlays  AudioPlay[]
-  comments    Comment[]
-  reposts     Repost[]
+  id            String      @id @default(cuid())
+  artist        String?
+  title         String
+  slug          String      @unique
+  description   String?     @db.Text
+  duration      Int         @default(0)
+  userId        String      @map("user_id")
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tags          Tag[]
+  genreId       String      @map("genre_id")
+  genre         Genre       @relation(fields: [genreId], references: [id])
+  audioFile     AudioFile?
+  coverFile     CoverFile?
+  likes         Like[]
+  likesCount    Int         @default(0) @map("likes_count")
+  playsCount    Int         @default(0) @map("plays_count")
+  createdAt     DateTime    @default(now()) @map("created_at")
+  updatedAt     DateTime    @updatedAt @map("updated_at")
+  audioPlays    AudioPlay[]
+  commentsCount Int         @default(0)
+  comments      Comment[]
 
   @@index([duration, slug, likesCount])
   @@map("audio")
@@ -217,15 +216,4 @@ model CommentLike {
 
   @@unique([userId, commentId])
   @@map("comment_like")
-}
-
-model Repost {
-  userId    String   @map("user_id")
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  audioId   String   @map("audio_id")
-  audio     Audio    @relation(fields: [audioId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now()) @map("created_at")
-
-  @@id([userId, audioId])
-  @@map("repost")
 }

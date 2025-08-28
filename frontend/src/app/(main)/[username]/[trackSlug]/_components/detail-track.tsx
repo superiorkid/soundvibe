@@ -1,10 +1,9 @@
 "use client";
 
 import { PlayerActions } from "@/app/(main)/_components/player-actions";
+import { Button } from "@/components/ui/button";
 import { useAudioBySlug } from "@/hooks/tanstack/audio";
-import { TAudio } from "@/types/audio.type";
-import { TUser } from "@/types/user.type";
-import { HeartIcon } from "lucide-react";
+import { AlertCircleIcon, HeartIcon, MusicIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -23,32 +22,70 @@ interface DetailTrackProps {
 const hasComments = true;
 
 const DetailTrack = ({ slug }: DetailTrackProps) => {
-  const { audio, isPending } = useAudioBySlug(slug);
+  const { audio, isPending, isError } = useAudioBySlug(slug);
 
   if (isPending && slug) {
     return (
-      <div>
-        <p>Loading...</p>
+      <div className="flex justify-center items-center min-h-[400px]">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="flex flex-col justify-center items-center min-h-[400px] text-center p-6">
+        <div className="text-destructive mb-4">
+          <AlertCircleIcon size={48} strokeWidth={1.5} />
+        </div>
+        <h2 className="text-xl font-semibold mb-2">Something went wrong</h2>
+        <p className="text-muted-foreground mb-6">
+          Failed to load track information
+        </p>
+        <Button onClick={() => window.location.reload()} variant="outline">
+          Try Again
+        </Button>
+      </div>
+    );
+  }
+
+  if (!audio?.data) {
+    return (
+      <div className="flex flex-col justify-center items-center min-h-[400px] text-center p-6">
+        <div className="text-muted-foreground mb-4">
+          <MusicIcon size={48} strokeWidth={1.5} />
+        </div>
+        <h2 className="text-xl font-semibold mb-2">Track not found</h2>
+        <p className="text-muted-foreground">
+          The track you&apos;re looking for doesn&apos;t exist or may have been
+          removed.
+        </p>
       </div>
     );
   }
 
   return (
     <div>
-      <TrackHeader audio={audio?.data as TAudio} />
+      <TrackHeader audio={audio.data} />
       <div className="flex gap-6 mt-5">
         <div className="flex-1 space-y-6">
-          <PlayerActions audio={audio?.data as TAudio} />
+          <PlayerActions audio={audio.data} />
           <div className="flex gap-6">
-            <UserCard user={audio?.data?.user as TUser} />
+            <UserCard user={audio.data.user} />
             <div className="flex-1 space-y-8">
-              <TrackDescription audio={audio?.data as TAudio} />
+              <TrackDescription audio={audio.data} />
               <div>
                 {!hasComments ? (
                   <CommentsEmpty />
                 ) : (
-                  <Suspense>
-                    <Comments audioId={audio?.data?.id as string} />
+                  <Suspense
+                    fallback={
+                      <div className="flex justify-center py-8">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                      </div>
+                    }
+                  >
+                    <Comments audioId={audio.data.id} />
                   </Suspense>
                 )}
               </div>
@@ -57,7 +94,7 @@ const DetailTrack = ({ slug }: DetailTrackProps) => {
         </div>
         <div className="w-[363px] space-y-10">
           {/* fans */}
-          <FanRankPanel audioId={audio?.data?.id as string} />
+          <FanRankPanel audioId={audio.data.id} />
 
           <div>
             <p>SOON: related tracks here...</p>
@@ -110,8 +147,8 @@ const DetailTrack = ({ slug }: DetailTrackProps) => {
 
           {/* likes */}
           <LikeSummaryPanel
-            audioSlug={audio?.data?.slug as string}
-            username={audio?.data?.user.displayUsername as string}
+            audioSlug={audio.data.slug}
+            username={audio.data.user.displayUsername}
           />
 
           {/* reposts */}

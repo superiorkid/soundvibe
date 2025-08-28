@@ -88,7 +88,7 @@ export function PlayerActions({
           </Label>
           <Label>
             <MessageSquareTextIcon size={12} strokeWidth={3} />
-            40
+            {audio.commentsCount > 0 && <span>{audio.commentsCount}</span>}
           </Label>
         </div>
       </div>

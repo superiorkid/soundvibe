@@ -26,13 +26,6 @@ const Comments = ({ audioId }: CommentsProps) => {
     filter: commentFilter,
   });
 
-  if (isPending) {
-    return (
-      <div className="flex items-center justify-center py-6">
-        <Loader2Icon className="animate-spin size-14 text-muted-foreground" />
-      </div>
-    );
-  }
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -44,10 +37,17 @@ const Comments = ({ audioId }: CommentsProps) => {
           <CommentFilterDropdown />
         </Suspense>
       </div>
+
       <div className="space-y-6">
-        {(comments?.data?.comments || []).map((comment, index) => (
-          <CommentCard key={index} comment={comment} />
-        ))}
+        {isPending ? (
+          <div className="flex justify-center">
+            <Loader2Icon />
+          </div>
+        ) : (
+          (comments?.data?.comments || []).map((comment, index) => (
+            <CommentCard key={index} comment={comment} />
+          ))
+        )}
       </div>
       <div className="flex justify-center">
         <AppBrand>

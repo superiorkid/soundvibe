@@ -111,18 +111,25 @@ export class CommentService {
     if (!audio) throw new NotFoundException('');
 
     try {
-      await this.commentRepository.create({
-        data: {
-          content: commentDto.content,
-          timestamp: commentDto.timestamp,
-          audio: { connect: { id: audioId } },
-          user: { connect: { id: userId } },
-          parent: commentDto.parentId
-            ? { connect: { id: commentDto.parentId } }
-            : undefined,
-        },
-      });
-
+      await Promise.all([
+        this.commentRepository.create({
+          data: {
+            content: commentDto.content,
+            timestamp: commentDto.timestamp,
+            audio: { connect: { id: audioId } },
+            user: { connect: { id: userId } },
+            parent: commentDto.parentId
+              ? { connect: { id: commentDto.parentId } }
+              : undefined,
+          },
+        }),
+        this.audioRepository.update({
+          where: { id: audioId },
+          data: {
+            commentsCount: { increment: 1 },
+          },
+        }),
+      ]);
       return {
         success: true,
         message: '',
@@ -144,7 +151,13 @@ export class CommentService {
     if (!commentExists) throw new NotFoundException('');
 
     try {
-      await this.commentRepository.delete({ where: { id: commentId } });
+      await Promise.all([
+        this.commentRepository.delete({ where: { id: commentId } }),
+        this.audioRepository.update({
+          where: { id: audioId },
+          data: { commentsCount: { decrement: 1 } },
+        }),
+      ]);
       return {
         success: true,
         message: '',

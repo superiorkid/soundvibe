@@ -1,4 +1,5 @@
 import { TAudioFile } from "./audio-file.type";
+import { TComment } from "./comment.type";
 import { TCoverFile } from "./cover-file.type";
 import { TGenre } from "./genre.type";
 import { TLike } from "./like.type";
@@ -25,4 +26,6 @@ export type TAudio = {
   likesCount: number;
   likes: TLike[];
   playsCount: number;
+  commentsCount: number;
+  comments: TComment[];
 };
