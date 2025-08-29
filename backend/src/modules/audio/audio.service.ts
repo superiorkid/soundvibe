@@ -456,6 +456,7 @@ export class AudioService {
                 user: true,
                 audioFile: true,
                 likes: true,
+                reposts: true,
               },
             },
           },

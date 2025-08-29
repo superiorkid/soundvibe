@@ -19,10 +19,10 @@ const TrackVisualizer = dynamic(() => import("./track-visualizer"), {
 
 interface TrackCardProps {
   audio: TAudio;
-  type: "audio" | "repost";
+  type?: "audio" | "repost";
 }
 
-const TrackCard = ({ audio, type }: TrackCardProps) => {
+const TrackCard = ({ audio, type = "audio" }: TrackCardProps) => {
   const { currentTrack, isPlaying, playTrack, togglePlay } = useAudio();
 
   const isThisTrackPlaying =
