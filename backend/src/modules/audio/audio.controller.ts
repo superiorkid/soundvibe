@@ -24,6 +24,7 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiParam,
+  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 import type { Request, Response } from 'express';
@@ -69,9 +70,10 @@ export class AudioController {
   @ApiOperation({})
   @ApiInternalServerErrorResponse({})
   @ApiOkResponse({})
-  async allTracks() {
+  @ApiQuery({ name: 'showRepost', required: false, type: Boolean })
+  async allTracks(@Query('showRepost') showRepost: boolean = true) {
     // TODO: findall audio by following user
-    return this.audioService.allAudios();
+    return this.audioService.allAudios({ showRepost });
   }
 
   @Get('liked/recent')

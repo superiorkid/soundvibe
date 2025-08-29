@@ -31,6 +31,7 @@ model User {
   audioPlays      AudioPlay[]
   comments        Comment[]
   commentLikes    CommentLike[]
+  reposts         Repost[]
 
   @@unique([email])
   @@unique([username])
@@ -103,7 +104,7 @@ model Genre {
   name      String   @unique
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
-  Audio     Audio[]
+  audio     Audio[]
 
   @@index([name])
   @@map("genre")
@@ -131,6 +132,8 @@ model Audio {
   audioPlays    AudioPlay[]
   commentsCount Int         @default(0)
   comments      Comment[]
+  repostsCount  Int         @default(0)
+  reposts       Repost[]
 
   @@index([duration, slug, likesCount])
   @@map("audio")
@@ -216,4 +219,18 @@ model CommentLike {
 
   @@unique([userId, commentId])
   @@map("comment_like")
+}
+
+model Repost {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  audioId String @map("audio_id")
+  audio   Audio  @relation(fields: [audioId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, audioId])
+  @@map("repost")
 }

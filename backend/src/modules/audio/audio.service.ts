@@ -18,6 +18,7 @@ import { AudioPlaysRepository } from './audio-plays.repository';
 import { AudioRepository } from './audio.repository';
 import { UploadAudioDTO } from './dto/upload-audio.dto';
 import { LikeRepository } from './like.repository';
+import { RepostRepository } from '../repost/repost.repository';
 
 @Injectable()
 export class AudioService {
@@ -30,6 +31,7 @@ export class AudioService {
     private likeRepository: LikeRepository,
     private audioPlaysRepository: AudioPlaysRepository,
     private usersRepository: UsersRepository,
+    private repostRepository: RepostRepository,
   ) {}
 
   async uploadTrack(uploadAudioDto: UploadAudioDTO, session: UserSession) {
@@ -159,32 +161,82 @@ export class AudioService {
     }
   }
 
-  async allAudios() {
+  async allAudios(params: { showRepost: boolean }) {
     try {
-      const audios = await this.audioRepository.findAll({
-        orderBy: { createdAt: 'desc' },
-        include: {
-          audioFile: true,
-          user: true,
-          genre: true,
-          tags: true,
-          coverFile: true,
-          likes: { include: { user: true } },
-          comments: true,
-        },
-      });
+      const [audios, reposts] = await Promise.all([
+        this.audioRepository.findAll({
+          orderBy: { createdAt: 'desc' },
+          include: {
+            audioFile: true,
+            user: true,
+            genre: true,
+            tags: true,
+            coverFile: true,
+            likes: { include: { user: true } },
+            reposts: true,
+            comments: true,
+          },
+        }),
+        // Only fetch reposts if showRepost is true
+        params.showRepost
+          ? this.repostRepository.findAll({
+              include: {
+                user: true,
+                audio: {
+                  include: {
+                    audioFile: true,
+                    user: true,
+                    genre: true,
+                    tags: true,
+                    coverFile: true,
+                    likes: { include: { user: true } },
+                    reposts: true,
+                    comments: true,
+                  },
+                },
+              },
+            })
+          : Promise.resolve([]),
+      ]);
 
-      const enrichedAudios = audios.map((audio) => ({
-        ...audio,
-        streamUrl: `/api/audio/stream/${audio.id}`,
+      const audioFeed = audios.map((audio) => ({
+        id: audio.id,
+        type: 'audio',
+        createdAt: audio.createdAt,
+        user: audio.user,
+        audio: {
+          ...audio,
+          streamUrl: `/api/audio/stream/${audio.id}`,
+        },
       }));
+
+      const repostFeed = reposts.map((repost) => ({
+        id: repost.id,
+        type: 'repost',
+        createdAt: repost.createdAt,
+        user: repost.user,
+        audio: {
+          ...repost.audio,
+          streamUrl: `/api/audio/stream/${repost.audio.id}`,
+        },
+      }));
+
+      // Only include reposts in the merged feed if showRepost is true
+      const mergedFeed = params.showRepost
+        ? [...audioFeed, ...repostFeed].sort(
+            (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
+          )
+        : audioFeed.sort(
+            (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
+          );
 
       return {
         success: true,
         message: '',
-        data: enrichedAudios,
+        data: mergedFeed,
       };
-    } catch {
+    } catch (error) {
+      this.logger.log(JSON.stringify(error));
       throw new InternalServerErrorException('');
     }
   }
@@ -201,6 +253,7 @@ export class AudioService {
           genre: true,
           likes: { include: { user: true } },
           comments: true,
+          reposts: true,
           _count: true,
         },
       });

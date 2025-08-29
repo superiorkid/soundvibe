@@ -6,14 +6,25 @@ import { TAudio } from "@/types/audio.type";
 import { TLike } from "@/types/like.type";
 import { TUser } from "@/types/user.type";
 
-export async function findAllAudio() {
+export async function findAllAudio(params: { showRepost: boolean }) {
+  const { showRepost } = params;
   const axiosInstance = await getAxios();
 
   try {
-    const response = await axiosInstance.get("/api/audio");
-    return response.data as TApiResponse<TAudio[]>;
+    const response = await axiosInstance.get("/api/audio", {
+      params: { showRepost },
+    });
+    return response.data as TApiResponse<
+      {
+        id: string;
+        type: "audio" | "repost";
+        createdAt: Date;
+        user: TUser;
+        audio: TAudio;
+      }[]
+    >;
   } catch (error) {
-    console.error("Failed to fetch audio:", error);
+    console.error("Failed to fetch audios:", error);
     throw new Error("Failed to get audios");
   }
 }

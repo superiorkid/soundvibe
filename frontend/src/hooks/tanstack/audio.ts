@@ -18,10 +18,10 @@ import { toast } from "sonner";
 
 const queryClient = getQueryClient();
 
-export function useAudio() {
+export function useAudio(params: { showRepost: boolean }) {
   const { data: audios, isPending } = useQuery({
-    queryKey: audioKeys.all,
-    queryFn: async () => findAllAudio(),
+    queryKey: audioKeys.audioWithRepost(params.showRepost),
+    queryFn: async () => findAllAudio({ showRepost: params.showRepost }),
   });
 
   return { audios, isPending };
