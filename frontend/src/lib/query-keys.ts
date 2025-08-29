@@ -6,6 +6,7 @@ export const authKeys = {
 
 export const audioKeys = {
   all: ["audio"] as const,
+  audioWithRepost: (showRepost: boolean) => [...audioKeys.all, { showRepost }],
   detailById: (audioId: string) => [...audioKeys.all, { audioId }],
   detailBySlug: (slug: string) => [...audioKeys.all, { slug }],
   recentLiked: (limit: number) => [...audioKeys.all, { limit }],

@@ -6,9 +6,15 @@ import { useAudio } from "@/hooks/tanstack/audio";
 import { cn } from "@/lib/utils";
 import { Loader2Icon, MusicIcon } from "lucide-react";
 import Link from "next/link";
+import { parseAsBoolean, useQueryState } from "nuqs";
 
 const AudioList = () => {
-  const { audios, isPending } = useAudio();
+  const [showRepost] = useQueryState(
+    "showRepost",
+    parseAsBoolean.withDefault(true)
+  );
+
+  const { audios, isPending } = useAudio({ showRepost });
 
   if (isPending) {
     return (
@@ -45,7 +51,11 @@ const AudioList = () => {
   return (
     <div className="space-y-6">
       {audios.data.map((audio, index) => (
-        <TrackCard key={audio.id || index} audio={audio} />
+        <TrackCard
+          key={audio.id || index}
+          audio={audio.audio}
+          type={audio.type}
+        />
       ))}
     </div>
   );

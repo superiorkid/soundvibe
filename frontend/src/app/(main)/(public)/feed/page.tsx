@@ -1,18 +1,26 @@
 import PageTitle from "@/components/page-title";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 import { getQueryClient } from "@/lib/query-client";
+import { audioKeys } from "@/lib/query-keys";
 import { findAllAudio } from "@/server/audio";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import AudioList from "../_components/audio-list";
-import { audioKeys } from "@/lib/query-keys";
+import RepostToggleSwitcher from "./_components/repost-toggle-switcher";
+import { Suspense } from "react";
 
-const FeedPage = async () => {
+interface FeedPageProps {
+  searchParams: Promise<{ showRepost?: string }>;
+}
+
+const FeedPage = async ({ searchParams }: FeedPageProps) => {
+  const params = await searchParams;
+  const showRepost =
+    params.showRepost === undefined ? true : params.showRepost !== "false";
+
   const queryClient = getQueryClient();
 
   await queryClient.prefetchQuery({
-    queryKey: audioKeys.all,
-    queryFn: async () => findAllAudio(),
+    queryKey: audioKeys.audioWithRepost(showRepost),
+    queryFn: async () => findAllAudio({ showRepost }),
   });
 
   return (
@@ -22,12 +30,9 @@ const FeedPage = async () => {
           <PageTitle className="2xl:text-2xl font-semibold text-xl tracking-tight">
             Hear the latest posts from the people you&apos;re following
           </PageTitle>
-          <div className="flex gap-1 items-center">
-            <Label className="text-base font-medium text-muted-foreground">
-              Reposts
-            </Label>
-            <Switch />
-          </div>
+          <Suspense>
+            <RepostToggleSwitcher />
+          </Suspense>
         </div>
 
         <AudioList />

@@ -1,6 +1,7 @@
 "use client";
 
 import CommentInput from "@/components/comment-input";
+import RepostButton from "@/components/repost-button";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { useLike } from "@/hooks/tanstack/audio";
@@ -13,7 +14,6 @@ import {
   HeartIcon,
   MessageSquareTextIcon,
   PlayIcon,
-  Repeat2Icon,
   UploadIcon,
 } from "lucide-react";
 
@@ -49,7 +49,10 @@ export function PlayerActions({
             variant="secondary"
             size="sm"
             disabled={isPending}
-            className={cn("hover:cursor-pointer", hasLiked && "text-red-500")}
+            className={cn(
+              "hover:cursor-pointer hover:opacity-50",
+              hasLiked && "text-red-500"
+            )}
             onClick={() => toggleLikeMutation()}
           >
             <HeartIcon
@@ -62,10 +65,7 @@ export function PlayerActions({
               {hasLiked ? "Dislike" : "Like"} Track
             </span>
           </Button>
-          <Button variant="secondary" size="sm">
-            <Repeat2Icon strokeWidth={2} size={16} className="mr-1" />
-            47
-          </Button>
+          <RepostButton audio={audio} userId={session?.user.id as string} />
           <Button variant="secondary" size="icon">
             <UploadIcon strokeWidth={2} size={16} />
           </Button>

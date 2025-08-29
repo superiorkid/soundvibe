@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { useAudio } from "@/context/audio-context";
 import { TAudio } from "@/types/audio.type";
 import { formatDistance } from "date-fns";
-import { PauseIcon, PlayIcon } from "lucide-react";
+import { PauseIcon, PlayIcon, Repeat2Icon } from "lucide-react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
@@ -19,9 +19,10 @@ const TrackVisualizer = dynamic(() => import("./track-visualizer"), {
 
 interface TrackCardProps {
   audio: TAudio;
+  type: "audio" | "repost";
 }
 
-const TrackCard = ({ audio }: TrackCardProps) => {
+const TrackCard = ({ audio, type }: TrackCardProps) => {
   const { currentTrack, isPlaying, playTrack, togglePlay } = useAudio();
 
   const isThisTrackPlaying =
@@ -52,7 +53,18 @@ const TrackCard = ({ audio }: TrackCardProps) => {
             </span>
           </UserTooltip>
           <span className="text-muted-foreground">
-            Posted a track{" "}
+            {type === "audio" ? (
+              "Posted"
+            ) : (
+              <span className="">
+                <Repeat2Icon
+                  size={16}
+                  className="inline-flex self-center mr-1"
+                />
+                Reposted
+              </span>
+            )}{" "}
+            a track{" "}
             {formatDistance(new Date(audio.createdAt), new Date(), {
               addSuffix: true,
             })}
