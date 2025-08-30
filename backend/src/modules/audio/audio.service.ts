@@ -488,14 +488,6 @@ export class AudioService {
     }
   }
 
-  async repostAudio() {
-    // Implement repost functionality
-  }
-
-  async undoRepostAudio() {
-    // Implement undo repost functionality
-  }
-
   async incrementPlay(audioId: string, userId: string) {
     const audioExist = await this.audioRepository.exists({ id: audioId });
     if (!audioExist)

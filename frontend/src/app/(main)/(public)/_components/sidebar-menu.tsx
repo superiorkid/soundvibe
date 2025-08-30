@@ -88,7 +88,7 @@ const SidebarMenu = () => {
       </div>
 
       <LikedTracksPanel />
-      <ListeningHistoryPanel />
+      <ListeningHistoryPanel userId={session.user.id} />
     </>
   );
 };

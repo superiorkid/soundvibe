@@ -31,3 +31,12 @@ export const commentKeys = {
     { audioId, ...(filter && { filter }) },
   ],
 };
+
+export const listeningHistoryKeys = {
+  all: ["listening-history"] as const,
+  audioWithLimit: (params: {
+    take?: number;
+    userId: string;
+    query?: string;
+  }) => [...listeningHistoryKeys.all, params],
+};

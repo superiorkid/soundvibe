@@ -1,6 +1,7 @@
 "use client";
 
 import { useIncrementPlay } from "@/hooks/tanstack/audio";
+import { useSetListeningHistory } from "@/hooks/tanstack/listening-history";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { TAudio } from "@/types/audio.type";
 import React, {
@@ -41,6 +42,8 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
 
   // local flag for preventing multiple play counts
   const hasCountedRef = useRef(false);
+
+  const { setListeningHistoryMutation } = useSetListeningHistory();
 
   const setCurrentTime = (time: number) => {
     _setCurrentTime(Math.max(0, Math.min(time, duration || 0)));
@@ -112,6 +115,8 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
     audioRef.current.play();
     setIsPlaying(true);
     setLastTrack(JSON.stringify(track));
+
+    setListeningHistoryMutation(track.id);
   };
 
   const togglePlay = () => {

@@ -13,6 +13,7 @@ import { DatabaseService } from './shared/database/database.service';
 import { FileUploadModule } from './shared/file-upload/file-upload.module';
 import { CommentModule } from './modules/comment/comment.module';
 import { RepostModule } from './modules/repost/repost.module';
+import { ListeningHistoryModule } from './modules/listening-history/listening-history.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { RepostModule } from './modules/repost/repost.module';
     GenreModule,
     CommentModule,
     RepostModule,
+    ListeningHistoryModule,
   ],
   providers: [
     {

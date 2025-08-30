@@ -3,6 +3,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
+import UserTooltip from "@/components/user-tooltip";
 import { useAudio } from "@/context/audio-context";
 import { TAudio } from "@/types/audio.type";
 import { formatDistance } from "date-fns";
@@ -11,7 +12,6 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 import { PlayerActions } from "./player-actions";
-import UserTooltip from "@/components/user-tooltip";
 
 const TrackVisualizer = dynamic(() => import("./track-visualizer"), {
   ssr: false,
@@ -20,9 +20,16 @@ const TrackVisualizer = dynamic(() => import("./track-visualizer"), {
 interface TrackCardProps {
   audio: TAudio;
   type?: "audio" | "repost";
+  showActionText?: boolean;
+  repostedAt?: Date;
 }
 
-const TrackCard = ({ audio, type = "audio" }: TrackCardProps) => {
+const TrackCard = ({
+  audio,
+  type = "audio",
+  showActionText = true,
+  repostedAt,
+}: TrackCardProps) => {
   const { currentTrack, isPlaying, playTrack, togglePlay } = useAudio();
 
   const isThisTrackPlaying =
@@ -52,23 +59,31 @@ const TrackCard = ({ audio, type = "audio" }: TrackCardProps) => {
               {audio.user.name}
             </span>
           </UserTooltip>
-          <span className="text-muted-foreground">
-            {type === "audio" ? (
-              "Posted"
-            ) : (
-              <span className="">
-                <Repeat2Icon
-                  size={16}
-                  className="inline-flex self-center mr-1"
-                />
-                Reposted
-              </span>
-            )}{" "}
-            a track{" "}
-            {formatDistance(new Date(audio.createdAt), new Date(), {
-              addSuffix: true,
-            })}
-          </span>
+          {showActionText && (
+            <span className="text-muted-foreground">
+              {type === "audio" ? (
+                "Posted"
+              ) : (
+                <span className="">
+                  <Repeat2Icon
+                    size={16}
+                    className="inline-flex self-center mr-1"
+                  />
+                  Reposted
+                </span>
+              )}{" "}
+              a track{" "}
+              {formatDistance(
+                new Date(
+                  type === "audio"
+                    ? audio.createdAt
+                    : repostedAt ?? audio.createdAt
+                ),
+                new Date(),
+                { addSuffix: true }
+              )}
+            </span>
+          )}
         </Label>
       </div>
       <div className="flex space-x-5">

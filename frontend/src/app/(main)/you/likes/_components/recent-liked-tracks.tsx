@@ -38,7 +38,11 @@ const RecentLikedTracks = () => {
   return (
     <div className="space-y-8 mt-6">
       {likedTracks?.data?.recent.map((track, index) => (
-        <TrackCard key={index} audio={track.audio as TAudio} />
+        <TrackCard
+          key={index}
+          audio={track.audio as TAudio}
+          showActionText={false}
+        />
       ))}
     </div>
   );

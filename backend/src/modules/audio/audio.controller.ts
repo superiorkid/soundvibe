@@ -162,16 +162,6 @@ export class AudioController {
     return this.audioService.unlikeAudio({ audioId: id, userId });
   }
 
-  @Post(':id/repost')
-  async repostAudio() {
-    return this.audioService.repostAudio();
-  }
-
-  @Delete(':id/repost')
-  async undoRepostAudio() {
-    return this.audioService.undoRepostAudio();
-  }
-
   @Post(':id/play')
   async incrementPlay(
     @Param('id') id: string,
