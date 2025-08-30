@@ -13,8 +13,8 @@ const YourLikesPage = async () => {
   const queryClient = getQueryClient();
 
   await queryClient.prefetchQuery({
-    queryKey: audioKeys.recentLiked(25),
-    queryFn: async () => recentLike(25),
+    queryKey: audioKeys.recentLiked({ limit: 25 }),
+    queryFn: async () => recentLike({ limit: 25 }),
   });
 
   return (

@@ -9,7 +9,7 @@ import TrackCardMini from "./track-card-mini";
 import { TAudio } from "@/types/audio.type";
 
 const LikedTracksPanel = () => {
-  const { likedTracks, isPending } = useRecentLiked(3);
+  const { likedTracks, isPending } = useRecentLiked({ limit: 3 });
   const total = likedTracks?.data?.total || 0;
 
   if (isPending) {
