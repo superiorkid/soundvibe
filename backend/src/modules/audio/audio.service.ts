@@ -13,12 +13,12 @@ import path, { join } from 'node:path';
 import slugify from 'slugify';
 import { DatabaseService } from 'src/shared/database/database.service';
 import { FileUploadService } from 'src/shared/file-upload/file-upload.service';
+import { RepostRepository } from '../repost/repost.repository';
 import { UsersRepository } from '../users/users.repository';
 import { AudioPlaysRepository } from './audio-plays.repository';
 import { AudioRepository } from './audio.repository';
 import { UploadAudioDTO } from './dto/upload-audio.dto';
 import { LikeRepository } from './like.repository';
-import { RepostRepository } from '../repost/repost.repository';
 
 @Injectable()
 export class AudioService {
@@ -439,13 +439,29 @@ export class AudioService {
     }
   }
 
-  async getRecentLikedTracks(params: { userId: string; limit: number }) {
-    const { userId, limit } = params;
+  async getRecentLikedTracks(params: {
+    userId: string;
+    limit: number;
+    query?: string;
+  }) {
+    const { userId, limit, query } = params;
 
     try {
       const [recentLiked, total] = await Promise.all([
         this.likeRepository.findAll({
-          where: { userId },
+          where: {
+            userId,
+            ...(query
+              ? {
+                  audio: {
+                    OR: [
+                      { title: { contains: query, mode: 'insensitive' } },
+                      { artist: { contains: query, mode: 'insensitive' } },
+                    ],
+                  },
+                }
+              : {}),
+          },
           take: limit,
           orderBy: { createdAt: 'desc' },
           include: {
@@ -486,14 +502,6 @@ export class AudioService {
         'Failed to retrieve recent liked tracks.',
       );
     }
-  }
-
-  async repostAudio() {
-    // Implement repost functionality
-  }
-
-  async undoRepostAudio() {
-    // Implement undo repost functionality
   }
 
   async incrementPlay(audioId: string, userId: string) {

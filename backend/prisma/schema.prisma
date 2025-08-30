@@ -26,12 +26,13 @@ model User {
   audios        Audio[]
   likedTracks   Like[]
 
-  username        String?
-  displayUsername String?
-  audioPlays      AudioPlay[]
-  comments        Comment[]
-  commentLikes    CommentLike[]
-  reposts         Repost[]
+  username           String?
+  displayUsername    String?
+  audioPlays         AudioPlay[]
+  comments           Comment[]
+  commentLikes       CommentLike[]
+  reposts            Repost[]
+  listeningHistories ListeningHistory[]
 
   @@unique([email])
   @@unique([username])
@@ -111,29 +112,30 @@ model Genre {
 }
 
 model Audio {
-  id            String      @id @default(cuid())
-  artist        String?
-  title         String
-  slug          String      @unique
-  description   String?     @db.Text
-  duration      Int         @default(0)
-  userId        String      @map("user_id")
-  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  tags          Tag[]
-  genreId       String      @map("genre_id")
-  genre         Genre       @relation(fields: [genreId], references: [id])
-  audioFile     AudioFile?
-  coverFile     CoverFile?
-  likes         Like[]
-  likesCount    Int         @default(0) @map("likes_count")
-  playsCount    Int         @default(0) @map("plays_count")
-  createdAt     DateTime    @default(now()) @map("created_at")
-  updatedAt     DateTime    @updatedAt @map("updated_at")
-  audioPlays    AudioPlay[]
-  commentsCount Int         @default(0)
-  comments      Comment[]
-  repostsCount  Int         @default(0)
-  reposts       Repost[]
+  id                 String             @id @default(cuid())
+  artist             String?
+  title              String
+  slug               String             @unique
+  description        String?            @db.Text
+  duration           Int                @default(0)
+  userId             String             @map("user_id")
+  user               User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tags               Tag[]
+  genreId            String             @map("genre_id")
+  genre              Genre              @relation(fields: [genreId], references: [id])
+  audioFile          AudioFile?
+  coverFile          CoverFile?
+  likes              Like[]
+  likesCount         Int                @default(0) @map("likes_count")
+  playsCount         Int                @default(0) @map("plays_count")
+  createdAt          DateTime           @default(now()) @map("created_at")
+  updatedAt          DateTime           @updatedAt @map("updated_at")
+  audioPlays         AudioPlay[]
+  commentsCount      Int                @default(0)
+  comments           Comment[]
+  repostsCount       Int                @default(0)
+  reposts            Repost[]
+  listeningHistories ListeningHistory[]
 
   @@index([duration, slug, likesCount])
   @@map("audio")
@@ -233,4 +235,16 @@ model Repost {
 
   @@unique([userId, audioId])
   @@map("repost")
+}
+
+model ListeningHistory {
+  userId     String   @map("user_id")
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  audioId    String   @map("audio_id")
+  audio      Audio    @relation(fields: [audioId], references: [id], onDelete: Cascade)
+  listenedAt DateTime @default(now()) @map("listened_at")
+
+  @@id([userId, audioId])
+  @@index([listenedAt, userId])
+  @@map("listening_history")
 }

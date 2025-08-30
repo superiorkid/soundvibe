@@ -99,11 +99,11 @@ const TrackCardMini = ({ audio }: TrackCardMiniProps) => {
           </Link>
           <button className="flex items-center gap-0.5">
             <Repeat2Icon size={14} strokeWidth={3} />
-            12.2K
+            {audio.repostsCount > 0 && audio.repostsCount}
           </button>
           <button className="flex items-center gap-0.5">
             <MessageSquareTextIcon size={12} strokeWidth={3} />
-            502
+            {audio.commentsCount > 0 && audio.commentsCount}
           </button>
         </div>
       </div>

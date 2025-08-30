@@ -79,10 +79,11 @@ export class AudioController {
   @Get('liked/recent')
   async recentLikedTracks(
     @Query('limit') limit: number,
+    @Query('query') query: string,
     @Session() session: UserSession,
   ) {
     const userId = session.user.id;
-    return this.audioService.getRecentLikedTracks({ userId, limit });
+    return this.audioService.getRecentLikedTracks({ userId, limit, query });
   }
 
   @Get('slug/:slug')
@@ -160,16 +161,6 @@ export class AudioController {
   async unlikeAudio(@Param('id') id: string, @Session() session: UserSession) {
     const userId = session.user.id;
     return this.audioService.unlikeAudio({ audioId: id, userId });
-  }
-
-  @Post(':id/repost')
-  async repostAudio() {
-    return this.audioService.repostAudio();
-  }
-
-  @Delete(':id/repost')
-  async undoRepostAudio() {
-    return this.audioService.undoRepostAudio();
   }
 
   @Post(':id/play')

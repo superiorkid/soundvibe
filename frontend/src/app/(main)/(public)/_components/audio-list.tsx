@@ -55,6 +55,7 @@ const AudioList = () => {
           key={audio.id || index}
           audio={audio.audio}
           type={audio.type}
+          repostedAt={audio.createdAt}
         />
       ))}
     </div>

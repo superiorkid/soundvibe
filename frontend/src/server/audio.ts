@@ -81,12 +81,13 @@ export async function unlikeAudio(audioId: string) {
   }
 }
 
-export async function recentLike(limit: number) {
+export async function recentLike(params: { limit: number; query?: string }) {
+  const { limit, query } = params;
   const axiosInstance = await getAxios();
 
   try {
     const response = await axiosInstance.get("/api/audio/liked/recent", {
-      params: { limit },
+      params: { limit, query },
     });
     return response.data as TApiResponse<{ total: number; recent: TLike[] }>;
   } catch (error) {
