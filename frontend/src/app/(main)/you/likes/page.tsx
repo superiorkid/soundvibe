@@ -6,6 +6,8 @@ import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { Suspense } from "react";
 import TrackViewControl from "./_components/track-view-control";
 import RecentLikedTracks from "./_components/recent-liked-tracks";
+import LikesFilterInput from "./_components/likes-filter-input";
+import { LikesFilterContextProvider } from "@/context/likes-filter-context";
 
 const YourLikesPage = async () => {
   const queryClient = getQueryClient();
@@ -17,23 +19,22 @@ const YourLikesPage = async () => {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <div className="flex justify-between items-center">
-        <h2 className="font-medium text-lg">
-          Hear the tracks you&quot;ve liked:
-        </h2>
-        <div className="flex gap-6 items-center">
-          <Suspense>
-            <TrackViewControl />
-          </Suspense>
-          <Input
-            placeholder="Filter"
-            className="h-8 rounded-sm border shadow-none w-[271px]"
-          />
+      <LikesFilterContextProvider>
+        <div className="flex justify-between items-center">
+          <h2 className="font-medium text-lg">
+            Hear the tracks you&quot;ve liked:
+          </h2>
+          <div className="flex gap-6 items-center">
+            <Suspense>
+              <TrackViewControl />
+            </Suspense>
+            <LikesFilterInput />
+          </div>
         </div>
-      </div>
-      <Suspense>
-        <RecentLikedTracks />
-      </Suspense>
+        <Suspense>
+          <RecentLikedTracks />
+        </Suspense>
+      </LikesFilterContextProvider>
     </HydrationBoundary>
   );
 };

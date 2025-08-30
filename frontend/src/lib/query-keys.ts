@@ -9,7 +9,10 @@ export const audioKeys = {
   audioWithRepost: (showRepost: boolean) => [...audioKeys.all, { showRepost }],
   detailById: (audioId: string) => [...audioKeys.all, { audioId }],
   detailBySlug: (slug: string) => [...audioKeys.all, { slug }],
-  recentLiked: (limit: number) => [...audioKeys.all, { limit }],
+  recentLiked: (params: { limit: number; query?: string }) => [
+    ...audioKeys.all,
+    params,
+  ],
   usersLikesAudio: (params: { slug: string; limit: number }) => [
     ...audioKeys.all,
     { ...params, mode: "users-who-likes-audio" },

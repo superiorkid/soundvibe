@@ -79,10 +79,11 @@ export class AudioController {
   @Get('liked/recent')
   async recentLikedTracks(
     @Query('limit') limit: number,
+    @Query('query') query: string,
     @Session() session: UserSession,
   ) {
     const userId = session.user.id;
-    return this.audioService.getRecentLikedTracks({ userId, limit });
+    return this.audioService.getRecentLikedTracks({ userId, limit, query });
   }
 
   @Get('slug/:slug')
