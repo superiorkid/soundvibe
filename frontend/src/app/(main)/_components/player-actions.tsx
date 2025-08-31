@@ -1,7 +1,7 @@
 "use client";
 
 import CommentInput from "@/components/comment-input";
-import RepostButton from "@/components/repost-button";
+import { RepostAction } from "@/components/repost-button";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { useLike } from "@/hooks/tanstack/audio";
@@ -9,13 +9,16 @@ import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 import { TAudio } from "@/types/audio.type";
 import {
+  CheckIcon,
   CopyIcon,
   EllipsisIcon,
   HeartIcon,
   MessageSquareTextIcon,
   PlayIcon,
+  Repeat2Icon,
   UploadIcon,
 } from "lucide-react";
+import CopyAudioLink from "./copy-audio-link";
 
 type PlayerActionsProps = {
   showComment?: boolean;
@@ -65,13 +68,46 @@ export function PlayerActions({
               {hasLiked ? "Dislike" : "Like"} Track
             </span>
           </Button>
-          <RepostButton audio={audio} userId={session?.user.id as string} />
+          <RepostAction audio={audio} userId={session?.user.id as string}>
+            {({ hasReposted, isPending, toggleRepost }) => (
+              <Button
+                variant="secondary"
+                onClick={toggleRepost}
+                disabled={isPending}
+                className="flex items-center gap-1 hover:opacity-50 hover:cursor-pointer"
+              >
+                <Repeat2Icon
+                  strokeWidth={2}
+                  size={16}
+                  className={cn(hasReposted && "stroke-rose-500")}
+                />
+                {audio.repostsCount > 0 && (
+                  <span className={cn(hasReposted && "text-rose-500")}>
+                    {audio.repostsCount}
+                  </span>
+                )}
+              </Button>
+            )}
+          </RepostAction>
           <Button variant="secondary" size="icon">
             <UploadIcon strokeWidth={2} size={16} />
           </Button>
-          <Button variant="secondary" size="sm">
-            <CopyIcon strokeWidth={2} size={16} />
-          </Button>
+          <CopyAudioLink url={audio.streamUrl ?? ""}>
+            {({ onClick, copied }) => (
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={onClick}
+                className="hover:cursor-pointer"
+              >
+                {copied ? (
+                  <CheckIcon strokeWidth={2} size={16} />
+                ) : (
+                  <CopyIcon strokeWidth={2} size={16} />
+                )}
+              </Button>
+            )}
+          </CopyAudioLink>
           <Button variant="secondary" size="sm">
             <EllipsisIcon strokeWidth={2} size={16} />
           </Button>

@@ -24,7 +24,7 @@ const ListeningHistoryPanel = ({ userId }: ListeningHistoryPanelProps) => {
 
   if (isError) {
     return (
-      <div className="p-4">
+      <div className="">
         <h1 className="font-semibold uppercase text-xs">listening history</h1>
         <p className="text-error text-sm mt-2">
           Failed to load listening history. Please try again later.
@@ -36,7 +36,7 @@ const ListeningHistoryPanel = ({ userId }: ListeningHistoryPanelProps) => {
   const history = data?.data || [];
 
   return (
-    <div className="space-y-2 p-4">
+    <div className="space-y-2">
       <div className="flex justify-between items-center">
         <h1 className="font-semibold uppercase text-xs">listening history</h1>
         <Link

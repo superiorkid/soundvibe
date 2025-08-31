@@ -8,11 +8,6 @@ export function useMainMenu() {
   const menus = useMemo<TMenu[]>(
     () => [
       {
-        href: "/discover",
-        label: "Home",
-        isActive: pathname === "/discover",
-      },
-      {
         href: "/feed",
         label: "Feed",
         isActive: pathname === "/feed",

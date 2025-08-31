@@ -6,8 +6,12 @@ import { useMutation } from "@tanstack/react-query";
 
 const queryClient = getQueryClient();
 
-export function useRepost(params: { audio: TAudio; userId: string }) {
-  const { audio, userId } = params;
+export function useRepost(params: {
+  audio: TAudio;
+  userId: string;
+  onSuccess?: () => void;
+}) {
+  const { audio, userId, onSuccess } = params;
 
   const hasReposted = !!audio.reposts.some(
     (repost) => repost.userId === userId
@@ -68,6 +72,9 @@ export function useRepost(params: { audio: TAudio; userId: string }) {
       queryClient.invalidateQueries({
         queryKey: audioKeys.all,
       });
+    },
+    onSuccess: () => {
+      onSuccess?.();
     },
   });
 

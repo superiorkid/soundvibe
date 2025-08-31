@@ -17,8 +17,7 @@ const AuthCard = () => {
   const [callback] = useQueryState("callback");
 
   const handleSocialLogin = async (provider: "github" | "google") => {
-    const callbackUrl =
-      callback && callback.trim().length > 0 ? callback : "/discover";
+    const callbackUrl = callback && callback.trim().length > 0 ? callback : "/";
 
     await authClient.signIn.social({
       provider,

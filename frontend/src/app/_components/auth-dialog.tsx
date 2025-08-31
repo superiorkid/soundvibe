@@ -28,7 +28,7 @@ const AuthDialog = ({ children }: AuthDialogProps) => {
   const handleSocialLogin = async (provider: "github" | "google") => {
     await authClient.signIn.social({
       provider,
-      callbackURL: `${process.env.NEXT_PUBLIC_FRONTEND_URL}/discover`,
+      callbackURL: `${process.env.NEXT_PUBLIC_FRONTEND_URL}/feed`,
     });
   };
 

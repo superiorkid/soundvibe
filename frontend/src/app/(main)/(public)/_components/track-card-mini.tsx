@@ -1,14 +1,7 @@
-"use client";
-
-import { Button } from "@/components/ui/button";
 import UserTooltip from "@/components/user-tooltip";
-import { useLike } from "@/hooks/tanstack/audio";
-import { authClient } from "@/lib/auth-client";
-import { cn } from "@/lib/utils";
 import { TAudio } from "@/types/audio.type";
 import { TUser } from "@/types/user.type";
 import {
-  EllipsisIcon,
   HeartIcon,
   MessageSquareTextIcon,
   PlayIcon,
@@ -16,18 +9,13 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import TrackActionsMini from "./track-actions-mini";
 
 interface TrackCardMiniProps {
   audio: TAudio;
 }
 
 const TrackCardMini = ({ audio }: TrackCardMiniProps) => {
-  const { data: session } = authClient.useSession();
-  const { hasLiked, toggleLikeMutation } = useLike(
-    audio,
-    session?.user.id as string
-  );
-
   return (
     <div className="flex gap-3 group relative">
       <div className="size-14 relative shrink-0">
@@ -108,29 +96,7 @@ const TrackCardMini = ({ audio }: TrackCardMiniProps) => {
         </div>
       </div>
 
-      <div className="absolute right-0 top-1/2 -translate-y-1/2 flex gap-1 items-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-        <Button
-          size="sm"
-          variant="secondary"
-          className="hover:cursor-pointer"
-          onClick={() => toggleLikeMutation()}
-        >
-          <HeartIcon
-            size={14}
-            className={cn(
-              "fill-foreground stroke-foreground",
-              hasLiked && "fill-red-500 stroke-red-500"
-            )}
-          />
-        </Button>
-        <Button size="sm" variant="secondary" className="hover:cursor-pointer">
-          <EllipsisIcon
-            size={14}
-            strokeWidth={2}
-            className={cn("fill-foreground stroke-foreground")}
-          />
-        </Button>
-      </div>
+      <TrackActionsMini audio={audio} />
     </div>
   );
 };

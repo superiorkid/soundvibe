@@ -23,13 +23,13 @@ const UploadPage = async () => {
       <header className="fixed left-0 top-0 flex w-full justify-between px-12 bg-background items-center h-16 z-50">
         <AppBrand>
           <AppBrand.Icon size={25} strokeWidth={2.5} />
-          <AppBrand.Link href="/discover" className="text-xl">
+          <AppBrand.Link href="/feed" className="text-xl">
             Upload
           </AppBrand.Link>
         </AppBrand>
         <div>
           <Link
-            href="/discover"
+            href="/feed"
             className={cn(
               buttonVariants({
                 className: "rounded-full",
