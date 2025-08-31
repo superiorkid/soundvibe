@@ -12,13 +12,7 @@ import { useLike } from "@/hooks/tanstack/audio";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 import { TAudio } from "@/types/audio.type";
-import {
-  CheckIcon,
-  CopyIcon,
-  EllipsisIcon,
-  HeartIcon,
-  Repeat2Icon,
-} from "lucide-react";
+import { CopyIcon, EllipsisIcon, HeartIcon, Repeat2Icon } from "lucide-react";
 import { useState } from "react";
 import CopyAudioLink from "../../_components/copy-audio-link";
 
@@ -104,26 +98,20 @@ const TrackActionsMini = ({ audio }: TrackActionsMiniProps) => {
           <DropdownMenuItem>Share</DropdownMenuItem>
           <DropdownMenuItem asChild>
             <CopyAudioLink
-              url={audio.streamUrl ?? ""}
+              url={`${process.env.NEXT_PUBLIC_FRONTEND_URL}/${audio.user.displayUsername}/${audio.slug}`}
               onSuccess={() => {
                 setMenuOpen(false);
               }}
             >
-              {({ onClick, copied }) => (
+              {({ onClick }) => (
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={onClick}
                   className="hover:cursor-pointer w-full"
                 >
-                  {copied ? (
-                    <CheckIcon strokeWidth={2} size={16} />
-                  ) : (
-                    <>
-                      <CopyIcon strokeWidth={2} size={16} />
-                      Copy Link
-                    </>
-                  )}
+                  <CopyIcon strokeWidth={2} size={16} />
+                  Copy Link
                 </Button>
               )}
             </CopyAudioLink>

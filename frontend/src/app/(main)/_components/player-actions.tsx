@@ -92,7 +92,9 @@ export function PlayerActions({
           <Button variant="secondary" size="icon">
             <UploadIcon strokeWidth={2} size={16} />
           </Button>
-          <CopyAudioLink url={audio.streamUrl ?? ""}>
+          <CopyAudioLink
+            url={`${process.env.NEXT_PUBLIC_FRONTEND_URL}/${audio.user.displayUsername}/${audio.slug}`}
+          >
             {({ onClick, copied }) => (
               <Button
                 variant="secondary"
