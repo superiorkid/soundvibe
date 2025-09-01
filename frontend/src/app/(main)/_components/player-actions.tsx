@@ -3,6 +3,7 @@
 import CommentInput from "@/components/comment-input";
 import { RepostAction } from "@/components/repost-button";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,6 +26,7 @@ import {
   UploadIcon,
 } from "lucide-react";
 import CopyAudioLink from "./copy-audio-link";
+import PlaylistOption from "./playlist-option";
 
 type PlayerActionsProps = {
   showComment?: boolean;
@@ -116,25 +118,33 @@ export function PlayerActions({
               </Button>
             )}
           </CopyAudioLink>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="secondary"
-                size="sm"
-                className="hover:cursor-pointer hover:opacity-50"
-              >
-                <EllipsisIcon strokeWidth={2} size={16} />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem className="hover:cursor-pointer">
-                Add to Next Up
-              </DropdownMenuItem>
-              <DropdownMenuItem className="hover:cursor-pointer">
-                Add to Playlist
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <Dialog>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  className="hover:cursor-pointer"
+                >
+                  <EllipsisIcon size="16" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem>Add to Next Up</DropdownMenuItem>
+                <DropdownMenuItem>
+                  <DialogTrigger className="hover:cursor-pointer">
+                    Add to Playlist
+                  </DialogTrigger>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <DialogContent
+              className="top-[8%] left-[50%] translate-x-[-50%] translate-y-[-0%] data-[state=open]:slide-in-from-top-90 data-[state=closed]:slide-out-to-top-90 duration-400 rounded-md min-w-[556px] p-4"
+              onInteractOutside={(event) => event.preventDefault()}
+            >
+              <PlaylistOption />
+            </DialogContent>
+          </Dialog>
         </div>
 
         <div className="flex space-x-3 items-center text-xs text-muted-foreground">

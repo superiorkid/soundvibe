@@ -252,11 +252,16 @@ model ListeningHistory {
   @@map("listening_history")
 }
 
+enum PlaylistTypeEnum {
+  PUBLIC
+  PRIVATE
+}
+
 model Playlist {
   id String @id @default(cuid())
   title String
-  description String? @db.Text
   slug String @unique
+  type PlaylistTypeEnum @default(PUBLIC)
   coverUrl String? @map("cover_url")
   userId String @map("user_id")
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)

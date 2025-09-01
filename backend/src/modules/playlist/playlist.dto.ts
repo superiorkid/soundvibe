@@ -21,16 +21,6 @@ export class PlaylistDTO {
   })
   title: string;
 
-  @IsString()
-  @IsOptional()
-  @MaxLength(500)
-  @ApiPropertyOptional({
-    description: 'Optional description of the playlist',
-    example: 'A collection of my all-time favorite tracks',
-    maxLength: 500,
-  })
-  description?: string;
-
   @IsFile()
   @IsOptional()
   @MaxFileSize(MAX_COVER_SIZE)
