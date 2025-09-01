@@ -3,6 +3,12 @@
 import CommentInput from "@/components/comment-input";
 import { RepostAction } from "@/components/repost-button";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Label } from "@/components/ui/label";
 import { useLike } from "@/hooks/tanstack/audio";
 import { authClient } from "@/lib/auth-client";
@@ -110,9 +116,25 @@ export function PlayerActions({
               </Button>
             )}
           </CopyAudioLink>
-          <Button variant="secondary" size="sm">
-            <EllipsisIcon strokeWidth={2} size={16} />
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="secondary"
+                size="sm"
+                className="hover:cursor-pointer hover:opacity-50"
+              >
+                <EllipsisIcon strokeWidth={2} size={16} />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem className="hover:cursor-pointer">
+                Add to Next Up
+              </DropdownMenuItem>
+              <DropdownMenuItem className="hover:cursor-pointer">
+                Add to Playlist
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         <div className="flex space-x-3 items-center text-xs text-muted-foreground">
