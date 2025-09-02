@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 const PUBLIC_ROUTES = ["/", "/signin", "/logout"];
-const AUTH_REDIRECT_ROUTES = ["/signin"];
+const AUTH_REDIRECT_ROUTES = ["/signin", "/"];
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -18,7 +18,10 @@ export function middleware(request: NextRequest) {
   }
 
   if (isAuthenticated && shouldRedirectAuthUser) {
-    return NextResponse.redirect(new URL("/", request.url));
+    if (pathname === "/") {
+      return NextResponse.redirect(new URL("/feed", request.url));
+    }
+    return NextResponse.redirect(new URL("/feed", request.url));
   }
 
   return NextResponse.next();

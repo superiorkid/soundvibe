@@ -1,5 +1,5 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
+import { ApiPropertyOptional } from '@nestjs/swagger';
+import { IsOptional } from 'class-validator';
 import {
   HasMimeType,
   IsFile,
@@ -10,17 +10,7 @@ import {
 export const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 export const MAX_COVER_SIZE = 3 * 1024 * 1024;
 
-export class PlaylistDTO {
-  @IsString()
-  @IsNotEmpty()
-  @MaxLength(100)
-  @ApiProperty({
-    description: 'The title of the playlist',
-    example: 'My Favorite Songs',
-    maxLength: 100,
-  })
-  title: string;
-
+export class UpdatePlaylistDTO {
   @IsFile()
   @IsOptional()
   @MaxFileSize(MAX_COVER_SIZE)

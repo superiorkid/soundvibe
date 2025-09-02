@@ -4,8 +4,13 @@ import { cn } from "@/lib/utils";
 import { useState } from "react";
 import AddToPlaylist from "./add-to-playlist";
 import CreatePlaylist from "./create-playlist";
+import { TAudio } from "@/types/audio.type";
 
-const PlaylistOption = () => {
+interface PlaylistOptionProps {
+  audio: TAudio;
+}
+
+const PlaylistOption = ({ audio }: PlaylistOptionProps) => {
   const [tabsActive, setTabsActive] = useState<
     "add-playlist" | "create-playlist"
   >("add-playlist");
@@ -40,7 +45,11 @@ const PlaylistOption = () => {
       </div>
 
       <div className="mt-2">
-        {tabsActive === "add-playlist" ? <AddToPlaylist /> : <CreatePlaylist />}
+        {tabsActive === "add-playlist" ? (
+          <AddToPlaylist audioId={audio.id} />
+        ) : (
+          <CreatePlaylist audio={audio} />
+        )}
       </div>
     </>
   );

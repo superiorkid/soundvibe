@@ -1,50 +1,97 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import Image from "next/image";
-import Link from "next/link";
+import { useCurrentUserPlaylist } from "@/hooks/tanstack/playlist";
+import { AlertCircleIcon, MusicIcon, RefreshCwIcon } from "lucide-react";
+import PlaylistCardMini from "./playlist-card-mini";
 
-const AddToPlaylist = () => {
+interface AddToPlaylistProps {
+  audioId: string;
+}
+
+const AddToPlaylist = ({ audioId }: AddToPlaylistProps) => {
+  const { playlists, isError, isPending, checkIfAudioExists } =
+    useCurrentUserPlaylist();
+
+  if (isPending) {
+    return (
+      <div className="space-y-4">
+        {Array.from({ length: 3 }).map((_, index) => (
+          <div
+            key={index}
+            className="flex justify-between items-center animate-pulse"
+          >
+            <div className="flex items-center gap-3">
+              <div className="relative size-12 bg-muted rounded-md"></div>
+              <div className="space-y-2">
+                <div className="h-4 w-32 bg-muted rounded"></div>
+                <div className="h-3 w-16 bg-muted rounded"></div>
+              </div>
+            </div>
+            <div className="h-8 w-28 bg-muted rounded-sm"></div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="flex flex-col items-center justify-center py-8 text-center">
+        <AlertCircleIcon className="h-12 w-12 text-destructive mb-4" />
+        <h3 className="text-lg font-semibold mb-2">Failed to load playlists</h3>
+        <p className="text-muted-foreground mb-2">
+          sSomething went wrong while loading your playlists.
+        </p>
+        <p className="text-sm text-muted-foreground mb-4">
+          Please try again later.
+        </p>
+        <Button
+          onClick={() => window.location.reload()}
+          variant="outline"
+          className="flex items-center gap-2"
+        >
+          <RefreshCwIcon className="h-4 w-4" />
+          Try Again
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <div>
       <Input
         placeholder="Filter playlist"
-        className="rounded-none border-primary h-8"
+        className="rounded-none border-primary h-8 mb-4"
+        disabled={(playlists?.data || []).length < 1}
       />
 
-      <div className="space-y-4 mt-8">
-        {Array.from({ length: 3 }).map((_, index) => (
-          <div key={index} className="flex justify-between items-center">
-            <div className="flex items-center gap-3">
-              <div className="relative size-12">
-                <Image
-                  fill
-                  src="https://images.unsplash.com/photo-1552058321-cdcc666cbfed?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                  alt="playlistn cover"
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  decoding="async"
-                  loading="lazy"
-                  className="object-cover"
-                />
-              </div>
-              <div className="space-y-0.5">
-                <Link href="#" className="text-sm font-semibold line-clamp-1">
-                  best remix
-                </Link>
-                <p className="text-sm text-muted-foreground">14</p>
-              </div>
-            </div>
-            <Button
-              size="sm"
-              className="rounded-sm text-sm font-semibold hover:cursor-pointer hover:opacity-50"
-              variant="secondary"
-            >
-              Add to playlist
-            </Button>
-          </div>
-        ))}
-      </div>
+      {playlists && (playlists.data || []).length > 0 ? (
+        <div className="space-y-4 mt-4">
+          {(playlists.data || []).map((playlist, index) => {
+            const audioExist = checkIfAudioExists(playlist.id, audioId);
+            return (
+              <PlaylistCardMini
+                key={index}
+                playlist={playlist}
+                isAudioExistInPlaylist={audioExist || false}
+                audioId={audioId}
+              />
+            );
+          })}
+        </div>
+      ) : (
+        <div className="flex flex-col items-center justify-center py-12 text-center">
+          <MusicIcon className="h-16 w-16 text-muted-foreground/60 mb-4" />
+          <h3 className="text-lg font-semibold mb-2">No playlists yet</h3>
+          <p className="text-muted-foreground mb-6 max-w-md">
+            You haven&apos;t created any playlists. Create your first playlist
+            to start organizing your favorite songs.
+          </p>
+        </div>
+      )}
     </div>
   );
 };
-
 export default AddToPlaylist;

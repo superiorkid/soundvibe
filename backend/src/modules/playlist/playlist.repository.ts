@@ -17,4 +17,11 @@ export class PlaylistRepository extends BaseRepository<
   constructor(prisma: DatabaseService) {
     super(prisma, prisma.playlist);
   }
+
+  async findOne<T extends Prisma.PlaylistFindFirstArgs>(
+    args: T,
+  ): Promise<Prisma.PlaylistGetPayload<T> | null> {
+    // @ts-expect-error - error
+    return await this.delegate.findFirst(args);
+  }
 }

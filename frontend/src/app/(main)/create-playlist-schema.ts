@@ -8,6 +8,7 @@ const playlistType = ["public", "private"] as const;
 export const createPlaylistSchema = z.object({
   title: z.string().min(1, { error: "playlist title is required" }),
   type: z.enum(playlistType),
+  audio: z.string().min(1, { error: "audio is required" }),
 });
 
 export const updatePlaylistSchema = z.object({

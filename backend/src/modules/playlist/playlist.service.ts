@@ -4,12 +4,13 @@ import {
   InternalServerErrorException,
   Logger,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
-import path from 'path';
 import slugify from 'slugify';
 import { DatabaseService } from 'src/shared/database/database.service';
 import { FileUploadService } from 'src/shared/file-upload/file-upload.service';
-import { PlaylistDTO } from './playlist.dto';
+import { CreatePlaylistDTO } from './dto/create-playlist.dto';
+import { PlaylistAudioRepository } from './playlist-audio.repository';
 import { PlaylistRepository } from './playlist.repository';
 
 @Injectable()
@@ -18,6 +19,7 @@ export class PlaylistService {
 
   constructor(
     private playlistRepository: PlaylistRepository,
+    private playlistAudioRepository: PlaylistAudioRepository,
     private fileUploadService: FileUploadService,
     private databaseService: DatabaseService,
   ) {}
@@ -29,6 +31,7 @@ export class PlaylistService {
         orderBy: { createdAt: 'desc' },
         include: {
           likes: true,
+          audios: true,
         },
       });
 
@@ -43,9 +46,12 @@ export class PlaylistService {
     }
   }
 
-  async createPlaylist(params: { playlistDto: PlaylistDTO; userId: string }) {
+  async createPlaylist(params: {
+    playlistDto: CreatePlaylistDTO;
+    userId: string;
+  }) {
     const { playlistDto, userId } = params;
-    const { title, cover, description } = playlistDto;
+    const { title, audio, type } = playlistDto;
 
     const slug = slugify(playlistDto.title);
 
@@ -55,34 +61,33 @@ export class PlaylistService {
     });
     if (playlistExist) throw new ConflictException('playlist already exist');
 
-    let savedPlaylistCover: string | null = null;
-    const playlistFoler = `${userId}/playlist/${slug}`;
+    // let savedPlaylistCover: string | null = null;
+    // const playlistFoler = `${userId}/playlist/${slug}`;
 
     try {
-      return await this.databaseService.$transaction(async (trx) => {
-        if (cover) {
-          const coverExtension = path.extname(cover?.originalName) || '.png';
-          savedPlaylistCover = await this.fileUploadService.upload(
-            cover.buffer,
-            `${slug}-cover${coverExtension}`,
-            playlistFoler,
-          );
-        }
-
-        await trx.playlist.create({
-          data: {
-            title,
-            slug,
-            description,
-            userId,
-            coverUrl: savedPlaylistCover,
-          },
-        });
+      const newPlaylist = await this.playlistRepository.create({
+        data: {
+          title,
+          slug,
+          type,
+          audioCount: 1,
+          user: { connect: { id: userId } },
+        },
       });
-    } catch (error) {
-      if (savedPlaylistCover)
-        await this.fileUploadService.remove(savedPlaylistCover);
 
+      await this.playlistAudioRepository.create({
+        data: {
+          playlist: { connect: { id: newPlaylist.id } },
+          audio: { connect: { id: audio } },
+        },
+      });
+
+      return {
+        success: true,
+        message: 'Playlist created successfully',
+        data: newPlaylist,
+      };
+    } catch (error) {
       this.logger.log(JSON.stringify(error));
       throw new InternalServerErrorException('');
     }
@@ -149,6 +154,95 @@ export class PlaylistService {
       return {
         success: true,
         message: '',
+      };
+    } catch (error) {
+      this.logger.log(JSON.stringify(error));
+      throw new InternalServerErrorException();
+    }
+  }
+
+  async addAudioToPlaylist(params: {
+    playlistId: string;
+    audioId: string;
+    userId: string;
+  }) {
+    const { audioId, playlistId, userId } = params;
+    const playlist = await this.playlistRepository.findOne({
+      where: { id: playlistId },
+      include: {
+        audios: true,
+      },
+    });
+    if (!playlist) throw new NotFoundException('Playlist not found');
+
+    if (playlist.userId !== userId)
+      throw new UnauthorizedException(
+        'You do not have permission to modify this playlist',
+      );
+
+    const alreadyExists = playlist.audios.some((a) => a.audioId === audioId);
+    if (alreadyExists)
+      throw new ConflictException('Audio already exists in this playlist');
+
+    try {
+      await Promise.all([
+        this.playlistAudioRepository.create({
+          data: {
+            playlist: { connect: { id: playlistId } },
+            audio: { connect: { id: audioId } },
+          },
+        }),
+        await this.playlistRepository.update({
+          where: { id: playlistId },
+          data: {
+            audioCount: { increment: 1 },
+          },
+        }),
+      ]);
+    } catch (error) {
+      this.logger.log(JSON.stringify(error));
+      throw new InternalServerErrorException();
+    }
+  }
+
+  async removeAudioFromPlaylist(params: {
+    userId: string;
+    audioId: string;
+    playlistId: string;
+  }) {
+    const { audioId, playlistId, userId } = params;
+
+    const playlist = await this.playlistRepository.findOne({
+      where: { id: playlistId },
+      include: { audios: true },
+    });
+    if (!playlist) throw new NotFoundException('Playlist not found');
+
+    if (playlist.userId !== userId)
+      throw new UnauthorizedException(
+        'You do not have permission to modify this playlist',
+      );
+
+    const audioInPlaylist = playlist.audios.find((a) => a.audioId === audioId);
+    if (!audioInPlaylist)
+      throw new NotFoundException('Audio not found in this playlist');
+
+    try {
+      await Promise.all([
+        this.playlistAudioRepository.delete({
+          where: { id: audioInPlaylist.id },
+        }),
+        this.playlistRepository.update({
+          where: { id: playlistId },
+          data: {
+            audioCount: { decrement: 1 },
+          },
+        }),
+      ]);
+
+      return {
+        success: true,
+        message: 'Audio removed from playlist successfully',
       };
     } catch (error) {
       this.logger.log(JSON.stringify(error));
