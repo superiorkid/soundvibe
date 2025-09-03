@@ -3,6 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import UserTooltip from "@/components/user-tooltip";
 import { useActiveCommentCard } from "@/context/active-comment-card-context";
+import { useCommentLike } from "@/hooks/tanstack/comment";
 import { authClient } from "@/lib/auth-client";
 import { getInitials } from "@/lib/utils";
 import { TComment } from "@/types/comment.type";
@@ -11,9 +12,6 @@ import { formatDistance } from "date-fns";
 import Link from "next/link";
 import DeleteCommentDropdown from "./delete-comment-dropdown";
 import LikeCommentButton from "./like-comment-button";
-import { useCommentLike } from "@/hooks/tanstack/comment";
-import { Badge } from "@/components/ui/badge";
-import { HeartIcon } from "lucide-react";
 
 interface CommentCardProps {
   comment: TComment;

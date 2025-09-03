@@ -5,7 +5,6 @@ import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 import { TComment } from "@/types/comment.type";
 import { HeartIcon } from "lucide-react";
-import React from "react";
 
 interface LikeCommentButtonProps {
   comment: TComment;
@@ -14,8 +13,11 @@ interface LikeCommentButtonProps {
 const LikeCommentButton = ({ comment }: LikeCommentButtonProps) => {
   const { data: session } = authClient.useSession();
 
-  const { hasLiked, hasLikedByAuthor, isPending, toggleLikeMutation } =
-    useCommentLike(comment, session?.user.id as string, comment.audioId);
+  const { hasLiked, isPending, toggleLikeMutation } = useCommentLike(
+    comment,
+    session?.user.id as string,
+    comment.audioId
+  );
 
   return (
     <button

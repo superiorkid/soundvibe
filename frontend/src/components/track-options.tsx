@@ -1,10 +1,12 @@
 "use client";
 
 import CopyAudioLink from "@/app/(main)/_components/copy-audio-link";
+import PlaylistOption from "@/app/(main)/_components/playlist-option";
 import { authClient } from "@/lib/auth-client";
+import { cn } from "@/lib/utils";
+import { TAudio } from "@/types/audio.type";
 import {
   CopyIcon,
-  EllipsisIcon,
   ListPlusIcon,
   ListStartIcon,
   Repeat2Icon,
@@ -20,15 +22,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { TAudio } from "@/types/audio.type";
-import { cn } from "@/lib/utils";
-import PlaylistOption from "@/app/(main)/_components/playlist-option";
 
 interface TrackOptionsProps {
   audio: TAudio;
+  children: React.ReactNode;
 }
 
-const TrackOptions = ({ audio }: TrackOptionsProps) => {
+const TrackOptions = ({ audio, children }: TrackOptionsProps) => {
   const { data: session } = authClient.useSession();
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
 
@@ -36,20 +36,7 @@ const TrackOptions = ({ audio }: TrackOptionsProps) => {
     <Dialog>
       <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
         <div data-menu-open={menuOpen}>
-          <DropdownMenuTrigger asChild>
-            <Button
-              size="sm"
-              variant="secondary"
-              className="hover:cursor-pointer"
-            >
-              <EllipsisIcon
-                size={14}
-                strokeWidth={2}
-                className="fill-foreground stroke-foreground"
-              />
-            </Button>
-          </DropdownMenuTrigger>
-
+          <DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem asChild>
               <RepostAction

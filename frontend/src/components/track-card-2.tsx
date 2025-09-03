@@ -5,11 +5,18 @@ import { useLike } from "@/hooks/tanstack/audio";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 import { TAudio } from "@/types/audio.type";
-import { HeartIcon, PauseIcon, PlayIcon, UserCheckIcon } from "lucide-react";
+import {
+  EllipsisIcon,
+  HeartIcon,
+  PauseIcon,
+  PlayIcon,
+  UserCheckIcon,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import TrackOptions from "./track-options";
 import UserTooltip from "./user-tooltip";
+import { Button } from "./ui/button";
 
 interface TrackCard2Props {
   audio: TAudio;
@@ -42,7 +49,6 @@ const TrackCard2 = ({ audio }: TrackCard2Props) => {
   return (
     <div className="aspect-square space-y-1.5">
       <div className="h-full relative rounded-sm overflow-hidden hover:cursor-pointer group">
-        {/* Media layer */}
         {audio.coverFile ? (
           <Image
             fill
@@ -130,7 +136,19 @@ const TrackCard2 = ({ audio }: TrackCard2Props) => {
               />
             </button>
 
-            <TrackOptions audio={audio} />
+            <TrackOptions audio={audio}>
+              <Button
+                size="sm"
+                variant="secondary"
+                className="hover:cursor-pointer"
+              >
+                <EllipsisIcon
+                  size={14}
+                  strokeWidth={2}
+                  className="fill-foreground stroke-foreground"
+                />
+              </Button>
+            </TrackOptions>
           </div>
         </div>
       </div>

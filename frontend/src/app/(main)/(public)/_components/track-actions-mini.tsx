@@ -6,7 +6,7 @@ import { useLike } from "@/hooks/tanstack/audio";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 import { TAudio } from "@/types/audio.type";
-import { HeartIcon } from "lucide-react";
+import { EllipsisIcon, HeartIcon } from "lucide-react";
 
 interface TrackActionsMiniProps {
   audio: TAudio;
@@ -42,7 +42,15 @@ const TrackActionsMini = ({ audio }: TrackActionsMiniProps) => {
           )}
         />
       </Button>
-      <TrackOptions audio={audio} />
+      <TrackOptions audio={audio}>
+        <Button size="sm" variant="secondary" className="hover:cursor-pointer">
+          <EllipsisIcon
+            size={14}
+            strokeWidth={2}
+            className="fill-foreground stroke-foreground"
+          />
+        </Button>
+      </TrackOptions>
     </div>
   );
 };

@@ -117,7 +117,7 @@ const MainNavigation = () => {
           <AppSearch>
             <AppSearch.Input
               value=""
-              onChange={(e) => console.log("search")}
+              onChange={() => console.log("search")}
               placeholder="Search"
               className="h-9"
             />
