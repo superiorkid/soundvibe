@@ -6,14 +6,15 @@ import { MemoryStoredFile, NestjsFormDataModule } from 'nestjs-form-data';
 import { LoggerMiddleware } from './common/middlewares/logger.middleware';
 import { createAuthConfig } from './config/auth.config';
 import { AudioModule } from './modules/audio/audio.module';
+import { CommentModule } from './modules/comment/comment.module';
 import { GenreModule } from './modules/genre/genre.module';
+import { ListeningHistoryModule } from './modules/listening-history/listening-history.module';
+import { PlaylistModule } from './modules/playlist/playlist.module';
+import { RepostModule } from './modules/repost/repost.module';
 import { UsersModule } from './modules/users/users.module';
 import { DatabaseModule } from './shared/database/database.module';
 import { DatabaseService } from './shared/database/database.service';
 import { FileUploadModule } from './shared/file-upload/file-upload.module';
-import { CommentModule } from './modules/comment/comment.module';
-import { RepostModule } from './modules/repost/repost.module';
-import { ListeningHistoryModule } from './modules/listening-history/listening-history.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { ListeningHistoryModule } from './modules/listening-history/listening-hi
     CommentModule,
     RepostModule,
     ListeningHistoryModule,
+    PlaylistModule,
   ],
   providers: [
     {

@@ -11,7 +11,6 @@ import { TAudio } from "@/types/audio.type";
 import {
   CheckIcon,
   CopyIcon,
-  EllipsisIcon,
   HeartIcon,
   MessageSquareTextIcon,
   PlayIcon,
@@ -19,6 +18,7 @@ import {
   UploadIcon,
 } from "lucide-react";
 import CopyAudioLink from "./copy-audio-link";
+import MoreActionDropdown from "./more-action.dropdown";
 
 type PlayerActionsProps = {
   showComment?: boolean;
@@ -110,9 +110,7 @@ export function PlayerActions({
               </Button>
             )}
           </CopyAudioLink>
-          <Button variant="secondary" size="sm">
-            <EllipsisIcon strokeWidth={2} size={16} />
-          </Button>
+          <MoreActionDropdown audio={audio} />
         </div>
 
         <div className="flex space-x-3 items-center text-xs text-muted-foreground">

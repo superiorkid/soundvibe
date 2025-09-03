@@ -43,3 +43,8 @@ export const listeningHistoryKeys = {
     query?: string;
   }) => [...listeningHistoryKeys.all, params],
 };
+
+export const playlistKeys = {
+  all: ["playlist"] as const,
+  allCurrentUser: () => [...playlistKeys.all, { user: "me" }],
+};

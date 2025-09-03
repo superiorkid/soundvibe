@@ -14,7 +14,9 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import TrackOptions from "./track-options";
 import UserTooltip from "./user-tooltip";
+import { Button } from "./ui/button";
 
 interface TrackCard2Props {
   audio: TAudio;
@@ -47,62 +49,18 @@ const TrackCard2 = ({ audio }: TrackCard2Props) => {
   return (
     <div className="aspect-square space-y-1.5">
       <div className="h-full relative rounded-sm overflow-hidden hover:cursor-pointer group">
-        <button
-          onClick={handlePlay}
-          className="p-5 rounded-full bg-background group-hover:absolute z-40 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 hover:cursor-pointer hover:opacity-75"
-        >
-          {isThisTrackPlaying ? (
-            <PauseIcon
-              size={35}
-              className="fill-foreground stroke-foreground"
-            />
-          ) : (
-            <PlayIcon size={35} className="fill-foreground stroke-foreground" />
-          )}
-        </button>
-
-        <div className="group-hover:absolute bottom-3 right-3 z-50">
-          <div className="flex space-x-4 items-center">
-            <button
-              className={cn("hover:cursor-pointer hover:opacity-50")}
-              onClick={() => toggleLikeMutation()}
-              disabled={isPending}
-            >
-              <HeartIcon
-                size={16}
-                className={cn(
-                  "fill-foreground stroke-foreground",
-                  hasLiked && "fill-red-500 stroke-red-500"
-                )}
-              />
-            </button>
-            <button
-              className="hover:cursor-pointer hover:opacity-50"
-              onClick={handleFollow}
-            >
-              <UserCheckIcon
-                size={16}
-                className="fill-foreground stroke-foreground"
-              />
-            </button>
-            <button>
-              <EllipsisIcon size={16} strokeWidth={2} />
-            </button>
-          </div>
-        </div>
-
         {audio.coverFile ? (
           <Image
             fill
             src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/audio/cover/${audio.id}`}
             alt="track image"
-            className="object-cover group-hover:opacity-50"
+            className="absolute inset-0 object-cover z-0 transition-opacity group-hover:opacity-50"
             loading="lazy"
             decoding="async"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
         ) : (
-          <div className="absolute inset-0 bg-gradient-to-br from-amber-600/70 to-yellow-400/70 flex items-center justify-center group-hover:opacity-50">
+          <div className="absolute inset-0 z-0 bg-gradient-to-br from-amber-600/70 to-yellow-400/70 flex items-center justify-center transition-opacity group-hover:opacity-50">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="32"
@@ -121,7 +79,80 @@ const TrackCard2 = ({ audio }: TrackCard2Props) => {
             </svg>
           </div>
         )}
+
+        <button
+          onClick={handlePlay}
+          className={cn(
+            "absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2",
+            "p-5 rounded-full bg-background z-40 transition-opacity hover:opacity-75",
+            "focus-visible:outline-none focus-visible:ring-2",
+            isThisTrackPlaying
+              ? "opacity-100"
+              : "opacity-0 group-hover:opacity-100"
+          )}
+          aria-label={isThisTrackPlaying ? "Pause" : "Play"}
+        >
+          {isThisTrackPlaying ? (
+            <PauseIcon
+              size={35}
+              className="fill-foreground stroke-foreground"
+            />
+          ) : (
+            <PlayIcon size={35} className="fill-foreground stroke-foreground" />
+          )}
+        </button>
+
+        <div
+          className={cn(
+            "absolute bottom-3 right-3 z-50 transition-opacity",
+            isThisTrackPlaying
+              ? "opacity-100"
+              : "opacity-0 group-hover:opacity-100"
+          )}
+        >
+          <div className="flex space-x-4 items-center">
+            <button
+              className="hover:cursor-pointer hover:opacity-50"
+              onClick={() => toggleLikeMutation()}
+              disabled={isPending}
+              aria-pressed={hasLiked}
+            >
+              <HeartIcon
+                size={16}
+                className={cn(
+                  "fill-foreground stroke-foreground",
+                  hasLiked && "fill-red-500 stroke-red-500"
+                )}
+              />
+            </button>
+
+            <button
+              className="hover:cursor-pointer hover:opacity-50"
+              onClick={handleFollow}
+            >
+              <UserCheckIcon
+                size={16}
+                className="fill-foreground stroke-foreground"
+              />
+            </button>
+
+            <TrackOptions audio={audio}>
+              <Button
+                size="sm"
+                variant="secondary"
+                className="hover:cursor-pointer"
+              >
+                <EllipsisIcon
+                  size={14}
+                  strokeWidth={2}
+                  className="fill-foreground stroke-foreground"
+                />
+              </Button>
+            </TrackOptions>
+          </div>
+        </div>
       </div>
+
       <div>
         <p className="flex gap-1 items-center">
           <HeartIcon
