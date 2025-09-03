@@ -2,14 +2,17 @@ import { Session, type UserSession } from '@mguay/nestjs-better-auth';
 import {
   Body,
   Controller,
+  DefaultValuePipe,
   Delete,
   Get,
   HttpCode,
   HttpStatus,
   Param,
   Post,
+  Query,
 } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { PlaylistFilterEnum } from 'src/common/enums/playlist-filter.enum';
 import { CreatePlaylistDTO } from './dto/create-playlist.dto';
 import { PlaylistService } from './playlist.service';
 
@@ -24,8 +27,17 @@ export class PlaylistController {
     status: 200,
     description: 'Returns all playlists belonging to the current user',
   })
-  async getCurrentUserPlaylists(@Session() session: UserSession) {
-    return this.playlistService.getPlaylists(session.user.id);
+  async getCurrentUserPlaylists(
+    @Session() session: UserSession,
+    @Query('filter', new DefaultValuePipe(PlaylistFilterEnum.all))
+    filter: PlaylistFilterEnum,
+    @Query('query') query: string,
+  ) {
+    return this.playlistService.getPlaylists({
+      filter,
+      query,
+      userId: session.user.id,
+    });
   }
 
   @Get('user/:userId')
@@ -35,8 +47,13 @@ export class PlaylistController {
     status: 200,
     description: 'Returns all public playlists for the specified user',
   })
-  async getUserPlaylists(@Param('userId') userId: string) {
-    return this.playlistService.getPlaylists(userId);
+  async getUserPlaylists(
+    @Param('userId') userId: string,
+    @Query('filter', new DefaultValuePipe(PlaylistFilterEnum.all))
+    filter: PlaylistFilterEnum,
+    @Query('query') query: string,
+  ) {
+    return this.playlistService.getPlaylists({ userId, filter, query });
   }
 
   @Post()

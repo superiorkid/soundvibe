@@ -31,8 +31,8 @@ export class ListeningHistoryService {
             ? {
                 audio: {
                   OR: [
-                    { title: { contains: query, mode: 'insensitive' } },
-                    { artist: { contains: query, mode: 'insensitive' } },
+                    { title: { contains: query } },
+                    { artist: { contains: query } },
                   ],
                 },
               }

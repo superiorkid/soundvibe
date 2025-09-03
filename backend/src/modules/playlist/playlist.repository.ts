@@ -24,4 +24,11 @@ export class PlaylistRepository extends BaseRepository<
     // @ts-expect-error - error
     return await this.delegate.findFirst(args);
   }
+
+  async findAll<T extends Prisma.PlaylistFindManyArgs>(
+    args?: T,
+  ): Promise<Prisma.PlaylistGetPayload<T>[]> {
+    // @ts-expect-error - error
+    return await this.delegate.findMany(args);
+  }
 }

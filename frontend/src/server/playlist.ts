@@ -1,15 +1,21 @@
 "use server";
 
 import { TCreatePlaylistSchema } from "@/app/(main)/create-playlist-schema";
+import { PlaylistFilterEnum } from "@/enums/playlist-filter-enum";
 import { getAxios } from "@/lib/axios";
 import { TApiResponse } from "@/types/api-response.type";
 import { TPlaylist } from "@/types/playlist-type";
 
-export async function getCurrentUserPlaylist() {
+export async function getCurrentUserPlaylist(params?: {
+  query?: string;
+  filter?: PlaylistFilterEnum;
+}) {
   const axiosInstance = await getAxios();
 
   try {
-    const response = await axiosInstance.get("/api/playlists/me");
+    const response = await axiosInstance.get("/api/playlists/me", {
+      params,
+    });
     return response.data as TApiResponse<TPlaylist[]>;
   } catch (error) {
     console.error("Failed to fetch playlist", error);

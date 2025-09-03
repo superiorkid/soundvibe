@@ -6,11 +6,21 @@ import { PlaylistRepository } from './playlist.repository';
 import { PlaylistService } from './playlist.service';
 import { FileUploadModule } from 'src/shared/file-upload/file-upload.module';
 import { PlaylistAudioRepository } from './playlist-audio.repository';
+import { PlaylistLikeRepository } from './playlist-like.repository';
 
 @Module({
   imports: [DatabaseModule, AudioModule, FileUploadModule],
   controllers: [PlaylistController],
-  providers: [PlaylistRepository, PlaylistService, PlaylistAudioRepository],
-  exports: [PlaylistRepository, PlaylistAudioRepository],
+  providers: [
+    PlaylistRepository,
+    PlaylistService,
+    PlaylistAudioRepository,
+    PlaylistLikeRepository,
+  ],
+  exports: [
+    PlaylistRepository,
+    PlaylistAudioRepository,
+    PlaylistLikeRepository,
+  ],
 })
 export class PlaylistModule {}

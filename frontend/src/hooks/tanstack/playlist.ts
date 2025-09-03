@@ -1,4 +1,5 @@
 import { TCreatePlaylistSchema } from "@/app/(main)/create-playlist-schema";
+import { PlaylistFilterEnum } from "@/enums/playlist-filter-enum";
 import { getQueryClient } from "@/lib/query-client";
 import { playlistKeys } from "@/lib/query-keys";
 import {
@@ -13,14 +14,17 @@ import { toast } from "sonner";
 
 const queryClient = getQueryClient();
 
-export function useCurrentUserPlaylist() {
+export function useCurrentUserPlaylist(params?: {
+  query?: string;
+  filter?: PlaylistFilterEnum;
+}) {
   const {
     data: playlists,
     isPending,
     isError,
   } = useQuery({
-    queryKey: playlistKeys.allCurrentUser(),
-    queryFn: async () => getCurrentUserPlaylist(),
+    queryKey: playlistKeys.allCurrentUser(params),
+    queryFn: async () => getCurrentUserPlaylist(params),
   });
 
   const checkIfAudioExists = (playlistId: string, audioId: string) => {
@@ -80,45 +84,3 @@ export function useAddAudioPlaylist(params: {
 
   return { audioToPlaylistToggle: mutate, isPending };
 }
-
-// export function useAddAudioToPlaylist() {
-//   const { mutate, isPending } = useMutation({
-//     mutationFn: async ({
-//       audioId,
-//       playlistId,
-//     }: {
-//       audioId: string;
-//       playlistId: string;
-//     }) => addAudioToPlaylist({ audioId, playlistId }),
-//     onError: () =>
-//       toast.error("Failed to add audio to  playlist. Please try again."),
-//     onSuccess: () => {
-//       queryClient.invalidateQueries({
-//         queryKey: playlistKeys.allCurrentUser(),
-//       });
-//     },
-//   });
-
-//   return { addAudioToPlaylistMutation: mutate, isPending };
-// }
-
-// export function useRemoveAudioFromPlaylist() {
-//   const { mutate, isPending } = useMutation({
-//     mutationFn: async ({
-//       audioId,
-//       playlistId,
-//     }: {
-//       audioId: string;
-//       playlistId: string;
-//     }) => removeAudioFromPlaylist({ audioId, playlistId }),
-//     onError: () =>
-//       toast.error("Failed to remove audio from playlist. Please try again."),
-//     onSuccess: () => {
-//       queryClient.invalidateQueries({
-//         queryKey: playlistKeys.allCurrentUser(),
-//       });
-//     },
-//   });
-
-//   return { removeAudioToPlaylistMutation: mutate, isPending };
-// }

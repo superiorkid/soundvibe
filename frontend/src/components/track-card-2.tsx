@@ -139,7 +139,7 @@ const TrackCard2 = ({ audio }: TrackCard2Props) => {
             <TrackOptions audio={audio}>
               <Button
                 size="sm"
-                variant="secondary"
+                variant="ghost"
                 className="hover:cursor-pointer"
               >
                 <EllipsisIcon

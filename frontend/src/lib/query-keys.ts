@@ -1,4 +1,5 @@
 import { CommentFilterEnum } from "@/enums/comment-filter-enum";
+import { PlaylistFilterEnum } from "@/enums/playlist-filter-enum";
 
 export const authKeys = {
   session: ["session"] as const,
@@ -46,5 +47,8 @@ export const listeningHistoryKeys = {
 
 export const playlistKeys = {
   all: ["playlist"] as const,
-  allCurrentUser: () => [...playlistKeys.all, { user: "me" }],
+  allCurrentUser: (params?: {
+    query?: string;
+    filter?: PlaylistFilterEnum;
+  }) => [...playlistKeys.all, { user: "me", ...params }],
 };

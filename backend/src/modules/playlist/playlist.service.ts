@@ -11,7 +11,9 @@ import { DatabaseService } from 'src/shared/database/database.service';
 import { FileUploadService } from 'src/shared/file-upload/file-upload.service';
 import { CreatePlaylistDTO } from './dto/create-playlist.dto';
 import { PlaylistAudioRepository } from './playlist-audio.repository';
+import { PlaylistLikeRepository } from './playlist-like.repository';
 import { PlaylistRepository } from './playlist.repository';
+import { PlaylistFilterEnum } from 'src/common/enums/playlist-filter.enum';
 
 @Injectable()
 export class PlaylistService {
@@ -22,26 +24,89 @@ export class PlaylistService {
     private playlistAudioRepository: PlaylistAudioRepository,
     private fileUploadService: FileUploadService,
     private databaseService: DatabaseService,
+    private playlistLikerepository: PlaylistLikeRepository,
   ) {}
 
-  async getPlaylists(userId: string) {
+  async getPlaylists(params: {
+    userId: string;
+    filter: PlaylistFilterEnum;
+    query?: string;
+  }) {
+    const { filter = PlaylistFilterEnum.all, userId, query } = params;
+
     try {
-      const playlists = await this.playlistRepository.findAll({
-        where: { userId },
+      const ownPlaylists = await this.playlistRepository.findAll({
+        where: {
+          userId,
+          ...(query ? { title: { contains: query, mode: 'insensitive' } } : {}),
+        },
         orderBy: { createdAt: 'desc' },
         include: {
           likes: true,
-          audios: true,
+          audios: { include: { audio: { include: { coverFile: true } } } },
+          user: true,
         },
       });
 
+      const mappedOwn = ownPlaylists.map((p) => ({
+        ...p,
+        sortDate: p.createdAt,
+      }));
+      type PlaylistWithSortDate = (typeof mappedOwn)[number];
+
+      let mappedLiked: PlaylistWithSortDate[] = [];
+      if (
+        filter === PlaylistFilterEnum.liked ||
+        filter === PlaylistFilterEnum.all
+      ) {
+        const likedRows = await this.playlistLikerepository.findAll({
+          where: { userId },
+          orderBy: { createdAt: 'desc' },
+          include: {
+            playlist: {
+              include: {
+                likes: true,
+                audios: {
+                  include: { audio: { include: { coverFile: true } } },
+                },
+                user: true,
+              },
+            },
+          },
+        });
+
+        mappedLiked = likedRows.map((likeRow) => ({
+          ...likeRow.playlist,
+          sortDate: likeRow.createdAt,
+        }));
+      }
+
+      let allPlaylists: PlaylistWithSortDate[] = [];
+      if (filter === PlaylistFilterEnum.all) {
+        allPlaylists = [
+          ...mappedOwn,
+          ...mappedLiked.filter((p) => !mappedOwn.some((op) => op.id === p.id)),
+        ];
+      } else if (filter === PlaylistFilterEnum.created) {
+        allPlaylists = mappedOwn;
+      } else if (filter === PlaylistFilterEnum.liked) {
+        allPlaylists = mappedLiked;
+      }
+
+      allPlaylists.forEach((p) => {
+        if (!p.sortDate) p.sortDate = p.createdAt ?? new Date();
+      });
+      allPlaylists.sort((a, b) => b.sortDate.getTime() - a.sortDate.getTime());
+
+      const responseData = allPlaylists.map(({ sortDate, ...rest }) => rest);
+
       return {
-        success: true,
+        success: true as const,
         message: '',
-        data: playlists,
+        data: responseData,
       };
     } catch (error) {
-      this.logger.log(JSON.stringify(error));
+      this.logger.error(error);
       throw new InternalServerErrorException();
     }
   }
