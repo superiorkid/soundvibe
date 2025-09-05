@@ -1,6 +1,6 @@
 "use client";
 
-import CopyAudioLink from "@/app/(main)/_components/copy-audio-link";
+import CopyAudioLink from "@/app/(main)/_components/copy-to-clipboard";
 import PlaylistOption from "@/app/(main)/_components/playlist-option";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
@@ -78,7 +78,7 @@ const TrackOptions = ({ audio, children }: TrackOptionsProps) => {
 
             <DropdownMenuItem asChild>
               <CopyAudioLink
-                url={`${process.env.NEXT_PUBLIC_FRONTEND_URL}/${audio.user.displayUsername}/${audio.slug}`}
+                text={`${process.env.NEXT_PUBLIC_FRONTEND_URL}/${audio.user.displayUsername}/${audio.slug}`}
                 onSuccess={() => {
                   setMenuOpen(false);
                 }}

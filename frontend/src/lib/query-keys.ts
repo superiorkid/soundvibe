@@ -51,4 +51,5 @@ export const playlistKeys = {
     query?: string;
     filter?: PlaylistFilterEnum;
   }) => [...playlistKeys.all, { user: "me", ...params }],
+  detailBySlug: (slug: string) => [...playlistKeys.all, { slug }],
 };

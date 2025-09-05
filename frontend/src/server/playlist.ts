@@ -77,3 +77,43 @@ export async function removeAudioFromPlaylist(params: {
     throw new Error("Failed to remove audio from playlist");
   }
 }
+
+export async function getPlaylistBySlug(slug: string) {
+  const axiosInstance = await getAxios();
+
+  try {
+    const response = await axiosInstance.get(`/api/playlists/slug/${slug}`);
+    return response.data as TApiResponse<TPlaylist>;
+  } catch (error) {
+    console.error("Failed to get detail playlist by slug", error);
+    throw new Error("Failed to get detail playlist by slug");
+  }
+}
+
+export async function likePlaylist(playlistId: string) {
+  const axiosInstance = await getAxios();
+
+  try {
+    const response = await axiosInstance.post(
+      `/api/playlists/${playlistId}/like`
+    );
+    return response.data as TApiResponse;
+  } catch (error) {
+    console.error("Failed to like playlist:", error);
+    throw new Error("Could not like playlist. Please try again.");
+  }
+}
+
+export async function unlikePlaylist(playlistId: string) {
+  const axiosInstance = await getAxios();
+
+  try {
+    const response = await axiosInstance.delete(
+      `/api/playlists/${playlistId}/unlike`
+    );
+    return response.data as TApiResponse;
+  } catch (error) {
+    console.error("Failed to like playlist:", error);
+    throw new Error("Could not like playlist. Please try again.");
+  }
+}

@@ -14,6 +14,7 @@ import LikeSummaryPanel from "./like-summary-panel";
 import TrackDescription from "./track-description";
 import TrackHeader from "./track-header";
 import UserCard from "./user-card";
+import { authClient } from "@/lib/auth-client";
 
 interface DetailTrackProps {
   slug: string;
@@ -22,6 +23,7 @@ interface DetailTrackProps {
 const hasComments = true;
 
 const DetailTrack = ({ slug }: DetailTrackProps) => {
+  const { data: session } = authClient.useSession();
   const { audio, isPending, isError } = useAudioBySlug(slug);
 
   if (isPending && slug) {
@@ -71,7 +73,10 @@ const DetailTrack = ({ slug }: DetailTrackProps) => {
         <div className="flex-1 space-y-6">
           <PlayerActions audio={audio.data} />
           <div className="flex gap-6">
-            <UserCard user={audio.data.user} />
+            <UserCard
+              user={audio.data.user}
+              isCurrentUser={audio.data.userId === session?.user.id}
+            />
             <div className="flex-1 space-y-8">
               <TrackDescription audio={audio.data} />
               <div>

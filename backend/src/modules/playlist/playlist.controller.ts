@@ -109,6 +109,26 @@ export class PlaylistController {
     return this.playlistService.deletePlaylist({ id, userId: session.user.id });
   }
 
+  @Post(':id/like')
+  @HttpCode(HttpStatus.CREATED)
+  async likePlaylist(@Param('id') id: string, @Session() session: UserSession) {
+    return this.playlistService.likePlaylist({
+      playlistId: id,
+      userId: session.user.id,
+    });
+  }
+
+  @Delete(':id/unlike')
+  async unlikePlaylist(
+    @Param('id') id: string,
+    @Session() session: UserSession,
+  ) {
+    return this.playlistService.unlikePlaylist({
+      playlistId: id,
+      userId: session.user.id,
+    });
+  }
+
   @Post(':id/repost')
   @ApiOperation({ summary: 'Repost a playlist' })
   @ApiParam({ name: 'id', description: 'ID of the playlist to repost' })

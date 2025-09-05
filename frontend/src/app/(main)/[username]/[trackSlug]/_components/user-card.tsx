@@ -6,9 +6,10 @@ import Link from "next/link";
 
 interface UserCardProps {
   user: TUser;
+  isCurrentUser: boolean;
 }
 
-const UserCard = ({ user }: UserCardProps) => {
+const UserCard = ({ user, isCurrentUser }: UserCardProps) => {
   return (
     <div className="flex flex-col items-center space-y-2.5 w-[145px]">
       <Avatar className="size-25">
@@ -30,14 +31,16 @@ const UserCard = ({ user }: UserCardProps) => {
           </Link>
         </div>
       </div>
-      <div className="space-y-1.5">
-        <Button size="sm" className="w-full rounded-md">
-          Follow
-        </Button>
-        <Button size="sm" className="w-full rounded-md" variant="ghost">
-          Report
-        </Button>
-      </div>
+      {!isCurrentUser && (
+        <div className="space-y-1.5">
+          <Button size="sm" className="w-full rounded-md">
+            Follow
+          </Button>
+          <Button size="sm" className="w-full rounded-md" variant="ghost">
+            Report
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

@@ -18,6 +18,13 @@ export class PlaylistLikeRepository extends BaseRepository<
     super(prisma, prisma.playlistLike);
   }
 
+  async findOne<T extends Prisma.PlaylistLikeFindFirstArgs>(
+    args: T,
+  ): Promise<Prisma.PlaylistLikeGetPayload<T> | null> {
+    // @ts-expect-error - error
+    return await this.delegate.findFirst(args);
+  }
+
   async findAll<T extends Prisma.PlaylistLikeFindManyArgs>(
     args?: T,
   ): Promise<Prisma.PlaylistLikeGetPayload<T>[]> {

@@ -11,13 +11,14 @@ import { TAudio } from "@/types/audio.type";
 import {
   CheckIcon,
   CopyIcon,
+  EllipsisIcon,
   HeartIcon,
   MessageSquareTextIcon,
   PlayIcon,
   Repeat2Icon,
   UploadIcon,
 } from "lucide-react";
-import CopyAudioLink from "./copy-audio-link";
+import CopyToClipboard from "./copy-to-clipboard";
 import MoreActionDropdown from "./more-action.dropdown";
 
 type PlayerActionsProps = {
@@ -92,8 +93,8 @@ export function PlayerActions({
           <Button variant="secondary" size="icon">
             <UploadIcon strokeWidth={2} size={16} />
           </Button>
-          <CopyAudioLink
-            url={`${process.env.NEXT_PUBLIC_FRONTEND_URL}/${audio.user.displayUsername}/${audio.slug}`}
+          <CopyToClipboard
+            text={`${process.env.NEXT_PUBLIC_FRONTEND_URL}/${audio.user.displayUsername}/${audio.slug}`}
           >
             {({ onClick, copied }) => (
               <Button
@@ -109,8 +110,16 @@ export function PlayerActions({
                 )}
               </Button>
             )}
-          </CopyAudioLink>
-          <MoreActionDropdown audio={audio} />
+          </CopyToClipboard>
+          <MoreActionDropdown audio={audio}>
+            <Button
+              variant="secondary"
+              size="sm"
+              className="hover:cursor-pointer"
+            >
+              <EllipsisIcon size="16" />
+            </Button>
+          </MoreActionDropdown>
         </div>
 
         <div className="flex space-x-3 items-center text-xs text-muted-foreground">

@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { toast } from "sonner";
 
-interface CopyAudioLinkProps {
-  url: string;
+interface CopyToClipboardProps {
+  text: string;
   onSuccess?: () => void;
   children: (props: {
     onClick: () => void;
@@ -12,12 +12,16 @@ interface CopyAudioLinkProps {
   }) => React.ReactNode;
 }
 
-const CopyAudioLink = ({ children, url, onSuccess }: CopyAudioLinkProps) => {
+const CopyToClipboard = ({
+  children,
+  text,
+  onSuccess,
+}: CopyToClipboardProps) => {
   const [copied, setCopied] = useState(false);
 
   const handleClick = async () => {
-    await navigator.clipboard.writeText(url);
-    toast.info("Audio link copied to clipboard");
+    await navigator.clipboard.writeText(text);
+    toast.info("Link copied to clipboard");
     setCopied(true);
     onSuccess?.();
     setTimeout(() => setCopied(false), 2000);
@@ -29,4 +33,4 @@ const CopyAudioLink = ({ children, url, onSuccess }: CopyAudioLinkProps) => {
   });
 };
 
-export default CopyAudioLink;
+export default CopyToClipboard;

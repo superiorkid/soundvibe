@@ -1,6 +1,9 @@
 "use client";
 
+import { Badge } from "@/components/ui/badge";
+import { useLikePlaylist } from "@/hooks/tanstack/playlist";
 import { authClient } from "@/lib/auth-client";
+import { cn } from "@/lib/utils";
 import { TPlaylist } from "@/types/playlist-type";
 import { HeartIcon, LockIcon, UserPlusIcon } from "lucide-react";
 import Image from "next/image";
@@ -13,6 +16,11 @@ interface PlaylistCard2Props {
 const PlaylistCard2 = ({ playlist }: PlaylistCard2Props) => {
   const { data: session } = authClient.useSession();
   const playlistFirstAudio = playlist.audios[0]?.audio ?? null;
+
+  const { hasLikedPlaylist, isPending, likePlaylistToggle } = useLikePlaylist({
+    playlist,
+    userId: session?.user.id as string,
+  });
 
   return (
     <div className="aspect-square space-y-1.5">
@@ -52,26 +60,44 @@ const PlaylistCard2 = ({ playlist }: PlaylistCard2Props) => {
           </div>
         )}
 
-        <div className="hidden group-hover:flex">
-          <div className="absolute bottom-4 right-4 z-50 flex gap-4 items-center">
-            <button className="hover:cursor-pointer hover:opacity-50">
-              <HeartIcon size={16} strokeWidth={2} />
+        <div className="hidden group-hover:block">
+          <div className="absolute bottom-4 right-4 z-50 flex gap-6 items-center">
+            <button
+              className="hover:cursor-pointer hover:opacity-50"
+              disabled={isPending}
+              onClick={() => likePlaylistToggle()}
+            >
+              <HeartIcon
+                size={16}
+                strokeWidth={2}
+                className={cn(
+                  "fill-foreground stroke-foreground",
+                  hasLikedPlaylist && "fill-rose-500 stroke-rose-500"
+                )}
+              />
             </button>
             <button className="hover:cursor-pointer hover:opacity-50">
               <UserPlusIcon size={16} strokeWidth={2} />
             </button>
           </div>
         </div>
+
+        <Badge
+          className="absolute top-2 right-1 font-medium"
+          variant="secondary"
+        >
+          {playlist.audioCount} track{playlist.audioCount > 1 && "s"}
+        </Badge>
       </div>
 
       <div className="text-sm">
         <div className="flex gap-1 items-center">
-          {session?.user.id !== playlist.userId ? (
-            <HeartIcon size={12} className="fill-foreground" />
-          ) : (
-            playlist.type === "private" && (
-              <LockIcon size={12} strokeWidth={2} />
-            )
+          {session?.user.id !== playlist.userId && (
+            <HeartIcon size={12} strokeWidth={2} className="fill-foreground" />
+          )}
+
+          {playlist.type === "private" && (
+            <LockIcon size={12} strokeWidth={2} />
           )}
           <Link
             href={`/${playlist?.user.displayUsername}/sets/${playlist.slug}`}

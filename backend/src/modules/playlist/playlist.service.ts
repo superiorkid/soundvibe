@@ -7,13 +7,11 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import slugify from 'slugify';
-import { DatabaseService } from 'src/shared/database/database.service';
-import { FileUploadService } from 'src/shared/file-upload/file-upload.service';
+import { PlaylistFilterEnum } from 'src/common/enums/playlist-filter.enum';
 import { CreatePlaylistDTO } from './dto/create-playlist.dto';
 import { PlaylistAudioRepository } from './playlist-audio.repository';
 import { PlaylistLikeRepository } from './playlist-like.repository';
 import { PlaylistRepository } from './playlist.repository';
-import { PlaylistFilterEnum } from 'src/common/enums/playlist-filter.enum';
 
 @Injectable()
 export class PlaylistService {
@@ -22,8 +20,6 @@ export class PlaylistService {
   constructor(
     private playlistRepository: PlaylistRepository,
     private playlistAudioRepository: PlaylistAudioRepository,
-    private fileUploadService: FileUploadService,
-    private databaseService: DatabaseService,
     private playlistLikerepository: PlaylistLikeRepository,
   ) {}
 
@@ -164,7 +160,21 @@ export class PlaylistService {
         where: { slug },
         include: {
           likes: true,
-          audios: true,
+          audios: {
+            include: {
+              audio: {
+                include: {
+                  audioFile: true,
+                  coverFile: true,
+                  genre: true,
+                  user: true,
+                  likes: { include: { user: true } },
+                  reposts: { include: { user: true } },
+                },
+              },
+            },
+          },
+          user: true,
         },
       });
 
@@ -308,6 +318,69 @@ export class PlaylistService {
       return {
         success: true,
         message: 'Audio removed from playlist successfully',
+      };
+    } catch (error) {
+      this.logger.log(JSON.stringify(error));
+      throw new InternalServerErrorException();
+    }
+  }
+
+  async likePlaylist(params: { playlistId: string; userId: string }) {
+    const { playlistId, userId } = params;
+
+    const playlistExist = await this.playlistRepository.exists({
+      id: playlistId,
+    });
+    if (!playlistExist) throw new NotFoundException('');
+
+    const alreadyLikePlaylist = await this.playlistLikerepository.exists({
+      id: playlistId,
+      userId,
+    });
+    if (alreadyLikePlaylist) throw new ConflictException('');
+
+    try {
+      await this.playlistLikerepository.create({
+        data: {
+          playlist: { connect: { id: playlistId } },
+          user: { connect: { id: userId } },
+        },
+      });
+
+      return {
+        success: true,
+        message: '',
+      };
+    } catch (error) {
+      this.logger.log(JSON.stringify(error));
+      throw new InternalServerErrorException();
+    }
+  }
+
+  async unlikePlaylist(params: { playlistId: string; userId: string }) {
+    const { playlistId, userId } = params;
+
+    const playlistExist = await this.playlistRepository.exists({
+      id: playlistId,
+    });
+    if (!playlistExist) throw new NotFoundException('');
+
+    const alreadyLikePlaylist = await this.playlistLikerepository.findOne({
+      where: {
+        playlistId,
+        userId,
+      },
+    });
+    if (!alreadyLikePlaylist) throw new NotFoundException('');
+
+    try {
+      await this.playlistLikerepository.delete({
+        where: { playlistId_userId: { playlistId, userId } },
+      });
+
+      return {
+        success: true,
+        message: '',
       };
     } catch (error) {
       this.logger.log(JSON.stringify(error));

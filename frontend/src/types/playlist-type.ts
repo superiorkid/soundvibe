@@ -29,8 +29,8 @@ export type TPlaylistAudio = {
 export type TPlaylistLike = {
   id: string;
   playlistId: string;
-  playlist: TPlaylist;
+  playlist?: TPlaylist;
   userId: string;
-  user: TUser;
+  user?: TUser;
   createdAt: Date;
 };

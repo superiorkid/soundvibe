@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import {
   DropdownMenu,
@@ -7,29 +6,22 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { TAudio } from "@/types/audio.type";
-import { EllipsisIcon, ListPlusIcon, ListStartIcon } from "lucide-react";
+import { ListPlusIcon, ListStartIcon } from "lucide-react";
 import { useState } from "react";
 import PlaylistOption from "./playlist-option";
 
 interface MoreActionDropdownProps {
   audio: TAudio;
+  children: React.ReactNode;
 }
 
-const MoreActionDropdown = ({ audio }: MoreActionDropdownProps) => {
+const MoreActionDropdown = ({ audio, children }: MoreActionDropdownProps) => {
   const [dialogOpen, setOpenDialog] = useState<boolean>(false);
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setOpenDialog}>
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="secondary"
-            size="sm"
-            className="hover:cursor-pointer"
-          >
-            <EllipsisIcon size="16" />
-          </Button>
-        </DropdownMenuTrigger>
+        <DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>
         <DropdownMenuContent>
           <DropdownMenuItem>
             <ListStartIcon size={16} strokeWidth={2} />

@@ -1,5 +1,5 @@
 import { getQueryClient } from "@/lib/query-client";
-import { audioKeys } from "@/lib/query-keys";
+import { audioKeys, playlistKeys } from "@/lib/query-keys";
 import {
   findAllAudio,
   findOneBySlug,
@@ -115,6 +115,9 @@ export function useLike(audio: TAudio, userId: string) {
       });
       queryClient.invalidateQueries({
         queryKey: audioKeys.all,
+      });
+      queryClient.invalidateQueries({
+        queryKey: playlistKeys.all,
       });
     },
   });
