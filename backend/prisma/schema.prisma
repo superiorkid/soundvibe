@@ -258,21 +258,34 @@ enum PlaylistTypeEnum {
 }
 
 model Playlist {
-  id         String           @id @default(cuid())
-  title      String
-  slug       String           @unique
-  type       PlaylistTypeEnum @default(public)
-  coverUrl   String?          @map("cover_url")
-  userId     String           @map("user_id")
-  user       User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  audios     PlaylistAudio[]
-  audioCount Int              @default(0) @map("audio_count")
-  likes      PlaylistLike[]
-  likeCount  Int              @default(0) @map("like_count")
-  createdAt  DateTime         @default(now()) @map("created_at")
-  updatedAt  DateTime         @updatedAt @map("updated_at")
+  id                String             @id @default(cuid())
+  title             String
+  slug              String             @unique
+  description       String?            @db.Text
+  type              PlaylistTypeEnum   @default(public)
+  userId            String             @map("user_id")
+  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  audios            PlaylistAudio[]
+  audioCount        Int                @default(0) @map("audio_count")
+  likes             PlaylistLike[]
+  likeCount         Int                @default(0) @map("like_count")
+  createdAt         DateTime           @default(now()) @map("created_at")
+  updatedAt         DateTime           @updatedAt @map("updated_at")
+  playlistCoverFile PlaylistCoverFile?
 
   @@map("playlist")
+}
+
+model PlaylistCoverFile {
+  id         String   @id @default(cuid())
+  url        String
+  alt        String?
+  playlistId String   @unique @map("playlist_id")
+  playlist   Playlist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  @@map("playlist_cover_file")
 }
 
 model PlaylistAudio {

@@ -5,14 +5,25 @@ export type TPlaylist = {
   id: string;
   title: string;
   slug: string;
+  description?: string;
   type: "public" | "private";
-  coverUrl?: string;
   userId: string;
   user: TUser;
   audios: TPlaylistAudio[];
   audioCount: number;
   likes: TPlaylistLike[];
   likeCount: number;
+  createdAt: Date;
+  updatedAt: Date;
+  playlistCoverFile?: TPlaylistCoverFile;
+};
+
+export type TPlaylistCoverFile = {
+  id: string;
+  url: string;
+  alt?: string;
+  playlistId: string;
+  playlist: TPlaylist;
   createdAt: Date;
   updatedAt: Date;
 };

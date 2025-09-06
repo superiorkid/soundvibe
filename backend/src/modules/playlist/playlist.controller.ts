@@ -1,4 +1,4 @@
-import { Session, type UserSession } from '@mguay/nestjs-better-auth';
+import { Public, Session, type UserSession } from '@mguay/nestjs-better-auth';
 import {
   Body,
   Controller,
@@ -8,13 +8,24 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  Patch,
   Post,
   Query,
+  Res,
 } from '@nestjs/common';
-import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiConsumes,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { PlaylistFilterEnum } from 'src/common/enums/playlist-filter.enum';
 import { CreatePlaylistDTO } from './dto/create-playlist.dto';
 import { PlaylistService } from './playlist.service';
+import { type Response } from 'express';
+import { UpdatePlaylistDTO } from './dto/update-playlist.dto';
+import { FormDataRequest } from 'nestjs-form-data';
 
 @Controller('playlists')
 @ApiTags('Playlist')
@@ -56,6 +67,12 @@ export class PlaylistController {
     return this.playlistService.getPlaylists({ userId, filter, query });
   }
 
+  @Public()
+  @Get('cover/:id')
+  async getCover(@Param('id') id: string, @Res() res: Response) {
+    return this.playlistService.getCover({ id, res });
+  }
+
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Create a new playlist' })
@@ -95,6 +112,23 @@ export class PlaylistController {
     return this.playlistService.detailPlaylist(id);
   }
 
+  @Patch(':id')
+  @ApiOperation({ summary: 'Update a playlist' })
+  @ApiParam({ name: 'id', description: 'ID of the playlist to update' })
+  @ApiConsumes('multipart/form-data')
+  @FormDataRequest()
+  async updatePlaylist(
+    @Param('id') id: string,
+    @Body() playlistDto: UpdatePlaylistDTO,
+    @Session() session: UserSession,
+  ) {
+    return this.playlistService.updatePlaylist({
+      id,
+      userId: session.user.id,
+      updatePlaylistDTO: playlistDto,
+    });
+  }
+
   @Delete(':id')
   @ApiOperation({ summary: 'Delete a playlist' })
   @ApiParam({ name: 'id', description: 'ID of the playlist to delete' })
@@ -127,17 +161,6 @@ export class PlaylistController {
       playlistId: id,
       userId: session.user.id,
     });
-  }
-
-  @Post(':id/repost')
-  @ApiOperation({ summary: 'Repost a playlist' })
-  @ApiParam({ name: 'id', description: 'ID of the playlist to repost' })
-  @ApiResponse({
-    status: 200,
-    description: 'Playlist successfully reposted',
-  })
-  async repostPlaylist() {
-    //
   }
 
   @Post(':id/audio/:audioId')

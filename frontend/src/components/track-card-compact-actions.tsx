@@ -22,7 +22,6 @@ interface TrackCardCompactActionsProps {
 
 const TrackCardCompactActions = ({ audio }: TrackCardCompactActionsProps) => {
   const { data: session } = authClient.useSession();
-
   const { toggleLikeMutation, isPending, hasLiked } = useLike(
     audio,
     session?.user.id as string

@@ -2,20 +2,20 @@ import { TCreatePlaylistSchema } from "@/app/(main)/create-playlist-schema";
 import { PlaylistFilterEnum } from "@/enums/playlist-filter-enum";
 import { getQueryClient } from "@/lib/query-client";
 import { playlistKeys } from "@/lib/query-keys";
-import { generateSecureRandomString } from "@/lib/utils";
 import {
   addAudioToPlaylist,
   createPlaylist,
+  deletePlaylist,
   getCurrentUserPlaylist,
   getPlaylistBySlug,
   likePlaylist,
   removeAudioFromPlaylist,
   unlikePlaylist,
+  updatePlaylist,
 } from "@/server/playlist";
 import { TPlaylist } from "@/types/playlist-type";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
-
 const queryClient = getQueryClient();
 
 export function useCurrentUserPlaylist(params?: {
@@ -102,6 +102,77 @@ export function usePlaylistBySlug(slug: string) {
   return { playlist, isPending, isError };
 }
 
+// export function useLikePlaylist(params: {
+//   playlist: TPlaylist;
+//   userId: string;
+// }) {
+//   const { playlist, userId } = params;
+//   const hasLikedPlaylist = !!playlist.likes.some(
+//     (like) => like.userId === userId
+//   );
+
+//   const { mutate, isPending } = useMutation({
+//     mutationFn: async () => {
+//       if (hasLikedPlaylist) return unlikePlaylist(playlist.id);
+//       return likePlaylist(playlist.id);
+//     },
+//     onMutate: async () => {
+//       await queryClient.cancelQueries({
+//         queryKey: playlistKeys.detailBySlug(playlist.slug),
+//       });
+
+//       const prevData = queryClient.getQueryData<TPlaylist>(
+//         playlistKeys.detailBySlug(playlist.slug)
+//       );
+//       if (prevData) {
+//         queryClient.setQueryData<TPlaylist>(
+//           playlistKeys.detailBySlug(playlist.slug),
+//           {
+//             ...prevData,
+//             likeCount: hasLikedPlaylist
+//               ? prevData.likeCount - 1
+//               : prevData.likeCount + 1,
+//             likes: hasLikedPlaylist
+//               ? prevData.likes.filter((like) => like.userId !== userId)
+//               : [
+//                   ...prevData.likes,
+//                   {
+//                     userId,
+//                     id: generateSecureRandomString(6),
+//                     playlistId: playlist.id,
+//                     createdAt: new Date(),
+//                   },
+//                 ],
+//           }
+//         );
+//       }
+//       return { prevData };
+//     },
+//     onError: (_error, _variables, context) => {
+//       if (context?.prevData) {
+//         queryClient.setQueryData(
+//           playlistKeys.detailBySlug(playlist.slug),
+//           context.prevData
+//         );
+//       }
+//     },
+//     onSettled: () => {
+//       queryClient.invalidateQueries({
+//         queryKey: playlistKeys.detailBySlug(playlist.slug),
+//       });
+//       queryClient.invalidateQueries({
+//         queryKey: playlistKeys.all,
+//       });
+//     },
+//   });
+
+//   return {
+//     hasLikedPlaylist,
+//     likePlaylistToggle: mutate,
+//     isPending,
+//   };
+// }
+
 export function useLikePlaylist(params: {
   playlist: TPlaylist;
   userId: string;
@@ -110,65 +181,59 @@ export function useLikePlaylist(params: {
   const hasLikedPlaylist = !!playlist.likes.some(
     (like) => like.userId === userId
   );
-
   const { mutate, isPending } = useMutation({
     mutationFn: async () => {
       if (hasLikedPlaylist) return unlikePlaylist(playlist.id);
       return likePlaylist(playlist.id);
     },
-    onMutate: async () => {
-      await queryClient.cancelQueries({
-        queryKey: playlistKeys.detailBySlug(playlist.slug),
-      });
-
-      const prevData = queryClient.getQueryData<TPlaylist>(
-        playlistKeys.detailBySlug(playlist.slug)
-      );
-      if (prevData) {
-        queryClient.setQueryData<TPlaylist>(
-          playlistKeys.detailBySlug(playlist.slug),
-          {
-            ...prevData,
-            likeCount: hasLikedPlaylist
-              ? prevData.likeCount - 1
-              : prevData.likeCount + 1,
-            likes: hasLikedPlaylist
-              ? prevData.likes.filter((like) => like.userId !== userId)
-              : [
-                  ...prevData.likes,
-                  {
-                    userId,
-                    id: generateSecureRandomString(6),
-                    playlistId: playlist.id,
-                    createdAt: new Date(),
-                  },
-                ],
-          }
-        );
-      }
-      return { prevData };
+    onError: () => {
+      toast.error(`Failed to ${hasLikedPlaylist ? "Unlike" : "Like"} playlist`);
     },
-    onError: (_error, _variables, context) => {
-      if (context?.prevData) {
-        queryClient.setQueryData(
-          playlistKeys.detailBySlug(playlist.slug),
-          context.prevData
-        );
-      }
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({
-        queryKey: playlistKeys.detailBySlug(playlist.slug),
-      });
-      queryClient.invalidateQueries({
-        queryKey: playlistKeys.all,
-      });
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: playlistKeys.all });
     },
   });
 
   return {
-    hasLikedPlaylist,
     likePlaylistToggle: mutate,
+    hasLikedPlaylist,
     isPending,
   };
+}
+
+export function useDeletePlaylist(props?: { onSuccess?: () => void }) {
+  const { mutate, isPending } = useMutation({
+    mutationFn: async (playlistId: string) => deletePlaylist(playlistId),
+    onError: () => {
+      toast.error("failed to delete playlist. try again.");
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: playlistKeys.allCurrentUser(),
+      });
+      props?.onSuccess?.();
+    },
+  });
+
+  return { deletePlaylistMutation: mutate, isPending };
+}
+
+export function useUpdatePlaylist(params: {
+  playlistId: string;
+  onSuccess?: () => void;
+}) {
+  const { playlistId, onSuccess } = params;
+  const { mutate, isPending } = useMutation({
+    mutationFn: async (formData: FormData) =>
+      updatePlaylist({ formData, playlistId }),
+    onError: () => {
+      toast.error("Failed to update playlist. try again");
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: playlistKeys.all });
+      onSuccess?.();
+    },
+  });
+
+  return { updatePlaylistMutation: mutate, isPending };
 }

@@ -47,7 +47,7 @@ export class AudioService {
     let savedAudioFile: string | null = null;
     let savedCoverFile: string | null = null;
 
-    const trackFolder = `${userId}/${audioSlug}`;
+    const trackFolder = `${userId}/audio/${audioSlug}`;
 
     try {
       return await this.databaseService.$transaction(async (trx) => {

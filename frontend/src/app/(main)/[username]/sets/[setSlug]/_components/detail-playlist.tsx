@@ -9,6 +9,8 @@ import UserCard from "../../../[trackSlug]/_components/user-card";
 import OtherUserPlaylistPanel from "./other-user-playlists-panel";
 import PlaylistActions from "./playlist-actions";
 import PlaylistDetailHeader from "./playlist-detall-header";
+import { LockIcon } from "lucide-react";
+import { P } from "shadcn-typography";
 
 interface DetailPlaylistProps {
   playlistSlug: string;
@@ -47,14 +49,27 @@ const DetailPlaylist = ({ playlistSlug }: DetailPlaylistProps) => {
                 isCurrentUser={playlist?.data?.userId === session?.user.id}
               />
             </div>
-            <div className="space-y-1 w-full">
-              {playlist?.data?.audios.map((playlistAudio, index) => (
-                <TrackCardCompact
-                  key={index}
-                  audio={playlistAudio.audio}
-                  index={index + 1}
-                />
-              ))}
+            <div className="space-y-5 w-full">
+              {playlist?.data?.type === "private" && (
+                <div className="flex space-x-2 items-center text-sm font-semibold p-2 text-muted-foreground">
+                  <LockIcon strokeWidth={2} size={13} />
+                  <span>This playlist is private</span>
+                </div>
+              )}
+
+              {playlist?.data?.description && (
+                <p className="leading-relaxed">{playlist.data.description}</p>
+              )}
+
+              <div className="space-y-1">
+                {playlist?.data?.audios.map((playlistAudio, index) => (
+                  <TrackCardCompact
+                    key={index}
+                    audio={playlistAudio.audio}
+                    index={index + 1}
+                  />
+                ))}
+              </div>
             </div>
           </div>
         </div>

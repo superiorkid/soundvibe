@@ -56,12 +56,36 @@ const PlaylistDetailHeader = ({ playlist }: PlaylistDetailHeaderProps) => {
           })}
         </p>
         <div className="relative aspect-square rounded-md overflow-hidden">
-          <Image
-            fill
-            src="https://images.unsplash.com/photo-1507808973436-a4ed7b5e87c9?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-            alt="playlist detail image"
-            className="object-cover"
-          />
+          {playlist.playlistCoverFile ? (
+            <Image
+              fill
+              src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/playlists/cover/${playlist.id}`}
+              alt="track image"
+              className="object-cover"
+              loading="lazy"
+              decoding="async"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            />
+          ) : (
+            <div className="absolute inset-0 bg-gradient-to-br from-amber-600/70 to-yellow-400/70 flex items-center justify-center">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="64"
+                height="64"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="white"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="opacity-80"
+              >
+                <path d="M9 18V5l12-2v13" />
+                <circle cx="6" cy="18" r="3" />
+                <circle cx="18" cy="16" r="3" />
+              </svg>
+            </div>
+          )}
         </div>
       </div>
     </header>

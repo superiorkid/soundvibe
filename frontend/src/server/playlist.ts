@@ -1,6 +1,9 @@
 "use server";
 
-import { TCreatePlaylistSchema } from "@/app/(main)/create-playlist-schema";
+import {
+  TCreatePlaylistSchema,
+  TUpdatePlaylistSchema,
+} from "@/app/(main)/create-playlist-schema";
 import { PlaylistFilterEnum } from "@/enums/playlist-filter-enum";
 import { getAxios } from "@/lib/axios";
 import { TApiResponse } from "@/types/api-response.type";
@@ -115,5 +118,36 @@ export async function unlikePlaylist(playlistId: string) {
   } catch (error) {
     console.error("Failed to like playlist:", error);
     throw new Error("Could not like playlist. Please try again.");
+  }
+}
+
+export async function deletePlaylist(playlistId: string) {
+  const axiosInstance = await getAxios();
+
+  try {
+    const response = await axiosInstance.delete(`/api/playlists/${playlistId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Failed to delete playlist:", error);
+    throw new Error("Could not delete playlist. Please try again.");
+  }
+}
+
+export async function updatePlaylist(params: {
+  formData: FormData;
+  playlistId: string;
+}) {
+  const { playlistId, formData } = params;
+  const axiosInstance = await getAxios();
+  try {
+    const response = await axiosInstance.patch(
+      `/api/playlists/${playlistId}`,
+      formData,
+      { headers: { "Content-Type": "multipart/form-data" } }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Failed to update playlist:", error);
+    throw new Error("Could not update playlsit. Please try again");
   }
 }

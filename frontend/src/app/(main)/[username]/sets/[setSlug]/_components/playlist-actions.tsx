@@ -1,17 +1,14 @@
 "use client";
 
+import CopyToClipboard from "@/app/(main)/_components/copy-to-clipboard";
 import { Button } from "@/components/ui/button";
 import { useLikePlaylist } from "@/hooks/tanstack/playlist";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 import { TPlaylist } from "@/types/playlist-type";
-import {
-  CopyIcon,
-  HeartIcon,
-  PencilIcon,
-  Trash2Icon,
-  UploadIcon,
-} from "lucide-react";
+import { CheckIcon, CopyIcon, HeartIcon, UploadIcon } from "lucide-react";
+import DeletePlaylistDialog from "./delete-playlist-dialog";
+import EditPlaylistDialog from "./edit-playlist-dialog";
 
 interface PlaylistActionsProps {
   playlist: TPlaylist;
@@ -45,15 +42,31 @@ const PlaylistActions = ({ playlist }: PlaylistActionsProps) => {
       <Button size="sm" variant="secondary">
         <UploadIcon strokeWidth={2} size={16} />
       </Button>
-      <Button size="sm" variant="secondary">
-        <CopyIcon strokeWidth={2} size={16} />
-      </Button>
-      <Button size="sm" variant="secondary">
-        <PencilIcon strokeWidth={2} size={16} />
-      </Button>
-      <Button size="sm" variant="secondary">
-        <Trash2Icon strokeWidth={2} size={16} />
-      </Button>
+      <CopyToClipboard
+        text={`${process.env.NEXT_PUBLIC_FRONTEND_URL}/${playlist.user.displayUsername}/sets/${playlist.slug}`}
+      >
+        {({ copied, onClick }) => (
+          <Button
+            size="sm"
+            variant="secondary"
+            onClick={onClick}
+            className="hover:cursor-pointer"
+          >
+            {copied ? (
+              <CheckIcon strokeWidth={2} size={16} />
+            ) : (
+              <CopyIcon strokeWidth={2} size={16} />
+            )}
+          </Button>
+        )}
+      </CopyToClipboard>
+
+      {session?.user.id === playlist.userId && (
+        <>
+          <EditPlaylistDialog playlist={playlist} />
+          <DeletePlaylistDialog playlistId={playlist.id} />
+        </>
+      )}
     </div>
   );
 };

@@ -73,7 +73,7 @@ export async function unlikeAudio(audioId: string) {
   const axiosInstance = await getAxios();
 
   try {
-    const response = await axiosInstance.delete(`/api/audio/${audioId}/like`);
+    const response = await axiosInstance.delete(`/api/audio/${audioId}/unlike`);
     return response.data as TApiResponse;
   } catch (error) {
     console.error("Failed to unlike audio track:", error);

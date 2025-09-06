@@ -1,15 +1,22 @@
 import {
   ConflictException,
+  ForbiddenException,
   Injectable,
   InternalServerErrorException,
   Logger,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
+import { Response } from 'express';
+import { createReadStream, statSync } from 'node:fs';
+import path, { join } from 'node:path';
 import slugify from 'slugify';
 import { PlaylistFilterEnum } from 'src/common/enums/playlist-filter.enum';
+import { FileUploadService } from 'src/shared/file-upload/file-upload.service';
 import { CreatePlaylistDTO } from './dto/create-playlist.dto';
+import { UpdatePlaylistDTO } from './dto/update-playlist.dto';
 import { PlaylistAudioRepository } from './playlist-audio.repository';
+import { PlaylistCoverFileRepository } from './playlist-cover-file.repository';
 import { PlaylistLikeRepository } from './playlist-like.repository';
 import { PlaylistRepository } from './playlist.repository';
 
@@ -21,6 +28,8 @@ export class PlaylistService {
     private playlistRepository: PlaylistRepository,
     private playlistAudioRepository: PlaylistAudioRepository,
     private playlistLikerepository: PlaylistLikeRepository,
+    private playlistCoverFileRepository: PlaylistCoverFileRepository,
+    private fileUploadService: FileUploadService,
   ) {}
 
   async getPlaylists(params: {
@@ -107,6 +116,102 @@ export class PlaylistService {
     }
   }
 
+  async getCover(params: { id: string; res: Response }) {
+    const { id, res } = params;
+
+    const playlist = await this.playlistRepository.findOne({
+      where: { id },
+      include: { playlistCoverFile: true },
+    });
+    if (!playlist || !playlist.playlistCoverFile)
+      throw new NotFoundException('Cover not found.');
+
+    const filePath = join(
+      process.cwd(),
+      'public',
+      playlist.playlistCoverFile.url,
+    );
+
+    try {
+      const stat = statSync(filePath);
+      const fileSize = stat.size;
+
+      res.writeHead(200, {
+        'Content-Length': fileSize,
+        'Content-Type': 'image/jpeg',
+        'Cache-Control': 'no-cache',
+      });
+
+      createReadStream(filePath).pipe(res);
+    } catch (error) {
+      console.error(error);
+      throw new NotFoundException('cover file not accessible');
+    }
+  }
+
+  async updatePlaylist(params: {
+    userId: string;
+    id: string;
+    updatePlaylistDTO: UpdatePlaylistDTO;
+  }) {
+    const { id, updatePlaylistDTO, userId } = params;
+
+    const playlist = await this.playlistRepository.findOne({
+      where: { id },
+      include: { playlistCoverFile: true },
+    });
+    if (!playlist) throw new NotFoundException('');
+    if (playlist.userId !== userId)
+      throw new ForbiddenException('You cannot update this playlist');
+
+    try {
+      if (updatePlaylistDTO.coverFile) {
+        // check if has remove
+        if (playlist.playlistCoverFile) {
+          // remove from local drive
+          await this.fileUploadService.remove(playlist.playlistCoverFile.url);
+          // remove from db
+          await this.playlistCoverFileRepository.delete({
+            where: { playlistId: id },
+          });
+        }
+
+        const playlistFolder = `${userId}/playlist/${playlist.slug}`;
+        const coverExtension =
+          path.extname(updatePlaylistDTO.coverFile.originalName) || '.png';
+        const savedPlaylistCover = await this.fileUploadService.upload(
+          updatePlaylistDTO.coverFile.buffer,
+          `${playlist.slug}${coverExtension}`,
+          playlistFolder,
+        );
+        await this.playlistCoverFileRepository.create({
+          data: {
+            url: savedPlaylistCover,
+            alt: `${playlist.title} cover`,
+            playlist: { connect: { id } },
+          },
+        });
+      }
+
+      await this.playlistRepository.update({
+        where: { id },
+        data: {
+          title: updatePlaylistDTO.title,
+          description: updatePlaylistDTO.description,
+          type: updatePlaylistDTO.type,
+        },
+      });
+
+      return {
+        success: true,
+        message: '',
+      };
+    } catch (error) {
+      this.logger.log(JSON.stringify(error));
+      throw new InternalServerErrorException('');
+    }
+  }
+
   async createPlaylist(params: {
     playlistDto: CreatePlaylistDTO;
     userId: string;
@@ -159,6 +264,7 @@ export class PlaylistService {
       const playlist = await this.playlistRepository.findOne({
         where: { slug },
         include: {
+          playlistCoverFile: true,
           likes: true,
           audios: {
             include: {

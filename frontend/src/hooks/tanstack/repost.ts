@@ -1,8 +1,9 @@
 import { getQueryClient } from "@/lib/query-client";
-import { audioKeys } from "@/lib/query-keys";
+import { audioKeys, playlistKeys } from "@/lib/query-keys";
 import { repost, undoRepost } from "@/server/repost";
 import { TAudio } from "@/types/audio.type";
 import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 const queryClient = getQueryClient();
 
@@ -72,6 +73,9 @@ export function useRepost(params: {
       queryClient.invalidateQueries({
         queryKey: audioKeys.all,
       });
+      queryClient.invalidateQueries({
+        queryKey: playlistKeys.all,
+      });
     },
     onSuccess: () => {
       onSuccess?.();
@@ -84,3 +88,42 @@ export function useRepost(params: {
     toggleRepostMutation: mutate,
   };
 }
+
+// export function useRepost(params: {
+//   audio: TAudio;
+//   userId: string;
+//   onSuccess?: () => void;
+// }) {
+//   const { audio, userId, onSuccess } = params;
+
+//   const hasReposted = !!audio.reposts.some(
+//     (repost) => repost.userId === userId
+//   );
+
+//   const { mutate, isPending } = useMutation({
+//     mutationFn: async () => {
+//       if (hasReposted) {
+//         return undoRepost(audio.id);
+//       }
+//       return repost(audio.id);
+//     },
+//     onError: () => {
+//       toast.error(`Failed to ${hasReposted ? "Unreposted" : "Repost"} audio.`);
+//     },
+//     onSuccess: () => {
+//       queryClient.invalidateQueries({
+//         queryKey: audioKeys.all,
+//       });
+//       queryClient.invalidateQueries({
+//         queryKey: playlistKeys.all,
+//       });
+//       onSuccess?.();
+//     },
+//   });
+
+//   return {
+//     hasReposted,
+//     isPending,
+//     toggleRepostMutation: mutate,
+//   };
+// }

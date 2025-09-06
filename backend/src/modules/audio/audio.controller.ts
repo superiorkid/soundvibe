@@ -157,7 +157,7 @@ export class AudioController {
     return this.audioService.getUsersWhoLikedAudio({ slug, limit: limitValue });
   }
 
-  @Delete(':id/like')
+  @Delete(':id/unlike')
   async unlikeAudio(@Param('id') id: string, @Session() session: UserSession) {
     const userId = session.user.id;
     return this.audioService.unlikeAudio({ audioId: id, userId });

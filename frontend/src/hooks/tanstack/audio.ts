@@ -125,6 +125,28 @@ export function useLike(audio: TAudio, userId: string) {
   return { hasLiked, isPending, toggleLikeMutation: mutate };
 }
 
+// export function useLike(audio: TAudio, userId: string) {
+//   const hasLiked = !!audio?.likes?.some((like) => like.userId === userId);
+
+//   const { mutate, isPending } = useMutation({
+//     mutationFn: async () => {
+//       if (hasLiked) {
+//         return unlikeAudio(audio.id);
+//       }
+//       return likeAudio(audio.id);
+//     },
+//     onError: () => {
+//       toast.error(`Failed to ${hasLiked ? "Unlike" : "Like"} audio.`);
+//     },
+//     onSuccess: () => {
+//       queryClient.invalidateQueries({ queryKey: audioKeys.all });
+//       queryClient.invalidateQueries({ queryKey: playlistKeys.all });
+//     },
+//   });
+
+//   return { hasLiked, isPending, toggleLikeMutation: mutate };
+// }
+
 export function useRecentLiked(params: { limit: number; query?: string }) {
   const { data: likedTracks, isPending } = useQuery({
     queryKey: audioKeys.recentLiked(params),
