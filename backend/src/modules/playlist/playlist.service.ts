@@ -446,12 +446,18 @@ export class PlaylistService {
     if (alreadyLikePlaylist) throw new ConflictException('');
 
     try {
-      await this.playlistLikerepository.create({
-        data: {
-          playlist: { connect: { id: playlistId } },
-          user: { connect: { id: userId } },
-        },
-      });
+      await Promise.all([
+        this.playlistLikerepository.create({
+          data: {
+            playlist: { connect: { id: playlistId } },
+            user: { connect: { id: userId } },
+          },
+        }),
+        this.playlistRepository.update({
+          where: { id: playlistId },
+          data: { likeCount: { increment: 1 } },
+        }),
+      ]);
 
       return {
         success: true,
@@ -480,9 +486,15 @@ export class PlaylistService {
     if (!alreadyLikePlaylist) throw new NotFoundException('');
 
     try {
-      await this.playlistLikerepository.delete({
-        where: { playlistId_userId: { playlistId, userId } },
-      });
+      await Promise.all([
+        this.playlistLikerepository.delete({
+          where: { playlistId_userId: { playlistId, userId } },
+        }),
+        this.playlistRepository.update({
+          where: { id: playlistId },
+          data: { likeCount: { decrement: 1 } },
+        }),
+      ]);
 
       return {
         success: true,

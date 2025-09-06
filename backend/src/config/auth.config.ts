@@ -25,13 +25,24 @@ export function createAuthConfig(
         customSession(async ({ user, session }) => {
           const userData = await database.user.findFirst({
             where: { id: user.id },
-            include: { likedTracks: true },
+            include: {
+              likedTracks: true,
+              playlists: {
+                orderBy: { updatedAt: 'desc' },
+                take: 3,
+                include: {
+                  playlistCoverFile: true,
+                },
+              },
+            },
           });
+
           return {
             session,
             user: {
               ...user,
               likedTracks: userData?.likedTracks,
+              playlists: userData?.playlists,
             },
           };
         }),
