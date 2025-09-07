@@ -22,7 +22,10 @@ const UserTooltip = ({ children, user }: UserTooltipProps) => {
           <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
         </Avatar>
         <div className="flex flex-col text-center space-y-1">
-          <Link href="#" className="font-medium text-sm">
+          <Link
+            href={`/${user.displayUsername}`}
+            className="font-medium text-sm hover:opacity-50"
+          >
             {user?.name}
           </Link>
           <Link href="#" className="flex items-center justify-center">

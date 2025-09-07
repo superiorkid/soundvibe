@@ -2,7 +2,10 @@
 
 import { PlayerActions } from "@/app/(main)/_components/player-actions";
 import { Button } from "@/components/ui/button";
-import { useAudioBySlug } from "@/hooks/tanstack/audio";
+import UserSummaryPanel from "@/components/user-summary-panel";
+import { useAudioBySlug, useUsersWhoLikedAudio } from "@/hooks/tanstack/audio";
+import { authClient } from "@/lib/auth-client";
+import { TUser } from "@/types/user.type";
 import { AlertCircleIcon, HeartIcon, MusicIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -10,11 +13,10 @@ import { Suspense } from "react";
 import Comments from "./comments";
 import CommentsEmpty from "./comments-empty";
 import FanRankPanel from "./fan-rank-panel";
-import LikeSummaryPanel from "./like-summary-panel";
 import TrackDescription from "./track-description";
 import TrackHeader from "./track-header";
 import UserCard from "./user-card";
-import { authClient } from "@/lib/auth-client";
+import LikeSummaryPanel from "./like-summary-panel";
 
 interface DetailTrackProps {
   slug: string;
@@ -151,10 +153,7 @@ const DetailTrack = ({ slug }: DetailTrackProps) => {
           </div>
 
           {/* likes */}
-          <LikeSummaryPanel
-            audioSlug={audio.data.slug}
-            username={audio.data.user.displayUsername}
-          />
+          <LikeSummaryPanel audioSlug={audio.data.slug} />
 
           {/* reposts */}
           <div className="space-y-5">

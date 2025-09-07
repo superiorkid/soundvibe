@@ -147,7 +147,11 @@ export function useLike(audio: TAudio, userId: string) {
 //   return { hasLiked, isPending, toggleLikeMutation: mutate };
 // }
 
-export function useRecentLiked(params: { limit: number; query?: string }) {
+export function useRecentLiked(params: {
+  limit: number;
+  query?: string;
+  username?: string;
+}) {
   const { data: likedTracks, isPending } = useQuery({
     queryKey: audioKeys.recentLiked(params),
     queryFn: async () => recentLike(params),

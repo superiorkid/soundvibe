@@ -2,6 +2,7 @@
 
 import { useUserByUsername } from "@/hooks/tanstack/user";
 import { randomGradient } from "@/lib/random-gradient";
+import { Loader2Icon } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 
@@ -16,8 +17,11 @@ const UserSpecificHeader = ({ username }: UserSpecificHeaderProps) => {
 
   if (isPending) {
     return (
-      <div>
-        <p>Loading...</p>
+      <div className="flex flex-col items-center justify-center h-[257px] gap-4">
+        <Loader2Icon size={40} strokeWidth={2} className="animate-spin" />
+        <span className="text-muted-foreground text-sm tracking-wide">
+          Loading...
+        </span>
       </div>
     );
   }
@@ -32,7 +36,7 @@ const UserSpecificHeader = ({ username }: UserSpecificHeaderProps) => {
 
   return (
     <div
-      className="h-[257px] flex gap-5 items-center py-3 px-7"
+      className="h-[257px] flex gap-7 items-center py-3 px-12"
       style={{ background: bgGradient }}
     >
       <div className="relative size-44 rounded-full overflow-hidden">
@@ -47,9 +51,20 @@ const UserSpecificHeader = ({ username }: UserSpecificHeaderProps) => {
         />
       </div>
 
-      <div>
-        <h1>Kygo</h1>
-        <p>admoaksmd</p>
+      <div className="font-semibold space-y-2">
+        <div>
+          <h1 className="text-background py-0.5 hover:text-zinc-300 text-3xl bg-foreground inline-block px-2 capitalize hover:cursor-pointer">
+            {user?.data?.name}
+          </h1>
+          <br />
+          <p className="text-zinc-400 bg-foreground inline-block px-2 py-0.5">
+            Al Henley AKA Thalbundt
+          </p>
+        </div>
+
+        <p className="text-zinc-400 bg-foreground inline-block px-2 py-0.5">
+          Manchester England, United Kingdom
+        </p>
       </div>
     </div>
   );

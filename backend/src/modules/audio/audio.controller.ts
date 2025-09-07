@@ -7,6 +7,7 @@ import {
   HttpCode,
   HttpStatus,
   Logger,
+  NotFoundException,
   Param,
   Post,
   Query,
@@ -29,6 +30,7 @@ import {
 } from '@nestjs/swagger';
 import type { Request, Response } from 'express';
 import { FormDataRequest } from 'nestjs-form-data';
+import { UsersRepository } from '../users/users.repository';
 import { AudioService } from './audio.service';
 import { UploadAudioDTO } from './dto/upload-audio.dto';
 
@@ -37,7 +39,10 @@ import { UploadAudioDTO } from './dto/upload-audio.dto';
 export class AudioController {
   protected readonly logger = new Logger(AudioController.name);
 
-  constructor(private audioService: AudioService) {}
+  constructor(
+    private audioService: AudioService,
+    private userRepository: UsersRepository,
+  ) {}
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
@@ -80,10 +85,22 @@ export class AudioController {
   async recentLikedTracks(
     @Query('limit') limit: number,
     @Query('query') query: string,
+    @Query('username') username: string,
     @Session() session: UserSession,
   ) {
-    const userId = session.user.id;
-    return this.audioService.getRecentLikedTracks({ userId, limit, query });
+    const user = username
+      ? await this.userRepository.findOne({
+          where: { displayUsername: username },
+        })
+      : session.user;
+
+    if (!user) throw new NotFoundException('user not found');
+
+    return this.audioService.getRecentLikedTracks({
+      userId: user.id,
+      limit,
+      query,
+    });
   }
 
   @Get('slug/:slug')

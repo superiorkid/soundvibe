@@ -3,13 +3,19 @@
 import { buttonVariants } from "@/components/ui/button";
 import { useRecentLiked } from "@/hooks/tanstack/audio";
 import { cn } from "@/lib/utils";
+import { TAudio } from "@/types/audio.type";
 import { Loader2Icon } from "lucide-react";
 import Link from "next/link";
 import TrackCardMini from "./track-card-mini";
-import { TAudio } from "@/types/audio.type";
 
-const LikedTracksPanel = () => {
-  const { likedTracks, isPending } = useRecentLiked({ limit: 3 });
+interface LikedTracksPanelProps {
+  username?: string;
+}
+
+const LikedTracksPanel = (props?: LikedTracksPanelProps) => {
+  const { username } = props || {};
+
+  const { likedTracks, isPending } = useRecentLiked({ username, limit: 3 });
   const total = likedTracks?.data?.total || 0;
 
   if (isPending) {

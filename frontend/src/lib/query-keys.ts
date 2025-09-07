@@ -10,10 +10,11 @@ export const audioKeys = {
   audioWithRepost: (showRepost: boolean) => [...audioKeys.all, { showRepost }],
   detailById: (audioId: string) => [...audioKeys.all, { audioId }],
   detailBySlug: (slug: string) => [...audioKeys.all, { slug }],
-  recentLiked: (params: { limit: number; query?: string }) => [
-    ...audioKeys.all,
-    params,
-  ],
+  recentLiked: (params: {
+    limit: number;
+    query?: string;
+    username?: string;
+  }) => [...audioKeys.all, params],
   usersLikesAudio: (params: { slug: string; limit: number }) => [
     ...audioKeys.all,
     { ...params, mode: "users-who-likes-audio" },
@@ -57,4 +58,8 @@ export const playlistKeys = {
 export const userKeys = {
   all: ["users"] as const,
   userByUsername: (username: string) => [...userKeys.all, { username }],
+  recentComments: (params: { limit: number; username?: string }) => [
+    ...userKeys.all,
+    { ...params, mode: "recent-comments" },
+  ],
 };

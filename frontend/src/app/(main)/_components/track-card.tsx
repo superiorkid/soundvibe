@@ -143,7 +143,7 @@ const TrackCard = ({
               <div>
                 <UserTooltip user={audio.user}>
                   <h2 className="font-semibold text-sm text-muted-foreground capitalize hover:opacity-50">
-                    <Link href="/username">
+                    <Link href={`/${audio.user.displayUsername}`}>
                       {audio.artist ?? "Unknown Artist"}
                     </Link>
                   </h2>
