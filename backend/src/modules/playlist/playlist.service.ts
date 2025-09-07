@@ -327,18 +327,28 @@ export class PlaylistService {
   async deletePlaylist(params: { userId: string; id: string }) {
     const { id, userId } = params;
 
-    const playlist = await this.playlistRepository.exists({ id, userId });
-    if (!playlist) throw new NotFoundException();
+    const playlist = await this.playlistRepository.findOne({
+      where: { id },
+      include: { playlistCoverFile: true },
+    });
+
+    if (!playlist) throw new NotFoundException('Playlist not found');
+    if (playlist.userId !== userId) throw new ForbiddenException();
 
     try {
+      if (playlist.playlistCoverFile) {
+        await this.fileUploadService.remove(playlist.playlistCoverFile.url);
+      }
+
       await this.playlistRepository.delete({ where: { id } });
+
       return {
         success: true,
-        message: '',
+        message: 'Playlist deleted successfully',
       };
     } catch (error) {
-      this.logger.log(JSON.stringify(error));
-      throw new InternalServerErrorException();
+      this.logger.error(error);
+      throw new InternalServerErrorException('Failed to delete playlist');
     }
   }
 
