@@ -1,6 +1,6 @@
 "use server";
 
-import { TCommentSchema } from "@/app/(main)/[username]/[trackSlug]/comment-schema";
+import { TCommentSchema } from "@/app/(main)/[username]/(detail)/[trackSlug]/comment-schema";
 import { CommentFilterEnum } from "@/enums/comment-filter-enum";
 import { getAxios } from "@/lib/axios";
 import { TApiResponse } from "@/types/api-response.type";

@@ -27,18 +27,36 @@ const PlaylistCardMini = ({
     <div className="flex justify-between items-center">
       <div className="flex items-center gap-3">
         <div className="relative size-12">
-          <Image
-            fill
-            src={
-              playlist.coverUrl ||
-              "https://images.unsplash.com/photo-1507808973436-a4ed7b5e87c9?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-            }
-            alt={`${playlist.title} cover`}
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            decoding="async"
-            loading="lazy"
-            className="object-cover rounded-md"
-          />
+          {playlist.playlistCoverFile ? (
+            <Image
+              fill
+              src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/playlists/cover/${playlist.id}`}
+              alt={`${playlist.title} cover`}
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              decoding="async"
+              loading="lazy"
+              className="object-cover rounded-md"
+            />
+          ) : (
+            <div className="absolute inset-0 bg-gradient-to-br from-amber-600/70 to-yellow-400/70 flex items-center justify-center">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="32"
+                height="32"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="white"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="opacity-80"
+              >
+                <path d="M9 18V5l12-2v13" />
+                <circle cx="6" cy="18" r="3" />
+                <circle cx="18" cy="16" r="3" />
+              </svg>
+            </div>
+          )}
         </div>
         <div className="space-y-0.5">
           <Link

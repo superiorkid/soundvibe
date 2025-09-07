@@ -53,3 +53,8 @@ export const playlistKeys = {
   }) => [...playlistKeys.all, { user: "me", ...params }],
   detailBySlug: (slug: string) => [...playlistKeys.all, { slug }],
 };
+
+export const userKeys = {
+  all: ["users"] as const,
+  userByUsername: (username: string) => [...userKeys.all, { username }],
+};

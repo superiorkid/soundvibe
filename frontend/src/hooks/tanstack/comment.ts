@@ -1,6 +1,6 @@
 "use client";
 
-import { TCommentSchema } from "@/app/(main)/[username]/[trackSlug]/comment-schema";
+import { TCommentSchema } from "@/app/(main)/[username]/(detail)/[trackSlug]/comment-schema";
 import { CommentFilterEnum } from "@/enums/comment-filter-enum";
 import { getQueryClient } from "@/lib/query-client";
 import { audioKeys, commentKeys } from "@/lib/query-keys";

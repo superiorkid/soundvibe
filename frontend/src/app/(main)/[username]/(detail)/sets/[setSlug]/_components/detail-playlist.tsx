@@ -7,10 +7,10 @@ import { authClient } from "@/lib/auth-client";
 import { TPlaylist } from "@/types/playlist-type";
 import { TUser } from "@/types/user.type";
 import { LockIcon } from "lucide-react";
-import UserCard from "../../../[trackSlug]/_components/user-card";
 import OtherUserPlaylistPanel from "./other-user-playlists-panel";
 import PlaylistActions from "./playlist-actions";
 import PlaylistDetailHeader from "./playlist-detall-header";
+import UserCard from "@/app/(main)/[username]/(detail)/[trackSlug]/_components/user-card";
 
 interface DetailPlaylistProps {
   playlistSlug: string;
