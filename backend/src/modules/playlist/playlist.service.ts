@@ -265,7 +265,7 @@ export class PlaylistService {
         where: { slug },
         include: {
           playlistCoverFile: true,
-          likes: true,
+          likes: { include: { user: true } },
           audios: {
             include: {
               audio: {

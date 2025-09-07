@@ -27,7 +27,7 @@ const OtherUserPlaylistPanel = () => {
           playlists from this user
         </h1>
         <Link
-          href="#"
+          href={`/${(session?.user as TUser).displayUsername}/sets`}
           className={cn(
             buttonVariants({
               className: "text-xs text-muted-foreground tracking-wide",
