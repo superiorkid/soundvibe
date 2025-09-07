@@ -1,16 +1,16 @@
 "use client";
 
+import AppFooter from "@/app/_components/app-footer";
 import TrackCardCompact from "@/components/track-card-compact";
 import { usePlaylistBySlug } from "@/hooks/tanstack/playlist";
 import { authClient } from "@/lib/auth-client";
 import { TPlaylist } from "@/types/playlist-type";
 import { TUser } from "@/types/user.type";
+import { LockIcon } from "lucide-react";
 import UserCard from "../../../[trackSlug]/_components/user-card";
 import OtherUserPlaylistPanel from "./other-user-playlists-panel";
 import PlaylistActions from "./playlist-actions";
 import PlaylistDetailHeader from "./playlist-detall-header";
-import { LockIcon } from "lucide-react";
-import { P } from "shadcn-typography";
 
 interface DetailPlaylistProps {
   playlistSlug: string;
@@ -73,8 +73,13 @@ const DetailPlaylist = ({ playlistSlug }: DetailPlaylistProps) => {
             </div>
           </div>
         </div>
-        <div className="w-[330px] my-4">
+        <div className="w-[330px] my-4 space-y-6">
           <OtherUserPlaylistPanel />
+
+          <AppFooter className="text-sm text-gray-700">
+            <AppFooter.Brand name="SoundVibe" />
+            <AppFooter.Language label="English (US)" />
+          </AppFooter>
         </div>
       </div>
     </div>
