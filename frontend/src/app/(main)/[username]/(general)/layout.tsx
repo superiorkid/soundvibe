@@ -38,7 +38,7 @@ const UserSpecificLayout = async ({
           <UserContentTabs />
         </div>
         <div className="flex gap-12">
-          <div className="flex-1 bg-amber-500">{children}</div>
+          <div className="flex-1">{children}</div>
 
           <div className="w-[344px] space-y-8">
             <UserStatPanel />

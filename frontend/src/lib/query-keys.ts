@@ -62,4 +62,8 @@ export const userKeys = {
     ...userKeys.all,
     { ...params, mode: "recent-comments" },
   ],
+  userTracks: (params: { username: string; filter: "popular" | "latest" }) => [
+    ...userKeys.all,
+    { ...params, mode: "user-tracks" },
+  ],
 };

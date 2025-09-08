@@ -1,3 +1,4 @@
+import { Session, type UserSession } from '@mguay/nestjs-better-auth';
 import {
   Controller,
   Get,
@@ -7,9 +8,8 @@ import {
   Query,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { UsersService } from './users.service';
-import { Session, type UserSession } from '@mguay/nestjs-better-auth';
 import { UsersRepository } from './users.repository';
+import { UsersService } from './users.service';
 
 @Controller('users')
 @ApiTags('users')
@@ -22,6 +22,19 @@ export class UsersController {
   @Get('username/:username')
   async getUserByUsername(@Param('username') username: string) {
     return this.usersService.findOneByUsername(username);
+  }
+
+  @Get('/tracks/:username')
+  async getUserTracks(
+    @Param('username') username: string,
+    @Query('filter') filter: 'latest' | 'popular',
+  ) {
+    return this.usersService.getUserTracks({ filter, username });
+  }
+
+  @Get('/reposts/:username')
+  async getUserReposts(@Param('username') username: string) {
+    return this.usersService.getUserReposts(username);
   }
 
   // get current user comments

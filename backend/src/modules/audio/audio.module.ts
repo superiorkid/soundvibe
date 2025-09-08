@@ -13,7 +13,7 @@ import { LikeRepository } from './like.repository';
   imports: [
     DatabaseModule,
     FileUploadModule,
-    UsersModule,
+    forwardRef(() => UsersModule),
     forwardRef(() => RepostModule),
   ],
   providers: [

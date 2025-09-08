@@ -1,5 +1,9 @@
 import { userKeys } from "@/lib/query-keys";
-import { getRecentUserComments, getUserByUsername } from "@/server/user";
+import {
+  getRecentUserComments,
+  getUserByUsername,
+  getUserTracks,
+} from "@/server/user";
 import { useQuery } from "@tanstack/react-query";
 
 export const useUserByUsername = (username: string) => {
@@ -22,4 +26,16 @@ export const useRecentComment = (params: {
   });
 
   return { comments: data, isPending, isError };
+};
+
+export const useUserTracks = (params: {
+  username: string;
+  filter: "popular" | "latest";
+}) => {
+  const { data, isPending, isError } = useQuery({
+    queryKey: userKeys.userTracks(params),
+    queryFn: async () => getUserTracks(params),
+  });
+
+  return { tracks: data, isPending, isError };
 };
