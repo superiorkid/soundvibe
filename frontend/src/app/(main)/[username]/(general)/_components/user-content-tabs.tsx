@@ -5,7 +5,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { authClient } from "@/lib/auth-client";
 import { TUser } from "@/types/user.type";
-import { EllipsisIcon } from "lucide-react";
+import {
+  EllipsisIcon,
+  PencilIcon,
+  UploadIcon,
+  UserCheckIcon,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useMemo } from "react";
@@ -15,9 +20,15 @@ type TMenu = {
   label: string;
 };
 
-const UserContentTabs = () => {
+interface UserContentTabs {
+  username: string;
+}
+
+const UserContentTabs = ({ username }: UserContentTabs) => {
   const pathname = usePathname();
   const { data: session, isPending } = authClient.useSession();
+
+  const isCurrentUser = username === (session?.user as TUser)?.displayUsername;
 
   const tabMenus = useMemo<TMenu[]>(() => {
     if (!session?.user) return [];
@@ -56,16 +67,30 @@ const UserContentTabs = () => {
           ))}
         </TabsList>
       </Tabs>
-      <div className="flex items-center space-x-4">
+
+      <div className="flex items-center space-x-3">
         <Button size="sm" className="rounded-sm">
-          Follow
-        </Button>
-        <Button size="sm" className="rounded-sm">
+          <UploadIcon size={16} className="mr-1" />
           Share
         </Button>
-        <Button size="sm" className="rounded-sm">
-          <EllipsisIcon />
-        </Button>
+        {isCurrentUser ? (
+          <>
+            <Button size="sm" className="rounded-sm">
+              <PencilIcon size={16} className="mr-1" />
+              Edit
+            </Button>
+          </>
+        ) : (
+          <>
+            <Button size="sm" className="rounded-sm">
+              <UserCheckIcon size={16} className="mr-1" />
+              Follow
+            </Button>
+            <Button size="sm" className="rounded-sm">
+              <EllipsisIcon />
+            </Button>
+          </>
+        )}
       </div>
     </div>
   );

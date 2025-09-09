@@ -13,4 +13,7 @@ export type TUser = {
   updatedAt: Date;
   likedTracks: TLike[];
   playlists: TPlaylist[];
+  _count?: {
+    audios?: number;
+  };
 };

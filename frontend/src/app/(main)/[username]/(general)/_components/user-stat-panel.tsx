@@ -1,7 +1,15 @@
-import { Label } from "@/components/ui/label";
-import React from "react";
+"use client";
 
-const UserStatPanel = () => {
+import { Label } from "@/components/ui/label";
+import { useUserByUsername } from "@/hooks/tanstack/user";
+
+interface UserStatPanelProps {
+  username: string;
+}
+
+const UserStatPanel = ({ username }: UserStatPanelProps) => {
+  const { isPending, user } = useUserByUsername(username);
+
   return (
     <section className="space-y-4">
       <div className="flex justify-between gap-4">
@@ -21,7 +29,9 @@ const UserStatPanel = () => {
           <Label className="text-xs font-semibold tracking-wide text-muted-foreground">
             Tracks
           </Label>
-          <h2 className="text-3xl font-bold">27</h2>
+          <h2 className="text-3xl font-bold">
+            {isPending ? 0 : user?.data?._count?.audios}
+          </h2>
         </div>
       </div>
       <p className="text-muted-foreground text-sm leading-relaxed">

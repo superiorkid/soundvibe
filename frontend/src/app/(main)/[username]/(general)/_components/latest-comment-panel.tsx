@@ -10,12 +10,16 @@ import { AlertTriangleIcon, Loader2Icon } from "lucide-react";
 import Link from "next/link";
 import RecentCommentCard from "./recent-comment-card";
 
-const LatestCommentPanel = () => {
+interface LatestCommentPanelProps {
+  usernameProps?: string;
+}
+
+const LatestCommentPanel = (props?: LatestCommentPanelProps) => {
+  const { usernameProps } = props || {};
+
   const { data: session, isPending: sessionPending } = authClient.useSession();
 
-  const username = session?.user
-    ? (session.user as TUser).displayUsername
-    : undefined;
+  const username = usernameProps || (session?.user as TUser)?.displayUsername;
 
   const { comments, isError, isPending } = useRecentComment({
     limit: 3,

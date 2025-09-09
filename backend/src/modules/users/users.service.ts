@@ -26,6 +26,9 @@ export class UsersService {
     try {
       const user = await this.userRepository.findOne({
         where: { displayUsername: username },
+        include: {
+          _count: { select: { audios: true } },
+        },
       });
       if (!user) throw new NotFoundException();
 
