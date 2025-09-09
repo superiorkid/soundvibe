@@ -70,4 +70,8 @@ export const userKeys = {
     ...userKeys.all,
     { mode: "reposted-tracks", username },
   ],
+  userPlaylists: (username: string) => [
+    ...userKeys.all,
+    { mode: "playlists-tracks", username },
+  ],
 };

@@ -2,6 +2,7 @@ import { userKeys } from "@/lib/query-keys";
 import {
   getRecentUserComments,
   getUserByUsername,
+  getUserPlaylists,
   getUserReposts,
   getUserTracks,
 } from "@/server/user";
@@ -52,4 +53,21 @@ export const useUserReposts = (username: string) => {
   });
 
   return { tracks, isPending, isError };
+};
+
+export const useUserPlaylist = (username: string) => {
+  const {
+    data: playlists,
+    isPending,
+    isError,
+  } = useQuery({
+    queryKey: userKeys.userPlaylists(username),
+    queryFn: async () => getUserPlaylists(username),
+  });
+
+  return {
+    playlists,
+    isError,
+    isPending,
+  };
 };

@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { AudioRepository } from '../audio/audio.repository';
 import { CommentRepository } from '../comment/comment.repository';
+import { PlaylistRepository } from '../playlist/playlist.repository';
 import { RepostRepository } from '../repost/repost.repository';
 import { UsersRepository } from './users.repository';
 
@@ -18,6 +19,7 @@ export class UsersService {
     private commentRepository: CommentRepository,
     private audioRepository: AudioRepository,
     private repostRepository: RepostRepository,
+    private playlistRepository: PlaylistRepository,
   ) {}
 
   async findOneByUsername(username: string) {
@@ -142,7 +144,56 @@ export class UsersService {
     } catch (error) {
       this.logger.error(JSON.stringify(error));
       throw new InternalServerErrorException(
-        'Failed to retrieve recent liked tracks.',
+        'Failed to retrieve user reposts.',
+      );
+    }
+  }
+
+  async getUserPlaylists(username: string) {
+    try {
+      const playlists = await this.playlistRepository.findAll({
+        where: { user: { displayUsername: username } },
+        include: {
+          playlistCoverFile: true,
+          likes: { include: { user: true } },
+          audios: {
+            include: {
+              audio: {
+                include: {
+                  audioFile: true,
+                  coverFile: true,
+                  genre: true,
+                  user: true,
+                  likes: { include: { user: true } },
+                  reposts: { include: { user: true } },
+                },
+              },
+            },
+          },
+          user: true,
+        },
+      });
+
+      const playlistWithStreamUrl = playlists.map((playlist) => ({
+        ...playlist,
+        audios: playlist.audios.map((playlistAudio) => ({
+          ...playlistAudio,
+          audio: {
+            ...playlistAudio.audio,
+            streamUrl: `/api/v1/audio/stream/${playlistAudio.audio.id}`,
+          },
+        })),
+      }));
+
+      return {
+        success: true,
+        message: '',
+        data: playlistWithStreamUrl,
+      };
+    } catch (error) {
+      this.logger.error(JSON.stringify(error));
+      throw new InternalServerErrorException(
+        'Failed to retrieve user playlists.',
       );
     }
   }

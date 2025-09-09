@@ -1,20 +1,21 @@
 "use client";
 
+import { useAudio } from "@/context/audio-context";
+import { cn } from "@/lib/utils";
 import { TAudio } from "@/types/audio.type";
 import { PauseIcon, PlayIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import TrackCardCompactActions from "./track-card-compact-actions";
 import { Button } from "./ui/button";
-import { useAudio } from "@/context/audio-context";
-import { cn } from "@/lib/utils";
 
 interface TrackCardCompactProps {
   audio: TAudio;
   index: number;
+  onPlay?: (audio: TAudio) => void;
 }
 
-const TrackCardCompact = ({ audio, index }: TrackCardCompactProps) => {
+const TrackCardCompact = ({ audio, index, onPlay }: TrackCardCompactProps) => {
   const { currentTrack, isPlaying, playTrack, togglePlay } = useAudio();
 
   const isThisTrackPlaying =
@@ -26,6 +27,8 @@ const TrackCardCompact = ({ audio, index }: TrackCardCompactProps) => {
     } else {
       playTrack(audio);
     }
+
+    onPlay?.(audio);
   };
 
   return (

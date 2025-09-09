@@ -3,6 +3,7 @@
 import TrackCard from "@/app/(main)/_components/track-card";
 import { useUserReposts } from "@/hooks/tanstack/user";
 import { TAudio } from "@/types/audio.type";
+import { Loader2Icon } from "lucide-react";
 import React from "react";
 
 interface RepostsPageProps {
@@ -14,8 +15,8 @@ const RepostsPage = ({ username }: RepostsPageProps) => {
 
   if (isPending) {
     return (
-      <div>
-        <p>Loading...</p>
+      <div className="flex justify-center items-center mt-6">
+        <Loader2Icon size={25} className="animate-spin" />
       </div>
     );
   }
@@ -31,7 +32,9 @@ const RepostsPage = ({ username }: RepostsPageProps) => {
   if (!tracks?.data || tracks.data.length === 0) {
     return (
       <div className="mt-6 flex flex-col items-center justify-center text-muted-foreground">
-        <p className="text-lg">No tracks uploaded yet</p>
+        <p className="text-lg">
+          No reposts found yet. Be the first to share some music!
+        </p>
       </div>
     );
   }

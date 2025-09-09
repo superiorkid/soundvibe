@@ -6,6 +6,7 @@ import { UsersService } from './users.service';
 import { CommentModule } from '../comment/comment.module';
 import { AudioModule } from '../audio/audio.module';
 import { RepostModule } from '../repost/repost.module';
+import { PlaylistModule } from '../playlist/playlist.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { RepostModule } from '../repost/repost.module';
     forwardRef(() => CommentModule),
     forwardRef(() => AudioModule),
     RepostModule,
+    forwardRef(() => PlaylistModule),
   ],
   providers: [UsersRepository, UsersService],
   controllers: [UsersController],

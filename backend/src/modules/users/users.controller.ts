@@ -37,6 +37,11 @@ export class UsersController {
     return this.usersService.getUserReposts(username);
   }
 
+  @Get('/playlists/:username')
+  async getUserPlaylists(@Param('username') username: string) {
+    return this.usersService.getUserPlaylists(username);
+  }
+
   // get current user comments
   @Get('/comments')
   async getRecentComments(

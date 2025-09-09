@@ -4,6 +4,7 @@ import { getAxios } from "@/lib/axios";
 import { TApiResponse } from "@/types/api-response.type";
 import { TAudio } from "@/types/audio.type";
 import { TComment } from "@/types/comment.type";
+import { TPlaylist } from "@/types/playlist-type";
 import { TRepost } from "@/types/repost.type";
 import { TUser } from "@/types/user.type";
 
@@ -68,7 +69,21 @@ export async function getUserReposts(username: string) {
     );
     return response.data as TApiResponse<TRepost[]>;
   } catch (error) {
-    console.error("failed to get user tracks:", error);
-    throw new Error("failed to get user tracks");
+    console.error("failed to get user reposts:", error);
+    throw new Error("failed to get user reposts");
+  }
+}
+
+export async function getUserPlaylists(username: string) {
+  const axiosInstance = await getAxios();
+
+  try {
+    const response = await axiosInstance.get(
+      `/api/v1/users/playlists/${username}`
+    );
+    return response.data as TApiResponse<TPlaylist[]>;
+  } catch (error) {
+    console.error("failed to get user playlists:", error);
+    throw new Error("failed to get user playlists");
   }
 }

@@ -1,7 +1,7 @@
 import { TCreatePlaylistSchema } from "@/app/(main)/create-playlist-schema";
 import { PlaylistFilterEnum } from "@/enums/playlist-filter-enum";
 import { getQueryClient } from "@/lib/query-client";
-import { playlistKeys } from "@/lib/query-keys";
+import { playlistKeys, userKeys } from "@/lib/query-keys";
 import {
   addAudioToPlaylist,
   createPlaylist,
@@ -191,6 +191,7 @@ export function useLikePlaylist(params: {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: playlistKeys.all });
+      queryClient.invalidateQueries({ queryKey: userKeys.all });
     },
   });
 
