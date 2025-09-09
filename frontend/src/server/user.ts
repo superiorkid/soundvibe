@@ -11,7 +11,9 @@ export async function getUserByUsername(username: string) {
   const axiosInstance = await getAxios();
 
   try {
-    const response = await axiosInstance.get(`/api/users/username/${username}`);
+    const response = await axiosInstance.get(
+      `/api/v1/users/username/${username}`
+    );
     return response.data as TApiResponse<TUser>;
   } catch (error) {
     console.error("failed to get user by username:", error);
@@ -26,7 +28,7 @@ export async function getRecentUserComments(params: {
   const { limit, username } = params;
   const axiosInstance = await getAxios();
   try {
-    const response = await axiosInstance.get(`/api/users/comments`, {
+    const response = await axiosInstance.get(`/api/v1/users/comments`, {
       params: { username, take: limit },
     });
     return response.data as TApiResponse<TComment[]>;
@@ -44,9 +46,12 @@ export async function getUserTracks(params: {
   const axiosInstance = await getAxios();
 
   try {
-    const response = await axiosInstance.get(`/api/users/tracks/${username}`, {
-      params: { filter },
-    });
+    const response = await axiosInstance.get(
+      `/api/v1/users/tracks/${username}`,
+      {
+        params: { filter },
+      }
+    );
     return response.data as TApiResponse<TAudio[]>;
   } catch (error) {
     console.error("failed to get user tracks:", error);
@@ -58,8 +63,10 @@ export async function getUserReposts(username: string) {
   const axiosInstance = await getAxios();
 
   try {
-    const response = await axiosInstance.get(`/api/users/reposts/${username}`);
-    return response.data as TApiResponse<[]>;
+    const response = await axiosInstance.get(
+      `/api/v1/users/reposts/${username}`
+    );
+    return response.data as TApiResponse<TRepost[]>;
   } catch (error) {
     console.error("failed to get user tracks:", error);
     throw new Error("failed to get user tracks");

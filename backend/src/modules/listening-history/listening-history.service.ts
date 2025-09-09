@@ -64,7 +64,7 @@ export class ListeningHistoryService {
           ...record,
           audio: {
             ...record.audio,
-            streamUrl: `/api/audio/stream/${record.audioId}`,
+            streamUrl: `/api/v1/audio/stream/${record.audioId}`,
           },
         })),
       };

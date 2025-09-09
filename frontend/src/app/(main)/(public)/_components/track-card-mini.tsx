@@ -22,7 +22,7 @@ const TrackCardMini = ({ audio }: TrackCardMiniProps) => {
         {audio?.coverFile ? (
           <Image
             fill
-            src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/audio/cover/${audio.id}`}
+            src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/audio/cover/${audio.id}`}
             alt={`${audio.title} image`}
             className="object-cover rounded-md"
             loading="lazy"

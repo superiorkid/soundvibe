@@ -11,7 +11,7 @@ export async function findAllAudio(params: { showRepost: boolean }) {
   const axiosInstance = await getAxios();
 
   try {
-    const response = await axiosInstance.get("/api/audio", {
+    const response = await axiosInstance.get("/api/v1/audio", {
       params: { showRepost },
     });
     return response.data as TApiResponse<
@@ -33,7 +33,7 @@ export async function findOneBySlug(slug: string) {
   const axiosInstance = await getAxios();
 
   try {
-    const response = await axiosInstance.get(`/api/audio/slug/${slug}`);
+    const response = await axiosInstance.get(`/api/v1/audio/slug/${slug}`);
     return response.data as TApiResponse<TAudio>;
   } catch (error) {
     console.error("Failed to fetch audio detail:", error);
@@ -45,7 +45,7 @@ export async function uploadAudio(formData: FormData) {
   const axiosInstance = await getAxios();
 
   try {
-    const response = await axiosInstance.post("/api/audio", formData, {
+    const response = await axiosInstance.post("/api/v1/audio", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
@@ -61,7 +61,7 @@ export async function likeAudio(audioId: string) {
   const axiosInstance = await getAxios();
 
   try {
-    const response = await axiosInstance.post(`/api/audio/${audioId}/like`);
+    const response = await axiosInstance.post(`/api/v1/audio/${audioId}/like`);
     return response.data as TApiResponse;
   } catch (error) {
     console.error("Failed to like audio track:", error);
@@ -73,7 +73,9 @@ export async function unlikeAudio(audioId: string) {
   const axiosInstance = await getAxios();
 
   try {
-    const response = await axiosInstance.delete(`/api/audio/${audioId}/unlike`);
+    const response = await axiosInstance.delete(
+      `/api/v1/audio/${audioId}/unlike`
+    );
     return response.data as TApiResponse;
   } catch (error) {
     console.error("Failed to unlike audio track:", error);
@@ -90,7 +92,7 @@ export async function recentLike(params: {
   const axiosInstance = await getAxios();
 
   try {
-    const response = await axiosInstance.get("/api/audio/liked/recent", {
+    const response = await axiosInstance.get("/api/v1/audio/liked/recent", {
       params: { limit, query, username },
     });
     return response.data as TApiResponse<{ total: number; recent: TLike[] }>;
@@ -106,7 +108,7 @@ export async function playIncrement(audioId: string) {
   const axiosInstance = await getAxios();
 
   try {
-    const response = await axiosInstance.post(`/api/audio/${audioId}/play`);
+    const response = await axiosInstance.post(`/api/v1/audio/${audioId}/play`);
     return response.data as TApiResponse;
   } catch (error) {
     console.error("Failed to increment play count:", error);
@@ -122,9 +124,12 @@ export async function getUsersWhoLikedAudio(params: {
   const axiosInstance = await getAxios();
 
   try {
-    const response = await axiosInstance.get(`/api/audio/${slug}/like/users`, {
-      params: { limit },
-    });
+    const response = await axiosInstance.get(
+      `/api/v1/audio/${slug}/like/users`,
+      {
+        params: { limit },
+      }
+    );
     return response.data as TApiResponse<{ total: number; result: TLike[] }>;
   } catch (error) {
     console.error("Failed to increment play count:", error);
@@ -137,7 +142,7 @@ export async function getTopFans(params: { days: number; audioId: string }) {
   const axiosInstance = await getAxios();
 
   try {
-    const response = await axiosInstance.get(`/api/audio/${audioId}/fans`, {
+    const response = await axiosInstance.get(`/api/v1/audio/${audioId}/fans`, {
       params: days !== 0 ? { days } : {},
     });
     return response.data as TApiResponse<{ user: TUser; plays: number }[]>;

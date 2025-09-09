@@ -141,7 +141,7 @@ const CreatePlaylist = ({ audio }: CreatePlaylistProps) => {
           {audio.coverFile ? (
             <Image
               fill
-              src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/audio/cover/${audio.id}`}
+              src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/audio/cover/${audio.id}`}
               alt="playlistn cover"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               decoding="async"

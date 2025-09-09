@@ -59,7 +59,7 @@ const PlaylistDetailHeader = ({ playlist }: PlaylistDetailHeaderProps) => {
           {playlist.playlistCoverFile ? (
             <Image
               fill
-              src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/playlists/cover/${playlist.id}`}
+              src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/playlists/cover/${playlist.id}`}
               alt="track image"
               className="object-cover"
               loading="lazy"

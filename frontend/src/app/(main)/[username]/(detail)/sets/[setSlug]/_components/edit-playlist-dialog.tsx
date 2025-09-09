@@ -109,7 +109,7 @@ const EditPlaylistDialog = ({ playlist }: EditPlaylistDialogProps) => {
               ) : form.getValues("coverUrl") ? (
                 <Image
                   fill
-                  src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/playlists/cover/${playlist.id}`}
+                  src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/playlists/cover/${playlist.id}`}
                   alt="playlist cover"
                   className="object-cover"
                 />

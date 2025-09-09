@@ -10,7 +10,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { RepostService } from './repost.service';
 import { Session, type UserSession } from '@mguay/nestjs-better-auth';
 
-@Controller('audio/:audioId/reposts')
+@Controller({ path: 'audio/:audioId/reposts', version: '1' })
 @ApiTags('Reposts')
 export class RepostController {
   constructor(private repostService: RepostService) {}

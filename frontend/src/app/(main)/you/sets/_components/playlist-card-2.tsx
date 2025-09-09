@@ -30,7 +30,7 @@ const PlaylistCard2 = ({ playlist }: PlaylistCard2Props) => {
             fill
             src={
               playlistFirstAudio
-                ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/audio/cover/${playlistFirstAudio.id}`
+                ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/audio/cover/${playlistFirstAudio.id}`
                 : "https://unsplash.com/photos/an-abstract-background-of-multicolored-lines-and-swirls-TIv00yVBYtI"
             }
             alt={`${playlist.title} image`}

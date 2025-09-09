@@ -1,4 +1,8 @@
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import {
+  INestApplication,
+  ValidationPipe,
+  VersioningType,
+} from '@nestjs/common';
 
 export async function appConfig(app: INestApplication) {
   app.useGlobalPipes(
@@ -8,6 +12,8 @@ export async function appConfig(app: INestApplication) {
       forbidNonWhitelisted: true,
     }),
   ); // Transform is recomended configuration for avoind issues with arrays of files transformations
+
+  app.enableVersioning({ type: VersioningType.URI });
   app.setGlobalPrefix('api');
   await app.listen(process.env.PORT ?? 8000);
 }

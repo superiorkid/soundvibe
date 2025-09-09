@@ -30,7 +30,7 @@ const PlaylistCardMini = ({
           {playlist.playlistCoverFile ? (
             <Image
               fill
-              src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/playlists/cover/${playlist.id}`}
+              src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/playlists/cover/${playlist.id}`}
               alt={`${playlist.title} cover`}
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               decoding="async"

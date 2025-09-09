@@ -1,9 +1,6 @@
 "use server";
 
-import {
-  TCreatePlaylistSchema,
-  TUpdatePlaylistSchema,
-} from "@/app/(main)/create-playlist-schema";
+import { TCreatePlaylistSchema } from "@/app/(main)/create-playlist-schema";
 import { PlaylistFilterEnum } from "@/enums/playlist-filter-enum";
 import { getAxios } from "@/lib/axios";
 import { TApiResponse } from "@/types/api-response.type";
@@ -16,7 +13,7 @@ export async function getCurrentUserPlaylist(params?: {
   const axiosInstance = await getAxios();
 
   try {
-    const response = await axiosInstance.get("/api/playlists/me", {
+    const response = await axiosInstance.get("/api/v1/playlists/me", {
       params,
     });
     return response.data as TApiResponse<TPlaylist[]>;
@@ -33,7 +30,7 @@ export async function createPlaylist(
 
   try {
     const response = await axiosInstance.post(
-      "/api/playlists",
+      "/api/v1/playlists",
       createPlaylistSchema
     );
     return response.data as TApiResponse<TPlaylist>;
@@ -53,7 +50,7 @@ export async function addAudioToPlaylist(params: {
 
   try {
     const response = await axiosInstance.post(
-      `/api/playlists/${playlistId}/audio/${audioId}`
+      `/api/v1/playlists/${playlistId}/audio/${audioId}`
     );
     return response.data as TApiResponse;
   } catch (error) {
@@ -72,7 +69,7 @@ export async function removeAudioFromPlaylist(params: {
 
   try {
     const response = await axiosInstance.delete(
-      `/api/playlists/${playlistId}/audio/${audioId}`
+      `/api/v1/playlists/${playlistId}/audio/${audioId}`
     );
     return response.data as TApiResponse;
   } catch (error) {
@@ -85,7 +82,7 @@ export async function getPlaylistBySlug(slug: string) {
   const axiosInstance = await getAxios();
 
   try {
-    const response = await axiosInstance.get(`/api/playlists/slug/${slug}`);
+    const response = await axiosInstance.get(`/api/v1/playlists/slug/${slug}`);
     return response.data as TApiResponse<TPlaylist>;
   } catch (error) {
     console.error("Failed to get detail playlist by slug", error);
@@ -98,7 +95,7 @@ export async function likePlaylist(playlistId: string) {
 
   try {
     const response = await axiosInstance.post(
-      `/api/playlists/${playlistId}/like`
+      `/api/v1/playlists/${playlistId}/like`
     );
     return response.data as TApiResponse;
   } catch (error) {
@@ -112,7 +109,7 @@ export async function unlikePlaylist(playlistId: string) {
 
   try {
     const response = await axiosInstance.delete(
-      `/api/playlists/${playlistId}/unlike`
+      `/api/v1/playlists/${playlistId}/unlike`
     );
     return response.data as TApiResponse;
   } catch (error) {
@@ -125,7 +122,9 @@ export async function deletePlaylist(playlistId: string) {
   const axiosInstance = await getAxios();
 
   try {
-    const response = await axiosInstance.delete(`/api/playlists/${playlistId}`);
+    const response = await axiosInstance.delete(
+      `/api/v1/playlists/${playlistId}`
+    );
     return response.data;
   } catch (error) {
     console.error("Failed to delete playlist:", error);
@@ -141,7 +140,7 @@ export async function updatePlaylist(params: {
   const axiosInstance = await getAxios();
   try {
     const response = await axiosInstance.patch(
-      `/api/playlists/${playlistId}`,
+      `/api/v1/playlists/${playlistId}`,
       formData,
       { headers: { "Content-Type": "multipart/form-data" } }
     );

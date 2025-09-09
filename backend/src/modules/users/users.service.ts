@@ -87,7 +87,7 @@ export class UsersService {
       // add streamUrl to each track
       const formattedTracks = tracks.map((track) => ({
         ...track,
-        streamUrl: `/api/audio/stream/${track.id}`,
+        streamUrl: `/api/v1/audio/stream/${track.id}`,
       }));
 
       return {
@@ -130,7 +130,7 @@ export class UsersService {
         user: repost.user,
         audio: {
           ...repost.audio,
-          streamUrl: `/api/audio/stream/${repost.audio.id}`,
+          streamUrl: `/api/v1/audio/stream/${repost.audio.id}`,
         },
       }));
 

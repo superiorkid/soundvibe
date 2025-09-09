@@ -12,7 +12,7 @@ import {
 import { ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { ListeningHistoryService } from './listening-history.service';
 
-@Controller()
+@Controller({ version: '1' })
 @ApiTags('Listening History')
 export class ListeningHistoryController {
   constructor(private listeningHistoryService: ListeningHistoryService) {}

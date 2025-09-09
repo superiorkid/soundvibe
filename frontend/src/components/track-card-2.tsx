@@ -52,7 +52,7 @@ const TrackCard2 = ({ audio }: TrackCard2Props) => {
         {audio.coverFile ? (
           <Image
             fill
-            src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/audio/cover/${audio.id}`}
+            src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/audio/cover/${audio.id}`}
             alt="track image"
             className="absolute inset-0 object-cover z-0 transition-opacity group-hover:opacity-50"
             loading="lazy"

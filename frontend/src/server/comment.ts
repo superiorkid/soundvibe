@@ -15,7 +15,7 @@ export async function getComments(params: {
 
   try {
     const response = await axiosInstance.get(
-      `/api/audio/${audioId}/comments/`,
+      `/api/v1/audio/${audioId}/comments/`,
       {
         ...(filter && { params: { filter } }),
       }
@@ -39,7 +39,7 @@ export async function createComment(params: {
 
   try {
     const response = await axiosInstance.post(
-      `/api/audio/${audioId}/comments`,
+      `/api/v1/audio/${audioId}/comments`,
       commentSchema
     );
     return response.data as TApiResponse;
@@ -58,7 +58,7 @@ export async function deleteComment(params: {
 
   try {
     const response = await axiosInstance.delete(
-      `/api/audio/${audioId}/comments/${commentId}`
+      `/api/v1/audio/${audioId}/comments/${commentId}`
     );
     return response.data as TApiResponse;
   } catch (error) {
@@ -81,7 +81,7 @@ export async function likeComment(params: {
 
   try {
     const response = await axiosInstance.post(
-      `/api/audio/${audioId}/comments/${commentId}/like`
+      `/api/v1/audio/${audioId}/comments/${commentId}/like`
     );
     return response.data as TApiResponse;
   } catch (error) {
@@ -99,7 +99,7 @@ export async function unlikeComment(params: {
 
   try {
     const response = await axiosInstance.delete(
-      `/api/audio/${audioId}/comments/${commentId}/unlike`
+      `/api/v1/audio/${audioId}/comments/${commentId}/unlike`
     );
     return response.data as TApiResponse;
   } catch (error) {

@@ -34,7 +34,7 @@ import { UsersRepository } from '../users/users.repository';
 import { AudioService } from './audio.service';
 import { UploadAudioDTO } from './dto/upload-audio.dto';
 
-@Controller('audio')
+@Controller({ version: '1', path: 'audio' })
 @ApiTags('audios')
 export class AudioController {
   protected readonly logger = new Logger(AudioController.name);

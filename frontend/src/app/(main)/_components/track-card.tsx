@@ -91,7 +91,7 @@ const TrackCard = ({
           {audio.coverFile ? (
             <Image
               fill
-              src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/audio/cover/${audio.id}`}
+              src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/audio/cover/${audio.id}`}
               alt="track image"
               className="object-cover"
               loading="lazy"

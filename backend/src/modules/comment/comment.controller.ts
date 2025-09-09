@@ -27,7 +27,7 @@ import { CommentDTO } from './comment.dto';
 import { CommentService } from './comment.service';
 import { CommentFilterEnum } from 'src/common/enums/comment-filter.enum';
 
-@Controller('audio/:audioId/comments')
+@Controller({ path: 'audio/:audioId/comments', version: '1' })
 @ApiTags('Comments')
 export class CommentController {
   protected logger = new Logger(CommentController.name);

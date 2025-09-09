@@ -2,6 +2,7 @@ import { userKeys } from "@/lib/query-keys";
 import {
   getRecentUserComments,
   getUserByUsername,
+  getUserReposts,
   getUserTracks,
 } from "@/server/user";
 import { useQuery } from "@tanstack/react-query";
@@ -38,4 +39,17 @@ export const useUserTracks = (params: {
   });
 
   return { tracks: data, isPending, isError };
+};
+
+export const useUserReposts = (username: string) => {
+  const {
+    data: tracks,
+    isPending,
+    isError,
+  } = useQuery({
+    queryKey: userKeys.userRepostsTracks(username),
+    queryFn: async () => getUserReposts(username),
+  });
+
+  return { tracks, isPending, isError };
 };

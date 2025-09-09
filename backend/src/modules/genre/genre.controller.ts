@@ -24,7 +24,7 @@ import {
 import { GenreDTO } from './dto/genre.dto';
 import { GenreService } from './genre.service';
 
-@Controller('genres')
+@Controller({ version: '1', path: 'genres' })
 @ApiTags('genres')
 export class GenreController {
   constructor(private genreService: GenreService) {}

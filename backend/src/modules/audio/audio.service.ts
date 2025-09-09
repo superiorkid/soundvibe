@@ -150,7 +150,7 @@ export class AudioService {
       return {
         data: {
           ...audio,
-          streamUrl: `/api/audio/stream/${audio.id}`,
+          streamUrl: `/api/v1/audio/stream/${audio.id}`,
         },
         success: true,
         message: 'get detail audio successfully',
@@ -206,7 +206,7 @@ export class AudioService {
         user: audio.user,
         audio: {
           ...audio,
-          streamUrl: `/api/audio/stream/${audio.id}`,
+          streamUrl: `/api/v1/audio/stream/${audio.id}`,
         },
       }));
 
@@ -217,7 +217,7 @@ export class AudioService {
         user: repost.user,
         audio: {
           ...repost.audio,
-          streamUrl: `/api/audio/stream/${repost.audio.id}`,
+          streamUrl: `/api/v1/audio/stream/${repost.audio.id}`,
         },
       }));
 
@@ -262,7 +262,7 @@ export class AudioService {
       return {
         data: {
           ...audio,
-          streamUrl: `/api/audio/stream/${audio.id}`,
+          streamUrl: `/api/v1/audio/stream/${audio.id}`,
         },
         success: true,
         message: 'get detail audio successfully',
@@ -492,7 +492,7 @@ export class AudioService {
             ...track,
             audio: {
               ...track.audio,
-              streamUrl: `/api/audio/stream/${track.audioId}`,
+              streamUrl: `/api/v1/audio/stream/${track.audioId}`,
             },
           })),
         },

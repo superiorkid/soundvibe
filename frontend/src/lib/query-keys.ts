@@ -66,4 +66,8 @@ export const userKeys = {
     ...userKeys.all,
     { ...params, mode: "user-tracks" },
   ],
+  userRepostsTracks: (username: string) => [
+    ...userKeys.all,
+    { mode: "reposted-tracks", username },
+  ],
 };

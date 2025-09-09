@@ -14,7 +14,7 @@ export async function getListehingHistory(params: {
 
   try {
     const response = await axiosInstance.get(
-      `/api/users/${userId}/listening-history`,
+      `/api/v1/users/${userId}/listening-history`,
       {
         params: { take, query },
       }
@@ -31,7 +31,7 @@ export async function setListeningHistory(audioId: string) {
 
   try {
     const response = await axiosInstance.post(
-      `/api/listening-history/${audioId}`
+      `/api/v1/listening-history/${audioId}`
     );
     return response.data as TApiResponse;
   } catch (error) {
@@ -43,7 +43,9 @@ export async function setListeningHistory(audioId: string) {
 export async function clearListeningHistory() {
   const axiosInstance = await getAxios();
   try {
-    const response = await axiosInstance.delete(`/api/users/listening-history`);
+    const response = await axiosInstance.delete(
+      `/api/v1/users/listening-history`
+    );
     return response.data as TApiResponse;
   } catch (error) {
     console.error("Failed to clear listening history:", error);

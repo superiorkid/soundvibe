@@ -7,7 +7,9 @@ export async function repost(audioId: string) {
   const axiosInstance = await getAxios();
 
   try {
-    const response = await axiosInstance.post(`/api/audio/${audioId}/reposts`);
+    const response = await axiosInstance.post(
+      `/api/v1/audio/${audioId}/reposts`
+    );
     return response.data as TApiResponse;
   } catch (error) {
     console.error("failed to repost audio:", error);
@@ -20,7 +22,7 @@ export async function undoRepost(audioId: string) {
 
   try {
     const response = await axiosInstance.delete(
-      `/api/audio/${audioId}/reposts`
+      `/api/v1/audio/${audioId}/reposts`
     );
     return response.data as TApiResponse;
   } catch (error) {

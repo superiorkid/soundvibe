@@ -27,7 +27,7 @@ import { type Response } from 'express';
 import { UpdatePlaylistDTO } from './dto/update-playlist.dto';
 import { FormDataRequest } from 'nestjs-form-data';
 
-@Controller('playlists')
+@Controller({ path: 'playlists', version: '1' })
 @ApiTags('Playlist')
 export class PlaylistController {
   constructor(private playlistService: PlaylistService) {}

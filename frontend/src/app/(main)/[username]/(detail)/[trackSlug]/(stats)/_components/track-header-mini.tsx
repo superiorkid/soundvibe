@@ -28,7 +28,7 @@ const TrackHeaderMini = ({ trackSlug }: TrackHeaderMiniProps) => {
           {audio?.data?.coverFile ? (
             <Image
               fill
-              src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/audio/cover/${audio.data.id}`}
+              src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/audio/cover/${audio.data.id}`}
               alt="track image"
               loading="lazy"
               decoding="async"

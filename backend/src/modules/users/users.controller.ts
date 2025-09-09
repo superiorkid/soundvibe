@@ -11,7 +11,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { UsersRepository } from './users.repository';
 import { UsersService } from './users.service';
 
-@Controller('users')
+@Controller({ path: 'users', version: '1' })
 @ApiTags('users')
 export class UsersController {
   constructor(

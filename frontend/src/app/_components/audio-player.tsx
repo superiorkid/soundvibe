@@ -165,7 +165,7 @@ const AudioPlayer = () => {
                 {currentTrack.coverFile ? (
                   <Image
                     fill
-                    src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/audio/cover/${currentTrack.id}`}
+                    src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/audio/cover/${currentTrack.id}`}
                     alt="track image"
                     className="object-cover"
                     loading="lazy"
