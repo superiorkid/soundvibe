@@ -155,7 +155,7 @@ export class UsersService {
   async getUserPlaylists(username: string) {
     try {
       const playlists = await this.playlistRepository.findAll({
-        where: { user: { displayUsername: username } },
+        where: { user: { displayUsername: username }, audios: { some: {} } },
         include: {
           playlistCoverFile: true,
           likes: { include: { user: true } },
