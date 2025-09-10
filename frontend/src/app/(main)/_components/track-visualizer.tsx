@@ -3,7 +3,7 @@
 import { useAudio } from "@/context/audio-context";
 import { formatTime } from "@/lib/utils";
 import { TAudio } from "@/types/audio.type";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import WaveSurfer from "wavesurfer.js";
 
 interface TrackVisualizerProps {
@@ -17,6 +17,34 @@ interface TrackVisualizerProps {
   hoverOverlayColor?: string;
 }
 
+const createDefaultGradient = (
+  ctx: CanvasRenderingContext2D,
+  height: number
+) => {
+  const gradient = ctx.createLinearGradient(0, 0, 0, height * 1.35);
+  gradient.addColorStop(0, "#656666");
+  gradient.addColorStop((height * 0.7) / height, "#656666");
+  gradient.addColorStop((height * 0.7 + 1) / height, "#ffffff");
+  gradient.addColorStop((height * 0.7 + 2) / height, "#ffffff");
+  gradient.addColorStop((height * 0.7 + 3) / height, "#B1B1B1");
+  gradient.addColorStop(1, "#B1B1B1");
+  return gradient;
+};
+
+const createDefaultProgressGradient = (
+  ctx: CanvasRenderingContext2D,
+  height: number
+) => {
+  const gradient = ctx.createLinearGradient(0, 0, 0, height * 1.35);
+  gradient.addColorStop(0, "#EE772F");
+  gradient.addColorStop((height * 0.7) / height, "#EB4926");
+  gradient.addColorStop((height * 0.7 + 1) / height, "#ffffff");
+  gradient.addColorStop((height * 0.7 + 2) / height, "#ffffff");
+  gradient.addColorStop((height * 0.7 + 3) / height, "#F6B094");
+  gradient.addColorStop(1, "#F6B094");
+  return gradient;
+};
+
 const TrackVisualizer = ({
   audio,
   height = 50,
@@ -29,6 +57,8 @@ const TrackVisualizer = ({
 }: TrackVisualizerProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const hoverRef = useRef<HTMLDivElement>(null);
+  const wavesurferRef = useRef<WaveSurfer | null>(null);
+
   const {
     audioRef,
     currentTrack,
@@ -36,77 +66,46 @@ const TrackVisualizer = ({
     setCurrentTime: setGlobalCurrentTime,
   } = useAudio();
 
-  const [wavesurfer, setWavesurfer] = useState<WaveSurfer | null>(null);
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
   const [loading, setLoading] = useState(true);
 
-  const createDefaultGradient = (
-    ctx: CanvasRenderingContext2D,
-    height: number
-  ) => {
-    const gradient = ctx.createLinearGradient(0, 0, 0, height * 1.35);
-    gradient.addColorStop(0, "#656666");
-    gradient.addColorStop((height * 0.7) / height, "#656666");
-    gradient.addColorStop((height * 0.7 + 1) / height, "#ffffff");
-    gradient.addColorStop((height * 0.7 + 2) / height, "#ffffff");
-    gradient.addColorStop((height * 0.7 + 3) / height, "#B1B1B1");
-    gradient.addColorStop(1, "#B1B1B1");
-    return gradient;
-  };
+  const gradientColors = useMemo(() => {
+    const ctx = document.createElement("canvas").getContext("2d");
+    if (!ctx) return { wave: "#666", progress: "#f43f5e" };
 
-  const createDefaultProgressGradient = (
-    ctx: CanvasRenderingContext2D,
-    height: number
-  ) => {
-    const progressGradient = ctx.createLinearGradient(0, 0, 0, height * 1.35);
-    progressGradient.addColorStop(0, "#EE772F");
-    progressGradient.addColorStop((height * 0.7) / height, "#EB4926");
-    progressGradient.addColorStop((height * 0.7 + 1) / height, "#ffffff");
-    progressGradient.addColorStop((height * 0.7 + 2) / height, "#ffffff");
-    progressGradient.addColorStop((height * 0.7 + 3) / height, "#F6B094");
-    progressGradient.addColorStop(1, "#F6B094");
-    return progressGradient;
-  };
+    const defaultWave = createDefaultGradient(ctx, height);
+    const defaultProgress = createDefaultProgressGradient(ctx, height);
 
-  // Initialize waveform
+    return {
+      wave: waveColor || defaultWave,
+      progress: progressColor || defaultProgress,
+    };
+  }, [height, waveColor, progressColor]);
+
   useEffect(() => {
     if (!containerRef.current) return;
 
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    const waveColorFinal = waveColor || createDefaultGradient(ctx, height);
-    const progressColorFinal =
-      progressColor || createDefaultProgressGradient(ctx, height);
-
     const ws = WaveSurfer.create({
       container: containerRef.current,
-      waveColor: waveColorFinal,
-      progressColor: progressColorFinal,
+      waveColor: gradientColors.wave,
+      progressColor: gradientColors.progress,
       height,
       barWidth,
       barGap,
       cursorColor,
       normalize: true,
       interact: true,
-      // Use WebAudio backend for better performance
       backend: "WebAudio",
       hideScrollbar: true,
-      fetchParams: {
-        credentials: "include",
-      },
+      fetchParams: { credentials: "include" },
     });
 
+    wavesurferRef.current = ws;
     setLoading(true);
 
     if (audio.streamUrl) {
       ws.load(`${process.env.NEXT_PUBLIC_BACKEND_URL}${audio.streamUrl}`);
-    } else {
-      console.error("No streamUrl provided for audio:", audio.id);
-      setLoading(false);
-      return;
     }
 
     ws.on("ready", () => {
@@ -114,106 +113,95 @@ const TrackVisualizer = ({
       setLoading(false);
     });
 
-    ws.on("error", (error) => {
-      console.error("WaveSurfer loading error:", error);
+    ws.on("error", (error: Error) => {
+      // Ignore AbortError since it's expected on destroy
+      if (error?.name === "AbortError") return;
+      console.error("WaveSurfer error:", error);
       setLoading(false);
     });
 
-    setWavesurfer(ws);
-
     return () => {
       ws.destroy();
+      wavesurferRef.current = null;
     };
   }, [
     audio.streamUrl,
     audio.id,
+    gradientColors,
     height,
     barWidth,
     barGap,
     cursorColor,
-    waveColor,
-    progressColor,
   ]);
 
-  // Sync current time (local + global)
   useEffect(() => {
-    if (!wavesurfer || !audioRef.current) return;
+    if (!wavesurferRef.current || !audioRef.current) return;
     const audioEl = audioRef.current;
 
-    const updateProgress = () => {
+    let frameId: number;
+
+    const update = () => {
       if (currentTrack?.id === audio.id) {
-        const progress = audioEl.currentTime / audioEl.duration || 0;
+        const progress = audioEl.currentTime / (audioEl.duration || 1);
         setCurrentTime(audioEl.currentTime);
         setGlobalCurrentTime(audioEl.currentTime);
-
-        wavesurfer.seekTo(progress);
+        wavesurferRef.current?.seekTo(progress);
       }
+      frameId = requestAnimationFrame(update);
     };
+
+    frameId = requestAnimationFrame(update);
 
     const handleEnded = () => {
       setCurrentTime(0);
       setGlobalCurrentTime(0);
-      wavesurfer.seekTo(0);
+      wavesurferRef.current?.seekTo(0);
     };
 
-    audioEl.addEventListener("timeupdate", updateProgress);
     audioEl.addEventListener("ended", handleEnded);
 
     return () => {
-      audioEl.removeEventListener("timeupdate", updateProgress);
+      cancelAnimationFrame(frameId);
       audioEl.removeEventListener("ended", handleEnded);
     };
-  }, [wavesurfer, audioRef, currentTrack, audio.id, setGlobalCurrentTime]);
+  }, [audio.id, audioRef, currentTrack, setGlobalCurrentTime]);
 
-  // Reset when track changes
   useEffect(() => {
-    if (currentTrack?.id !== audio.id) {
-      setCurrentTime(0);
-      wavesurfer?.seekTo(0);
-    }
-  }, [currentTrack, audio.id, wavesurfer]);
-
-  // Click-to-seek + play
-  useEffect(() => {
-    if (!wavesurfer) return;
+    const ws = wavesurferRef.current;
+    if (!ws) return;
 
     const handleInteraction = () => {
-      const currentTime = wavesurfer.getCurrentTime();
-
+      const currentTime = ws.getCurrentTime();
       if (currentTrack?.id === audio.id) {
-        // If this is the current track, just seek
         if (audioRef.current) {
           audioRef.current.currentTime = currentTime;
         }
       } else {
-        // If this is a different track, play it from the clicked position
         playTrack(audio, currentTime);
       }
     };
 
-    wavesurfer.on("interaction", handleInteraction);
+    ws.on("interaction", handleInteraction);
+    return () => ws.un("interaction", handleInteraction);
+  }, [audio, audioRef, currentTrack, playTrack]);
 
-    return () => {
-      wavesurfer.un("interaction", handleInteraction);
-    };
-  }, [wavesurfer, audioRef, currentTrack, audio, playTrack]);
-
-  // Hover effect
   useEffect(() => {
     if (!hoverRef.current || !containerRef.current) return;
 
+    const hoverEl = hoverRef.current;
+    const container = containerRef.current;
+
     const handlePointerMove = (e: PointerEvent) => {
-      const rect = containerRef.current!.getBoundingClientRect();
-      const offsetX = e.clientX - rect.left;
-      hoverRef.current!.style.width = `${offsetX}px`;
-      hoverRef.current!.style.opacity = "1";
+      const rect = container.getBoundingClientRect();
+      const ratio = (e.clientX - rect.left) / rect.width;
+      hoverEl.style.transform = `scaleX(${Math.max(0, Math.min(1, ratio))})`;
+      hoverEl.style.opacity = "1";
     };
 
     const handlePointerLeave = () => {
-      hoverRef.current!.style.opacity = "0";
+      hoverEl.style.opacity = "0";
     };
 
-    const container = containerRef.current;
     container.addEventListener("pointermove", handlePointerMove);
     container.addEventListener("pointerleave", handlePointerLeave);
 
@@ -232,10 +220,7 @@ const TrackVisualizer = ({
         <div
           style={{
             position: "absolute",
-            left: 0,
-            top: 0,
-            width: "100%",
-            height,
+            inset: 0,
             backgroundColor: "#ccc",
             filter: "blur(8px)",
             borderRadius: 4,
@@ -256,18 +241,19 @@ const TrackVisualizer = ({
           position: "absolute",
           left: 0,
           top: 0,
-          height,
-          width: 0,
+          bottom: 0,
+          width: "100%",
           pointerEvents: "none",
           mixBlendMode: "overlay",
           backgroundColor: hoverOverlayColor,
           opacity: 0,
+          transformOrigin: "left center",
+          transform: "scaleX(0)",
           transition: "opacity 0.2s ease",
           zIndex: 11,
         }}
       />
 
-      {/* Current Time */}
       <div
         style={{
           position: "absolute",
@@ -279,13 +265,11 @@ const TrackVisualizer = ({
           padding: "2px 4px",
           color: "#ddd",
           zIndex: 12,
-          userSelect: "none",
         }}
       >
         {formatTime(currentTime)}
       </div>
 
-      {/* Duration */}
       <div
         style={{
           position: "absolute",
@@ -297,7 +281,6 @@ const TrackVisualizer = ({
           padding: "2px 4px",
           color: "#ddd",
           zIndex: 12,
-          userSelect: "none",
         }}
       >
         {formatTime(duration)}
