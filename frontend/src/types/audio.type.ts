@@ -3,6 +3,7 @@ import { TComment } from "./comment.type";
 import { TCoverFile } from "./cover-file.type";
 import { TGenre } from "./genre.type";
 import { TLike } from "./like.type";
+import { TPlaylistLike } from "./playlist-type";
 import { TRepost } from "./repost.type";
 import { TTag } from "./tag.type";
 import { TUser } from "./user.type";
@@ -31,4 +32,7 @@ export type TAudio = {
   comments: TComment[];
   repostsCount: number;
   reposts: TRepost[];
+  type?: "audio";
 };
+
+export type TRecentLike = TAudio | TPlaylistLike;

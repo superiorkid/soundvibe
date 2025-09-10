@@ -44,4 +44,5 @@ export type TPlaylistLike = {
   userId: string;
   user?: TUser;
   createdAt: Date;
+  type?: "playlist";
 };

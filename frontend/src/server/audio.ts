@@ -87,15 +87,19 @@ export async function recentLike(params: {
   limit: number;
   query?: string;
   username?: string;
+  withPlaylist?: boolean;
 }) {
-  const { limit, query, username } = params;
+  const { limit, query, username, withPlaylist = false } = params;
   const axiosInstance = await getAxios();
 
   try {
     const response = await axiosInstance.get("/api/v1/audio/liked/recent", {
-      params: { limit, query, username },
+      params: { limit, query, username, withPlaylist },
     });
-    return response.data as TApiResponse<{ total: number; recent: TLike[] }>;
+    return response.data as TApiResponse<{
+      total: number;
+      recent: TLike[];
+    }>;
   } catch (error) {
     console.error("Failed to fetch recent liked tracks:", error);
     throw new Error(

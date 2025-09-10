@@ -14,7 +14,11 @@ export const audioKeys = {
     limit: number;
     query?: string;
     username?: string;
-  }) => [...audioKeys.all, params],
+    withPlaylist?: boolean;
+  }) => {
+    const { withPlaylist = false } = params;
+    return [...audioKeys.all, { ...params, withPlaylist }];
+  },
   usersLikesAudio: (params: { slug: string; limit: number }) => [
     ...audioKeys.all,
     { ...params, mode: "users-who-likes-audio" },

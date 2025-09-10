@@ -9,6 +9,7 @@ import {
   Logger,
   NotFoundException,
   Param,
+  ParseBoolPipe,
   Post,
   Query,
   Req,
@@ -86,6 +87,7 @@ export class AudioController {
     @Query('limit') limit: number,
     @Query('query') query: string,
     @Query('username') username: string,
+    @Query('withPlaylist', ParseBoolPipe) withPlaylist: boolean,
     @Session() session: UserSession,
   ) {
     const user = username

@@ -20,8 +20,6 @@ interface DetailTrackProps {
   slug: string;
 }
 
-const hasComments = true;
-
 const DetailTrack = ({ slug }: DetailTrackProps) => {
   const { data: session } = authClient.useSession();
   const { audio, isPending, isError } = useAudioBySlug(slug);
@@ -80,7 +78,7 @@ const DetailTrack = ({ slug }: DetailTrackProps) => {
             <div className="flex-1 space-y-8">
               <TrackDescription audio={audio.data} />
               <div>
-                {!hasComments ? (
+                {audio.data.commentsCount < 1 ? (
                   <CommentsEmpty />
                 ) : (
                   <Suspense
@@ -101,9 +99,9 @@ const DetailTrack = ({ slug }: DetailTrackProps) => {
           {/* fans */}
           <FanRankPanel audioId={audio.data.id} />
 
-          <div>
-            <p>SOON: related tracks here...</p>
-          </div>
+          {/* <div>
+            <p>TODO: related tracks here...</p>
+          </div> */}
 
           {/* in playlists */}
           <div className="space-y-5">

@@ -15,6 +15,8 @@ const UsersLikes = ({ trackSlug }: UsersLikesProps) => {
   });
   const userslikes = usersWhoLiked?.data?.result;
 
+  console.log("users likes", userslikes);
+
   if (isPending) {
     return (
       <div>

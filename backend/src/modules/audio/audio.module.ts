@@ -8,6 +8,7 @@ import { AudioController } from './audio.controller';
 import { AudioRepository } from './audio.repository';
 import { AudioService } from './audio.service';
 import { LikeRepository } from './like.repository';
+import { PlaylistModule } from '../playlist/playlist.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { LikeRepository } from './like.repository';
     FileUploadModule,
     forwardRef(() => UsersModule),
     forwardRef(() => RepostModule),
+    PlaylistModule,
   ],
   providers: [
     AudioRepository,

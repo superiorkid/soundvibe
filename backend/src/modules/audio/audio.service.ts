@@ -443,8 +443,9 @@ export class AudioService {
     userId: string;
     limit: number;
     query?: string;
+    withPlaylist?: boolean;
   }) {
-    const { userId, limit, query } = params;
+    const { userId, limit, query, withPlaylist = false } = params;
 
     try {
       const [recentLiked, total] = await Promise.all([
@@ -556,6 +557,8 @@ export class AudioService {
         }),
         this.likeRepository.count({ where: { audioId: audio.id } }),
       ]);
+
+      this.logger.log(result);
 
       if (result.length === 0) {
         return {

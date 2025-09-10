@@ -151,6 +151,7 @@ export function useRecentLiked(params: {
   limit: number;
   query?: string;
   username?: string;
+  withPlaylist?: boolean;
 }) {
   const { data: likedTracks, isPending } = useQuery({
     queryKey: audioKeys.recentLiked(params),

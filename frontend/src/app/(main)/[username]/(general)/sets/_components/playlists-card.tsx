@@ -3,6 +3,7 @@
 import TrackVisualizer from "@/app/(main)/_components/track-visualizer";
 import TrackCardCompact from "@/components/track-card-compact";
 import { Button } from "@/components/ui/button";
+import { useAudio } from "@/context/audio-context";
 import { TAudio } from "@/types/audio.type";
 import { TPlaylist } from "@/types/playlist-type";
 import { formatDistance } from "date-fns";
@@ -10,7 +11,6 @@ import { PauseIcon, PlayIcon } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import PlaylistActions from "../../../(detail)/sets/[setSlug]/_components/playlist-actions";
-import { useAudio } from "@/context/audio-context";
 
 interface PlaylistsCardProps {
   playlist: TPlaylist;
