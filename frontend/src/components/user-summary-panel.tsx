@@ -1,8 +1,8 @@
+import { isAbsoluteUrl } from "@/lib/utils";
 import { TUser } from "@/types/user.type";
 import { Loader2Icon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
 
 interface UserSummaryPanelProps {
   title: string;
@@ -46,7 +46,13 @@ export function UserSummaryPanel({
           <Image
             key={index}
             className="ring-background rounded-full ring-2"
-            src={user.image ?? "https://github.com/shadcn.png"}
+            src={
+              user.image
+                ? isAbsoluteUrl(user.image)
+                  ? user.image
+                  : `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/users/cover/${user.id}`
+                : "https://github.com/shadcn.png"
+            }
             width={60}
             height={60}
             alt={`${user.name ?? "User"} image`}

@@ -12,6 +12,7 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 import { PlayerActions } from "./player-actions";
+import { isAbsoluteUrl } from "@/lib/utils";
 
 const TrackVisualizer = dynamic(() => import("./track-visualizer"), {
   ssr: false,
@@ -48,7 +49,13 @@ const TrackCard = ({
       <div className="flex gap-2 items-center">
         <Avatar className="size-8">
           <AvatarImage
-            src={audio.user.image ?? "https://github.com/shadcn.png"}
+            src={
+              audio.user.image
+                ? isAbsoluteUrl(audio.user.image)
+                  ? audio.user.image
+                  : `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/users/cover/${audio.user.id}`
+                : "https://github.com/shadcn.png"
+            }
           />
           <AvatarFallback>CN</AvatarFallback>
         </Avatar>

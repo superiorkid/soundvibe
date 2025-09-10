@@ -43,6 +43,11 @@ export function createAuthConfig(
               ...user,
               likedTracks: userData?.likedTracks,
               playlists: userData?.playlists,
+              firstName: userData?.firstName,
+              lastName: userData?.lastName,
+              bio: userData?.bio,
+              city: userData?.city,
+              country: userData?.country,
             },
           };
         }),

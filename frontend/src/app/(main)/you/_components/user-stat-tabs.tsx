@@ -15,7 +15,6 @@ const UserStatTabs = () => {
 
   const tabMenus = useMemo<TMenu[]>(
     () => [
-      { href: "/you/library", label: "Overview" },
       { href: "/you/likes", label: "Likes" },
       { href: "/you/sets", label: "Playlists" },
       { href: "/you/following", label: "Following" },

@@ -1,23 +1,50 @@
-import { Session, type UserSession } from '@mguay/nestjs-better-auth';
+import { Public, Session, type UserSession } from '@mguay/nestjs-better-auth';
 import {
+  Body,
   Controller,
   Get,
+  Logger,
   NotFoundException,
   Param,
   ParseIntPipe,
+  Patch,
   Query,
+  Res,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { type Response } from 'express';
+import { FormDataRequest } from 'nestjs-form-data';
+import { UpdateUserProfileDTO } from './dto/update-user-profile.dto';
 import { UsersRepository } from './users.repository';
 import { UsersService } from './users.service';
 
 @Controller({ path: 'users', version: '1' })
 @ApiTags('users')
 export class UsersController {
+  protected readonly logger = new Logger(UsersController.name);
+
   constructor(
     private usersService: UsersService,
     private userRepository: UsersRepository,
   ) {}
+
+  @Patch()
+  @FormDataRequest()
+  async editUserProfile(
+    @Body() updateUserProfileDto: UpdateUserProfileDTO,
+    @Session() session: UserSession,
+  ) {
+    return this.usersService.updateUserProfile({
+      updateUserProfileDto,
+      userId: session.user.id,
+    });
+  }
+
+  @Public()
+  @Get('cover/:id')
+  async getProfileImage(@Param('id') id: string, @Res() res: Response) {
+    return this.usersService.getPofileImage({ id, res });
+  }
 
   @Get('username/:username')
   async getUserByUsername(@Param('username') username: string) {

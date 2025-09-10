@@ -13,7 +13,7 @@ export function useMainMenu() {
         isActive: pathname === "/feed",
       },
       {
-        href: "/you/library",
+        href: "/you/likes",
         label: "Library",
         isActive: pathname.includes("you"),
       },

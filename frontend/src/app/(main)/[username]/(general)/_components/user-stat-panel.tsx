@@ -34,10 +34,11 @@ const UserStatPanel = ({ username }: UserStatPanelProps) => {
           </h2>
         </div>
       </div>
-      <p className="text-muted-foreground text-sm leading-relaxed">
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto
-        dolore iste optio temporibus repellat corrupti animi ullam aliquid.
-      </p>
+      {user?.data?.bio && (
+        <p className="text-muted-foreground text-sm leading-relaxed whitespace-pre-line">
+          {user.data.bio}
+        </p>
+      )}
     </section>
   );
 };

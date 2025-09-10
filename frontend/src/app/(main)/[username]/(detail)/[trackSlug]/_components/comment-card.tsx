@@ -5,7 +5,7 @@ import UserTooltip from "@/components/user-tooltip";
 import { useActiveCommentCard } from "@/context/active-comment-card-context";
 import { useCommentLike } from "@/hooks/tanstack/comment";
 import { authClient } from "@/lib/auth-client";
-import { getInitials } from "@/lib/utils";
+import { getInitials, isAbsoluteUrl } from "@/lib/utils";
 import { TComment } from "@/types/comment.type";
 import { TUser } from "@/types/user.type";
 import { formatDistance } from "date-fns";
@@ -47,7 +47,13 @@ const CommentCard = ({ comment }: CommentCardProps) => {
         <div className="flex items-start gap-4 w-full">
           <Avatar>
             <AvatarImage
-              src={comment.user.image ?? "https://github.com/shadcn.png"}
+              src={
+                comment.user?.image
+                  ? isAbsoluteUrl(comment.user?.image)
+                    ? comment.user?.image
+                    : `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/users/cover/${comment.user.id}`
+                  : "https://github.com/shadcn.png"
+              }
             />
             <AvatarFallback>{getInitials(comment.user.name)}</AvatarFallback>
           </Avatar>

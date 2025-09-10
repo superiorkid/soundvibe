@@ -14,6 +14,7 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useMemo } from "react";
+import EditUserDialog from "./edit-user-dialog";
 
 type TMenu = {
   href: string;
@@ -74,12 +75,12 @@ const UserContentTabs = ({ username }: UserContentTabs) => {
           Share
         </Button>
         {isCurrentUser ? (
-          <>
-            <Button size="sm" className="rounded-sm">
+          <EditUserDialog username={username}>
+            <Button size="sm" className="rounded-sm hover:cursor-pointer">
               <PencilIcon size={16} className="mr-1" />
               Edit
             </Button>
-          </>
+          </EditUserDialog>
         ) : (
           <>
             <Button size="sm" className="rounded-sm">

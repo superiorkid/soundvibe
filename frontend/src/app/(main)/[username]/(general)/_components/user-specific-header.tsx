@@ -2,6 +2,7 @@
 
 import { useUserByUsername } from "@/hooks/tanstack/user";
 import { randomGradient } from "@/lib/random-gradient";
+import { isAbsoluteUrl } from "@/lib/utils";
 import { Loader2Icon } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
@@ -42,7 +43,13 @@ const UserSpecificHeader = ({ username }: UserSpecificHeaderProps) => {
       <div className="relative size-44 rounded-full overflow-hidden">
         <Image
           fill
-          src={user?.data?.image ?? "https://github.com/shadcn.png"}
+          src={
+            user?.data?.image
+              ? isAbsoluteUrl(user.data.image)
+                ? user.data.image
+                : `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/users/cover/${user.data.id}`
+              : "https://github.com/shadcn.png"
+          }
           alt={`${user?.data?.name} image`}
           className="object-cover"
           loading="lazy"
@@ -54,17 +61,25 @@ const UserSpecificHeader = ({ username }: UserSpecificHeaderProps) => {
       <div className="font-semibold space-y-2">
         <div>
           <h1 className="text-background py-0.5 hover:text-zinc-300 text-3xl bg-foreground inline-block px-2 capitalize hover:cursor-pointer">
-            {user?.data?.name}
+            {user?.data?.displayUsername ??
+              user?.data?.username ??
+              "Unknown User"}
           </h1>
           <br />
           <p className="text-zinc-400 bg-foreground inline-block px-2 py-0.5">
-            Al Henley AKA Thalbundt
+            {user?.data?.firstName || user?.data?.lastName
+              ? `${user?.data?.firstName ?? ""} ${
+                  user?.data?.lastName ?? ""
+                }`.trim()
+              : "No name provided"}
           </p>
         </div>
 
-        <p className="text-zinc-400 bg-foreground inline-block px-2 py-0.5">
-          Manchester England, United Kingdom
-        </p>
+        {(user?.data?.city || user?.data?.country) && (
+          <p className="text-zinc-400 bg-foreground inline-block px-2 py-0.5 capitalize">
+            {[user?.data?.city, user?.data?.country].filter(Boolean).join(", ")}
+          </p>
+        )}
       </div>
     </div>
   );

@@ -1,11 +1,11 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { getInitials, isAbsoluteUrl } from "@/lib/utils";
+import { TUser } from "@/types/user.type";
 import { UserIcon } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 import { Button } from "./ui/button";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "./ui/hover-card";
-import { TUser } from "@/types/user.type";
-import { getInitials } from "@/lib/utils";
 
 interface UserTooltipProps {
   children: React.ReactNode;
@@ -18,7 +18,15 @@ const UserTooltip = ({ children, user }: UserTooltipProps) => {
       <HoverCardTrigger asChild>{children}</HoverCardTrigger>
       <HoverCardContent className="w-[199px] space-y-5 flex flex-col items-center">
         <Avatar className="size-28">
-          <AvatarImage src={user?.image ?? "https://github.com/shadcn.png"} />
+          <AvatarImage
+            src={
+              user.image
+                ? isAbsoluteUrl(user.image)
+                  ? user.image
+                  : `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/users/cover/${user.id}`
+                : "https://github.com/shadcn.png"
+            }
+          />
           <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
         </Avatar>
         <div className="flex flex-col text-center space-y-1">

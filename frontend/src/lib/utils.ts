@@ -29,3 +29,12 @@ export const generateSecureRandomString = (length: number) => {
     .toString("hex")
     .slice(0, length);
 };
+
+export function isAbsoluteUrl(url: string): boolean {
+  try {
+    new URL(url);
+    return true;
+  } catch {
+    return false;
+  }
+}

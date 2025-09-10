@@ -1,5 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { isAbsoluteUrl } from "@/lib/utils";
 import { TUser } from "@/types/user.type";
 import { AudioLinesIcon, UserIcon } from "lucide-react";
 import Link from "next/link";
@@ -13,7 +14,15 @@ const UserCard = ({ user, isCurrentUser }: UserCardProps) => {
   return (
     <div className="flex flex-col items-center space-y-2.5 w-[145px]">
       <Avatar className="size-25">
-        <AvatarImage src={user.image ?? "https://github.com/shadcn.png"} />
+        <AvatarImage
+          src={
+            user?.image
+              ? isAbsoluteUrl(user.image)
+                ? user.image
+                : `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/users/cover/${user.id}`
+              : "https://github.com/shadcn.png"
+          }
+        />
         <AvatarFallback>CN</AvatarFallback>
       </Avatar>
       <div className="space-y-2">

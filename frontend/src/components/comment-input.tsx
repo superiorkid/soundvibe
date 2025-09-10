@@ -3,7 +3,7 @@
 import { useAudio } from "@/context/audio-context";
 import { useCreateComment } from "@/hooks/tanstack/comment";
 import { authClient } from "@/lib/auth-client";
-import { getInitials } from "@/lib/utils";
+import { getInitials, isAbsoluteUrl } from "@/lib/utils";
 import { TComment } from "@/types/comment.type";
 import { SendIcon } from "lucide-react";
 import { useState } from "react";
@@ -38,7 +38,13 @@ const CommentInput = ({
     <div className="flex space-x-4 items-center">
       <Avatar>
         <AvatarImage
-          src={session?.user.image ?? "https://github.com/shadcn.png"}
+          src={
+            session?.user.image
+              ? isAbsoluteUrl(session?.user.image)
+                ? session?.user.image
+                : `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/users/cover/${session.user.id}`
+              : "https://github.com/shadcn.png"
+          }
         />
         <AvatarFallback>
           {getInitials(session?.user.name as string)}

@@ -1,3 +1,4 @@
+import { getQueryClient } from "@/lib/query-client";
 import { userKeys } from "@/lib/query-keys";
 import {
   getRecentUserComments,
@@ -5,8 +6,12 @@ import {
   getUserPlaylists,
   getUserReposts,
   getUserTracks,
+  updateCurrentUserProfile,
 } from "@/server/user";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { toast } from "sonner";
+
+const queryClient = getQueryClient();
 
 export const useUserByUsername = (username: string) => {
   const { data, isPending, isError } = useQuery({
@@ -68,6 +73,29 @@ export const useUserPlaylist = (username: string) => {
   return {
     playlists,
     isError,
+    isPending,
+  };
+};
+
+export const useUpdateCurrentUserProfile = (props?: {
+  onSuccess?: () => void;
+}) => {
+  const { onSuccess } = props || {};
+
+  const { mutate: updateUserProfileMutation, isPending } = useMutation({
+    mutationFn: async (formData: FormData) =>
+      updateCurrentUserProfile(formData),
+    onError: () => {
+      toast.error("Failed to update user profile");
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: userKeys.all });
+      onSuccess?.();
+    },
+  });
+
+  return {
+    updateUserProfileMutation,
     isPending,
   };
 };

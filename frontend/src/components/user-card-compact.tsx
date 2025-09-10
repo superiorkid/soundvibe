@@ -1,5 +1,5 @@
 import { authClient } from "@/lib/auth-client";
-import { cn, getInitials } from "@/lib/utils";
+import { cn, getInitials, isAbsoluteUrl } from "@/lib/utils";
 import { TUser } from "@/types/user.type";
 import { UserIcon } from "lucide-react";
 import Link from "next/link";
@@ -17,7 +17,15 @@ const UserCardCompact = ({ user }: UserCardCompactProps) => {
   return (
     <div className="flex flex-col justify-center items-center space-y-3.5 group">
       <Avatar className="size-37">
-        <AvatarImage src={user?.image ?? "https://github.com/shadcn.png"} />
+        <AvatarImage
+          src={
+            user.image
+              ? isAbsoluteUrl(user.image)
+                ? user.image
+                : `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/users/cover/${user.id}`
+              : "https://github.com/shadcn.png"
+          }
+        />
         <AvatarFallback>{getInitials(user?.name)}</AvatarFallback>
       </Avatar>
       <div className="text-center -space-y-1.5">

@@ -87,3 +87,17 @@ export async function getUserPlaylists(username: string) {
     throw new Error("failed to get user playlists");
   }
 }
+
+export async function updateCurrentUserProfile(formData: FormData) {
+  const axiosInstance = await getAxios();
+
+  try {
+    const response = await axiosInstance.patch("/api/v1/users", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return response.data as TApiResponse;
+  } catch (error) {
+    console.error("failed to update user profile:", error);
+    throw new Error("failed to update user profile");
+  }
+}

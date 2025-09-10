@@ -25,9 +25,13 @@ model User {
   accounts      Account[]
   audios        Audio[]
   likedTracks   Like[]
-
   username           String?
   displayUsername    String?
+  firstName String? @map("first_name")
+  lastName String? @map("last_name")
+  city String?
+  country String?
+  bio String? @db.Text
   audioPlays         AudioPlay[]
   comments           Comment[]
   commentLikes       CommentLike[]

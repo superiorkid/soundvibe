@@ -13,6 +13,11 @@ export type TUser = {
   updatedAt: Date;
   likedTracks: TLike[];
   playlists: TPlaylist[];
+  firstName?: string;
+  lastName?: string;
+  city?: string;
+  country?: string;
+  bio?: string;
   _count?: {
     audios?: number;
   };

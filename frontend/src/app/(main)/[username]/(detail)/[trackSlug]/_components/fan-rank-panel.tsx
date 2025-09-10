@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTopFans } from "@/hooks/tanstack/audio";
-import { getInitials } from "@/lib/utils";
+import { getInitials, isAbsoluteUrl } from "@/lib/utils";
 import { Loader2Icon } from "lucide-react";
 import { useState } from "react";
 
@@ -62,7 +62,13 @@ const FanRankPanel = ({ audioId }: FanRankPanelProps) => {
                   <Label className="text-sm">{index + 1}</Label>
                   <Avatar className="size-9">
                     <AvatarImage
-                      src={fan.user.image ?? "https://github.com/shadcn.png"}
+                      src={
+                        fan.user.image
+                          ? isAbsoluteUrl(fan.user.image)
+                            ? fan.user.image
+                            : `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/users/cover/${fan.user.id}`
+                          : "https://github.com/shadcn.png"
+                      }
                     />
                     <AvatarFallback>
                       {getInitials(fan.user.name)}
