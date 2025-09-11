@@ -102,6 +102,7 @@ export class AudioController {
       userId: user.id,
       limit,
       query,
+      withPlaylist,
     });
   }
 

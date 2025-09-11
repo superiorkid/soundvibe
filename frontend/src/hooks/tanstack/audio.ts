@@ -11,7 +11,8 @@ import {
   unlikeAudio,
   uploadAudio,
 } from "@/server/audio";
-import { TAudio } from "@/types/audio.type";
+import { TAudio, TRecentLike } from "@/types/audio.type";
+import { TLike } from "@/types/like.type";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -147,7 +148,9 @@ export function useLike(audio: TAudio, userId: string) {
 //   return { hasLiked, isPending, toggleLikeMutation: mutate };
 // }
 
-export function useRecentLiked(params: {
+export function useRecentLiked<
+  T extends TLike[] | TRecentLike[] = TLike[]
+>(params: {
   limit: number;
   query?: string;
   username?: string;
@@ -155,7 +158,7 @@ export function useRecentLiked(params: {
 }) {
   const { data: likedTracks, isPending } = useQuery({
     queryKey: audioKeys.recentLiked(params),
-    queryFn: async () => recentLike(params),
+    queryFn: async () => recentLike<T>(params),
   });
 
   return { likedTracks, isPending };

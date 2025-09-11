@@ -2,7 +2,7 @@
 
 import { getAxios } from "@/lib/axios";
 import { TApiResponse } from "@/types/api-response.type";
-import { TAudio } from "@/types/audio.type";
+import { TAudio, TRecentLike } from "@/types/audio.type";
 import { TLike } from "@/types/like.type";
 import { TUser } from "@/types/user.type";
 
@@ -83,12 +83,14 @@ export async function unlikeAudio(audioId: string) {
   }
 }
 
-export async function recentLike(params: {
+export async function recentLike<
+  T extends TLike[] | TRecentLike[] = TLike[]
+>(params: {
   limit: number;
   query?: string;
   username?: string;
   withPlaylist?: boolean;
-}) {
+}): Promise<TApiResponse<{ total: number; recent: T }>> {
   const { limit, query, username, withPlaylist = false } = params;
   const axiosInstance = await getAxios();
 
@@ -96,10 +98,8 @@ export async function recentLike(params: {
     const response = await axiosInstance.get("/api/v1/audio/liked/recent", {
       params: { limit, query, username, withPlaylist },
     });
-    return response.data as TApiResponse<{
-      total: number;
-      recent: TLike[];
-    }>;
+
+    return response.data as TApiResponse<{ total: number; recent: T }>;
   } catch (error) {
     console.error("Failed to fetch recent liked tracks:", error);
     throw new Error(

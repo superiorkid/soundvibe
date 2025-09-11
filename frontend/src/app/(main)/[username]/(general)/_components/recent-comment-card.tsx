@@ -13,7 +13,7 @@ const RecentCommentCard = ({ comment }: RecentCommentCardProps) => {
           <span className="text-muted-foreground">on</span>{" "}
           {comment.audio.title}
         </p>
-        <p>{comment.content}</p>
+        <p className="tracking-wide">&quot;{comment.content}&quot;</p>
       </div>
       <div>
         <span className="text-muted-foreground">

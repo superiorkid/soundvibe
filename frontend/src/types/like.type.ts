@@ -7,4 +7,5 @@ export type TLike = {
   audioId: string;
   audio?: TAudio;
   created_at: Date;
+  type?: "audio";
 };

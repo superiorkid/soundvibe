@@ -5,6 +5,7 @@ import { recentLike } from "@/server/audio";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { UploadIcon } from "lucide-react";
 import TracksLikeByUserPage from "./_components/tracks-liked-by-user-page";
+import { TRecentLike } from "@/types/audio.type";
 
 interface UserLikePageProps {
   params: Promise<{ username: string }>;
@@ -17,7 +18,7 @@ const UserLikePage = async ({ params }: UserLikePageProps) => {
   const filter = { limit: 25, username, withPlaylist: true } as const;
   await queryClient.prefetchQuery({
     queryKey: audioKeys.recentLiked(filter),
-    queryFn: async () => recentLike(filter),
+    queryFn: async () => recentLike<TRecentLike[]>(filter),
   });
 
   return (
@@ -31,7 +32,7 @@ const UserLikePage = async ({ params }: UserLikePageProps) => {
           Share
         </Button>
       </div>
-      <div className="mt-6">
+      <div className="mt-8">
         <TracksLikeByUserPage username={username} />
       </div>
     </HydrationBoundary>

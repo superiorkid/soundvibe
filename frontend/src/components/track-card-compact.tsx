@@ -33,7 +33,7 @@ const TrackCardCompact = ({ audio, index, onPlay }: TrackCardCompactProps) => {
 
   return (
     <div className="items-center flex text-sm relative group hover:bg-zinc-300 p-2">
-      <div className="size-10 relative mr-2">
+      <div className="size-10 relative mr-2 rounded-md overflow-hidden">
         {audio.coverFile ? (
           <Image
             fill

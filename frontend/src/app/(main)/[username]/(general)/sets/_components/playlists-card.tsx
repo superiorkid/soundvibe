@@ -41,7 +41,7 @@ const PlaylistsCard = ({ playlist }: PlaylistsCardProps) => {
 
   return (
     <div className="flex gap-6">
-      <div className="relative size-40">
+      <div className="relative size-40 rounded-lg overflow-hidden">
         {playlist.playlistCoverFile ? (
           <Image
             fill

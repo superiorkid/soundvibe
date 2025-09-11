@@ -32,7 +32,6 @@ export type TAudio = {
   comments: TComment[];
   repostsCount: number;
   reposts: TRepost[];
-  type?: "audio";
 };
 
-export type TRecentLike = TAudio | TPlaylistLike;
+export type TRecentLike = TLike | TPlaylistLike;

@@ -13,6 +13,7 @@ import path, { join } from 'node:path';
 import slugify from 'slugify';
 import { DatabaseService } from 'src/shared/database/database.service';
 import { FileUploadService } from 'src/shared/file-upload/file-upload.service';
+import { PlaylistLikeRepository } from '../playlist/playlist-like.repository';
 import { RepostRepository } from '../repost/repost.repository';
 import { UsersRepository } from '../users/users.repository';
 import { AudioPlaysRepository } from './audio-plays.repository';
@@ -32,6 +33,7 @@ export class AudioService {
     private audioPlaysRepository: AudioPlaysRepository,
     private usersRepository: UsersRepository,
     private repostRepository: RepostRepository,
+    private playlistLikeRepository: PlaylistLikeRepository,
   ) {}
 
   async uploadTrack(uploadAudioDto: UploadAudioDTO, session: UserSession) {
@@ -448,54 +450,131 @@ export class AudioService {
     const { userId, limit, query, withPlaylist = false } = params;
 
     try {
-      const [recentLiked, total] = await Promise.all([
-        this.likeRepository.findAll({
-          where: {
-            userId,
-            ...(query
-              ? {
-                  audio: {
-                    OR: [
-                      { title: { contains: query } },
-                      { artist: { contains: query } },
-                    ],
-                  },
-                }
-              : {}),
-          },
-          take: limit,
-          orderBy: { createdAt: 'desc' },
-          include: {
-            audio: {
-              include: {
-                genre: true,
-                coverFile: true,
-                user: true,
-                audioFile: true,
-                likes: true,
-                reposts: true,
+      const [likedAudios, totalAudioLikes, likedPlaylists, totalPlaylistLikes] =
+        await Promise.all([
+          this.likeRepository.findAll({
+            where: {
+              userId,
+              ...(query
+                ? {
+                    audio: {
+                      OR: [
+                        { title: { contains: query } },
+                        { artist: { contains: query } },
+                      ],
+                    },
+                  }
+                : {}),
+            },
+            take: limit,
+            orderBy: { createdAt: 'desc' },
+            include: {
+              audio: {
+                include: {
+                  genre: true,
+                  coverFile: true,
+                  user: true,
+                  audioFile: true,
+                  likes: true,
+                  reposts: true,
+                },
               },
             },
+          }),
+          this.likeRepository.count({ where: { userId } }),
+          withPlaylist
+            ? this.playlistLikeRepository.findAll({
+                where: {
+                  userId,
+                  ...(query
+                    ? {
+                        playlist: {
+                          OR: [
+                            { title: { contains: query, mode: 'insensitive' } },
+                            {
+                              description: {
+                                contains: query,
+                                mode: 'insensitive',
+                              },
+                            },
+                          ],
+                        },
+                      }
+                    : {}),
+                },
+                orderBy: { createdAt: 'desc' },
+                include: {
+                  playlist: {
+                    include: {
+                      user: true,
+                      playlistCoverFile: true,
+                      likes: { include: { user: true } },
+                      audios: {
+                        include: {
+                          audio: {
+                            include: {
+                              audioFile: true,
+                              coverFile: true,
+                              genre: true,
+                              user: true,
+                              likes: { include: { user: true } },
+                              reposts: { include: { user: true } },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              })
+            : Promise.resolve([]),
+          withPlaylist
+            ? this.playlistLikeRepository.count({ where: { userId } })
+            : Promise.resolve(0),
+        ]);
+
+      // normalize audio likes
+      const audioItems =
+        likedAudios?.map((like) => ({
+          createdAt: like.createdAt,
+          type: 'audio' as const,
+          audio: {
+            ...like.audio,
+            streamUrl: `/api/v1/audio/stream/${like.audioId}`,
           },
-        }),
-        this.likeRepository.count({ where: { userId } }),
-      ]);
+        })) ?? [];
+
+      // normalize playlist like
+      const playlistItems =
+        likedPlaylists?.map((like) => ({
+          id: like.id,
+          createdAt: like.createdAt,
+          type: 'playlist' as const,
+          playlist: {
+            ...like.playlist,
+            audios: like.playlist.audios.map((playlistAudio) => ({
+              ...playlistAudio,
+              audio: {
+                ...playlistAudio.audio,
+                streamUrl: `/api/v1/audio/stream/${playlistAudio.audio.id}`,
+              },
+            })),
+          },
+        })) ?? [];
+
+      const merged = [...audioItems, ...playlistItems].sort(
+        (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
+      );
 
       return {
         success: true,
         message:
-          recentLiked.length > 0
-            ? 'Recent liked tracks retrieved successfully.'
-            : 'No liked tracks found.',
+          merged.length > 0
+            ? 'Recent liked items retrieved successfully.'
+            : 'No liked items found.',
         data: {
-          total,
-          recent: recentLiked.map((track) => ({
-            ...track,
-            audio: {
-              ...track.audio,
-              streamUrl: `/api/v1/audio/stream/${track.audioId}`,
-            },
-          })),
+          total: totalAudioLikes + totalPlaylistLikes,
+          recent: merged.slice(0, limit),
         },
       };
     } catch {
