@@ -52,7 +52,7 @@ const UserProfileDropdown = ({ user }: UserProfileDropdownProps) => {
         </DropdownMenuTrigger>
         <DropdownMenuContent className="max-w-64">
           <DropdownMenuGroup>
-            {dropdownMenus.map(({ href, label, icon: Icon }, index) => (
+            {dropdownMenus.menus.map(({ href, label, icon: Icon }, index) => (
               <DropdownMenuItem key={index} asChild>
                 <Link href={href}>
                   {Icon && (

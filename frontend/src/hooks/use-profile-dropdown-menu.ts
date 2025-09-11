@@ -1,4 +1,6 @@
+import { authClient } from "@/lib/auth-client";
 import { TMenu } from "@/types/menu-type";
+import { TUser } from "@/types/user.type";
 import {
   AudioLinesIcon,
   CopyIcon,
@@ -9,11 +11,15 @@ import {
 import { useMemo } from "react";
 
 export function useProfileDropdownMenu() {
-  const menus = useMemo<TMenu[]>(
-    () => [
+  const { data: session, isPending } = authClient.useSession();
+
+  const menus = useMemo<TMenu[]>(() => {
+    if (!session) return [];
+
+    return [
       {
         label: "Profile",
-        href: "#",
+        href: `/${(session.user as TUser).displayUsername}`,
         icon: UserIcon,
       },
       {
@@ -23,22 +29,21 @@ export function useProfileDropdownMenu() {
       },
       {
         label: "Playlists",
-        href: "#",
+        href: "/you/sets",
         icon: CopyIcon,
       },
       {
         label: "Following",
-        href: "#",
+        href: "/you/following",
         icon: UserCheckIcon,
       },
       {
         label: "Tracks",
-        href: "#",
+        href: `/${(session.user as TUser).displayUsername}/tracks`,
         icon: AudioLinesIcon,
       },
-    ],
-    []
-  );
+    ];
+  }, [session]);
 
-  return menus;
+  return { menus, isPending };
 }
