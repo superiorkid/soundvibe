@@ -212,7 +212,7 @@ const AudioPlayer = () => {
                   size={17}
                   strokeWidth={2}
                   className={cn(
-                    "hover:fill-zinc-400/70",
+                    "hover:opacity-50 fill-foreground",
                     hasLiked && "fill-red-500 stroke-red-500 hover:fill-red-600"
                   )}
                 />
