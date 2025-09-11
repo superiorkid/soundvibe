@@ -1,4 +1,8 @@
+"use client";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useFollow } from "@/hooks/tanstack/follows";
+import { authClient } from "@/lib/auth-client";
 import { getInitials, isAbsoluteUrl } from "@/lib/utils";
 import { TUser } from "@/types/user.type";
 import { UserIcon } from "lucide-react";
@@ -13,6 +17,13 @@ interface UserTooltipProps {
 }
 
 const UserTooltip = ({ children, user }: UserTooltipProps) => {
+  const { data: session } = authClient.useSession();
+
+  // const { followUserToggleMutation, hasFollowUser, isPending } = useFollow({
+  //   user,
+  //   currentUserId: session?.user.id as string,
+  // });
+
   return (
     <HoverCard>
       <HoverCardTrigger asChild>{children}</HoverCardTrigger>
@@ -36,17 +47,33 @@ const UserTooltip = ({ children, user }: UserTooltipProps) => {
           >
             {user?.name}
           </Link>
-          <Link href="#" className="flex items-center justify-center">
+          <Link
+            href={`/${user.displayUsername}/followers`}
+            className="flex items-center justify-center"
+          >
             <UserIcon strokeWidth={2} size={16} className="mr-1" />
             <span className="text-sm font-medium text-muted-foreground">
-              6,383
+              {user.followersCounts}
             </span>
           </Link>
-          <p className="text-sm text-muted-foreground">Perth, Australia</p>
+
+          {(user.city || user.country) && (
+            <p className="text-sm text-muted-foreground">
+              {[user.city, user.country].filter(Boolean).join(", ")}
+            </p>
+          )}
         </div>
-        <Button className="w-full" size="sm">
-          Follow
-        </Button>
+        {/* {session?.user.id !== user.id && (
+          <Button
+            variant={hasFollowUser ? "secondary" : "default"}
+            className="w-full"
+            size="sm"
+            disabled={isPending}
+            onClick={() => followUserToggleMutation(user.id)}
+          >
+            {hasFollowUser ? "Unfollow" : "Follow"}
+          </Button>
+        )} */}
       </HoverCardContent>
     </HoverCard>
   );

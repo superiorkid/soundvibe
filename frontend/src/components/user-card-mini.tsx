@@ -1,21 +1,37 @@
-import React from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import Link from "next/link";
-import { cn, getInitials } from "@/lib/utils";
-import { Button, buttonVariants } from "./ui/button";
-import { AudioLinesIcon, UserIcon } from "lucide-react";
+"use client";
+
+import { useFollow } from "@/hooks/tanstack/follows";
+import { cn, getInitials, isAbsoluteUrl } from "@/lib/utils";
 import { TUser } from "@/types/user.type";
+import { AudioLinesIcon, UserIcon } from "lucide-react";
+import Link from "next/link";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Button, buttonVariants } from "./ui/button";
 
 interface UserCardMiniProps {
   user: TUser;
+  currentUserId: string;
 }
 
-const UserCardMini = ({ user }: UserCardMiniProps) => {
+const UserCardMini = ({ user, currentUserId }: UserCardMiniProps) => {
+  const { followUserToggleMutation, isPending, hasFollowUser } = useFollow({
+    user,
+    currentUserId,
+  });
+
   return (
     <div className="flex justify-between items-center">
       <div className="flex items-center gap-2">
         <Avatar className="size-12">
-          <AvatarImage src="https://github.com/shadcn.png" />
+          <AvatarImage
+            src={
+              user.image
+                ? isAbsoluteUrl(user.image)
+                  ? user.image
+                  : `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/users/cover/${user.id}`
+                : "https://github.com/shadcn.png"
+            }
+          />
           <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
         </Avatar>
         <div className="text-sm">
@@ -34,7 +50,7 @@ const UserCardMini = ({ user }: UserCardMiniProps) => {
               )}
             >
               <UserIcon size={14} strokeWidth={2} />
-              22.6K
+              {user.followersCounts}
             </Link>
             <Link
               href={`/${user.displayUsername}/tracks`}
@@ -47,14 +63,19 @@ const UserCardMini = ({ user }: UserCardMiniProps) => {
               )}
             >
               <AudioLinesIcon size={14} strokeWidth={2} />
-              51
+              {user.audiosCounts}
             </Link>
           </div>
         </div>
       </div>
       <div>
-        <Button size="sm" className="rounded-sm">
-          Follow
+        <Button
+          size="sm"
+          className="rounded-sm"
+          disabled={isPending}
+          onClick={() => followUserToggleMutation(user.id)}
+        >
+          {hasFollowUser ? "Unfollow" : "Follow"}
         </Button>
       </div>
     </div>

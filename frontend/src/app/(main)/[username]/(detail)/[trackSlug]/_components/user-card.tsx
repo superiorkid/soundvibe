@@ -30,13 +30,13 @@ const UserCard = ({ user, isCurrentUser }: UserCardProps) => {
           {user.name}
         </h5>
         <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground font-medium">
-          <Link href="/username/followers">
+          <Link href={`/${user.displayUsername}/followers`}>
             <UserIcon size={18} className="inline-flex mr-1" />
-            221K
+            {user.followersCounts}
           </Link>
-          <Link href="/username/followers">
+          <Link href={`/${user.displayUsername}/tracks`}>
             <AudioLinesIcon size={18} className="inline-flex mr-1" />
-            76
+            {user.audiosCounts}
           </Link>
         </div>
       </div>

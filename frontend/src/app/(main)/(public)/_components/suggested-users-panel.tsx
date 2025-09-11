@@ -3,9 +3,11 @@
 import { Button } from "@/components/ui/button";
 import UserCardMini from "@/components/user-card-mini";
 import { useSuggestedUsers } from "@/hooks/tanstack/follows";
+import { authClient } from "@/lib/auth-client";
 import { Loader2Icon } from "lucide-react";
 
 const SuggestedUsersPanel = () => {
+  const { data: session } = authClient.useSession();
   const { isError, isPending, suggestedUsers, refetch } = useSuggestedUsers({
     limit: 3,
   });
@@ -60,7 +62,11 @@ const SuggestedUsersPanel = () => {
           !isError &&
           (suggestedUsers?.data || [])?.length > 0 &&
           (suggestedUsers?.data || []).map((user, index) => (
-            <UserCardMini key={index} user={user} />
+            <UserCardMini
+              key={index}
+              user={user}
+              currentUserId={session?.user.id as string}
+            />
           ))}
       </div>
     </div>

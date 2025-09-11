@@ -68,10 +68,14 @@ export const userKeys = {
 
 export const followKeys = {
   all: ["follows"] as const,
-  getFollowers: (userId: string) =>
+  getFollowersById: (userId: string) =>
     [...followKeys.all, { userId, mode: "get-followers" }] as const,
-  getFollowing: (userId: string) =>
-    [...followKeys.all, { userId, mode: "get-following" }] as const,
+  getFollowingById: (params: { userId: string; filter?: string }) =>
+    [...followKeys.all, { ...params, mode: "get-following" }] as const,
   getSuggestedUsers: (limit: number = 10) =>
     [...followKeys.all, { mode: "get-suggested-users", limit }] as const,
+  getFollowersByUsername: (username: string) =>
+    [...followKeys.all, { username, mode: "get-followers" }] as const,
+  getFollowingByUsername: (params: { username: string; filter?: string }) =>
+    [...followKeys.all, { ...params, mode: "get-following" }] as const,
 };

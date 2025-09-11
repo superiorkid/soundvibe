@@ -24,6 +24,7 @@ model User {
   sessions      Session[]
   accounts      Account[]
   audios        Audio[]
+  audiosCounts Int @default(0) @map("audios_counts")
   likedTracks   Like[]
   username           String?
   displayUsername    String?
@@ -39,7 +40,9 @@ model User {
   listeningHistories ListeningHistory[]
   playlists          Playlist[]
   playlistLikes      PlaylistLike[]
+  followingCounts Int @default(0) @map("following_counts")
   following    Follow[]  @relation("UserFollowing")
+  followersCounts Int @default(0) @map("followers_counts")
   followers    Follow[]  @relation("UserFollowers")
 
   @@unique([email])

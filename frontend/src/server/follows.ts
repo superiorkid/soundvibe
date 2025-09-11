@@ -43,12 +43,17 @@ export async function getFollowers(userId: string) {
   }
 }
 
-export async function getFollowing(userId: string) {
+export async function getFollowing(params: {
+  userId: string;
+  filter?: string;
+}) {
+  const { userId, filter } = params;
   const axiosInstance = await getAxios();
 
   try {
     const response = await axiosInstance.get(
-      `/api/v1/follows/${userId}/following`
+      `/api/v1/follows/${userId}/following`,
+      { params: { filter } }
     );
     return response.data as TApiResponse<TFollow[]>;
   } catch (error) {
@@ -68,5 +73,38 @@ export async function getSuggestedUsers(limit: number) {
   } catch (error) {
     console.error("Failed to get suggested users:", error);
     throw new Error("Failed to get suggested users");
+  }
+}
+
+export async function getFollowersByUsername(username: string) {
+  const axiosInstance = await getAxios();
+
+  try {
+    const response = await axiosInstance.get(
+      `/api/v1/follows/username/${username}/followers`
+    );
+    return response.data as TApiResponse<TFollow[]>;
+  } catch (error) {
+    console.error("Failed to get followers:", error);
+    throw new Error("Failed to get followers");
+  }
+}
+
+export async function getFollowingByUsername(params: {
+  username: string;
+  filter?: string;
+}) {
+  const { username, filter } = params;
+  const axiosInstance = await getAxios();
+
+  try {
+    const response = await axiosInstance.get(
+      `/api/v1/follows/username/${username}/following`,
+      { params: { filter } }
+    );
+    return response.data as TApiResponse<TFollow[]>;
+  } catch (error) {
+    console.error("Failed to get following:", error);
+    throw new Error("Failed to get following");
   }
 }

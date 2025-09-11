@@ -17,13 +17,13 @@ const UserStatPanel = ({ username }: UserStatPanelProps) => {
           <Label className="text-xs font-semibold tracking-wide text-muted-foreground">
             Followers
           </Label>
-          <h2 className="text-3xl font-bold">206</h2>
+          <h2 className="text-3xl font-bold">{user?.data?.followersCounts}</h2>
         </div>
         <div className="space-y-1">
           <Label className="text-xs font-semibold tracking-wide text-muted-foreground">
             Following
           </Label>
-          <h2 className="text-3xl font-bold">1,279</h2>
+          <h2 className="text-3xl font-bold">{user?.data?.followingCounts}</h2>
         </div>
         <div className="space-y-1">
           <Label className="text-xs font-semibold tracking-wide text-muted-foreground">

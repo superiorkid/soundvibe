@@ -3,7 +3,9 @@ import { followKeys } from "@/lib/query-keys";
 import {
   follow,
   getFollowers,
+  getFollowersByUsername,
   getFollowing,
+  getFollowingByUsername,
   getSuggestedUsers,
   unfollow,
 } from "@/server/follows";
@@ -13,14 +15,14 @@ import { toast } from "sonner";
 
 const queryClient = getQueryClient();
 
-export function useFollow(params: { user: TUser; userId: string }) {
-  const { user, userId } = params;
+export function useFollow(params: { user: TUser; currentUserId: string }) {
+  const { user, currentUserId } = params;
   const hasFollowUser = !!user.followers.some(
-    (follow) => follow.followerId === userId
+    (follow) => follow.followerId === currentUserId
   );
 
   const { mutate, isPending } = useMutation({
-    mutationFn: async () => {
+    mutationFn: async (userId: string) => {
       if (hasFollowUser) return unfollow(userId);
       return follow(userId);
     },
@@ -45,7 +47,7 @@ export function useFollowers(userId: string) {
     isPending,
     isError,
   } = useQuery({
-    queryKey: followKeys.getFollowers(userId),
+    queryKey: followKeys.getFollowersById(userId),
     queryFn: async () => getFollowers(userId),
     enabled: !!userId,
   });
@@ -57,21 +59,23 @@ export function useFollowers(userId: string) {
   };
 }
 
-export function useFollowing(userId: string) {
+export function useFollowing(params: { userId: string; filter?: string }) {
   const {
     data: following,
     isPending,
     isError,
+    refetch,
   } = useQuery({
-    queryKey: followKeys.getFollowing(userId),
-    queryFn: async () => getFollowing(userId),
-    enabled: !!userId,
+    queryKey: followKeys.getFollowingById(params),
+    queryFn: async () => getFollowing(params),
+    enabled: !!params.userId,
   });
 
   return {
     following,
     isPending,
     isError,
+    refetch,
   };
 }
 
@@ -89,6 +93,47 @@ export function useSuggestedUsers(props?: { limit?: number }) {
 
   return {
     suggestedUsers,
+    isPending,
+    isError,
+    refetch,
+  };
+}
+
+export function useFollowersByUsername(username: string) {
+  const {
+    data: followers,
+    isPending,
+    isError,
+  } = useQuery({
+    queryKey: followKeys.getFollowersByUsername(username),
+    queryFn: async () => getFollowersByUsername(username),
+    enabled: !!username,
+  });
+
+  return {
+    followers,
+    isPending,
+    isError,
+  };
+}
+
+export function useFollowingByUsername(params: {
+  username: string;
+  filter?: string;
+}) {
+  const {
+    data: following,
+    isPending,
+    isError,
+    refetch,
+  } = useQuery({
+    queryKey: followKeys.getFollowingByUsername(params),
+    queryFn: async () => getFollowingByUsername(params),
+    enabled: !!params.username,
+  });
+
+  return {
+    following,
     isPending,
     isError,
     refetch,

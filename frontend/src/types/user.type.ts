@@ -1,3 +1,4 @@
+import { TAudio } from "./audio.type";
 import { TFollow } from "./follows.type";
 import { TLike } from "./like.type";
 import { TPlaylist } from "./playlist-type";
@@ -10,6 +11,8 @@ export type TUser = {
   image?: string;
   username: string;
   displayUsername: string;
+  audios: TAudio[];
+  audiosCounts: number;
   createdAt: Date;
   updatedAt: Date;
   likedTracks: TLike[];
@@ -20,7 +23,9 @@ export type TUser = {
   country?: string;
   bio?: string;
   following: TFollow[];
+  followingCounts: number;
   followers: TFollow[];
+  followersCounts: number;
   _count?: {
     audios?: number;
   };
