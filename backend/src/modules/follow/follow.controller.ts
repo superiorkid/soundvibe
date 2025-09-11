@@ -6,7 +6,9 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseIntPipe,
   Post,
+  Query,
 } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { FollowService } from './follow.service';
@@ -15,6 +17,18 @@ import { FollowService } from './follow.service';
 @ApiTags('follows')
 export class FollowController {
   constructor(private followService: FollowService) {}
+
+  @ApiOperation({ summary: 'Get suggested users to follow' })
+  @Get('suggested')
+  async suggestedUsers(
+    @Query('limit', ParseIntPipe) limit: 10,
+    @Session() session: UserSession,
+  ) {
+    return this.followService.getSuggestedUsers({
+      limit,
+      currentUserId: session.user.id,
+    });
+  }
 
   @Post(':userId')
   @HttpCode(HttpStatus.CREATED)

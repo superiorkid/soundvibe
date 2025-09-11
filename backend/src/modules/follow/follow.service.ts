@@ -121,4 +121,32 @@ export class FollowService {
       );
     }
   }
+
+  async getSuggestedUsers(params: { currentUserId: string; limit: number }) {
+    const { currentUserId, limit } = params;
+
+    try {
+      const suggestedUsers = await this.userRepository.findAll({
+        where: {
+          id: { not: currentUserId },
+          followers: {
+            none: { followerId: currentUserId },
+          },
+        },
+        orderBy: { createdAt: 'desc' },
+        take: limit,
+      });
+
+      return {
+        success: true,
+        message: 'get suggested users successfully',
+        data: suggestedUsers,
+      };
+    } catch (error) {
+      this.logger.error(JSON.stringify(error));
+      throw new InternalServerErrorException(
+        `Failed to get suggested users :: ${(error as Error).message}`,
+      );
+    }
+  }
 }

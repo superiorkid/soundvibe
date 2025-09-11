@@ -323,11 +323,9 @@ model Follow {
   id String @id @default(cuid())
   followerId String @map("followed_id")
   followingId String @map("following_id")
-
   follower User @relation("UserFollowing", fields: [followerId], references: [id], onDelete: Cascade)
   following User @relation("UserFollowers", fields: [followingId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
+  createdAt DateTime @default(now()) @map("created_at")
 
   @@unique([followerId, followingId])
   @@map("follow")
