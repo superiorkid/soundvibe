@@ -4,6 +4,8 @@ import {
   findAllAudio,
   findOneBySlug,
   getTopFans,
+  getTrackPlaylists,
+  getTrackReposted,
   getUsersWhoLikedAudio,
   likeAudio,
   playIncrement,
@@ -200,4 +202,34 @@ export function useTopFans(params: { audioId: string; days: number }) {
   });
 
   return { topFans, isPending };
+}
+
+export function useTrackPlaylists(params: { audioId: string; limit?: number }) {
+  const {
+    data: playlists,
+    isPending,
+    isError,
+    refetch,
+  } = useQuery({
+    queryKey: audioKeys.trackPlaylists(params),
+    queryFn: async () => getTrackPlaylists(params),
+    enabled: !!params.audioId,
+  });
+
+  return { playlists, isPending, isError, refetch };
+}
+
+export function useTrackReposted(params: { audioId: string; limit?: number }) {
+  const {
+    data: reposts,
+    isPending,
+    isError,
+    refetch,
+  } = useQuery({
+    queryKey: audioKeys.trackReposted(params),
+    queryFn: async () => getTrackReposted(params),
+    enabled: !!params.audioId,
+  });
+
+  return { reposts, isPending, isError, refetch };
 }

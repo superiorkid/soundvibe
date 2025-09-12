@@ -46,7 +46,7 @@ const PlaylistsCard = ({ playlist }: PlaylistsCardProps) => {
           <Image
             fill
             src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/playlists/cover/${playlist.id}`}
-            alt="track image"
+            alt={`${playlist.title} cover`}
             className="object-cover"
             loading="lazy"
             decoding="async"

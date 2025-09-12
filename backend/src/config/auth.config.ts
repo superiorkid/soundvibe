@@ -32,6 +32,7 @@ export function createAuthConfig(
                 take: 3,
                 include: {
                   playlistCoverFile: true,
+                  user: true,
                 },
               },
             },

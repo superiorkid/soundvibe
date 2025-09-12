@@ -24,6 +24,7 @@ model User {
   sessions      Session[]
   accounts      Account[]
   audios        Audio[]
+  audiosCounts Int @default(0) @map("audios_counts")
   likedTracks   Like[]
   username           String?
   displayUsername    String?
@@ -39,6 +40,10 @@ model User {
   listeningHistories ListeningHistory[]
   playlists          Playlist[]
   playlistLikes      PlaylistLike[]
+  followingCounts Int @default(0) @map("following_counts")
+  following    Follow[]  @relation("UserFollowing")
+  followersCounts Int @default(0) @map("followers_counts")
+  followers    Follow[]  @relation("UserFollowers")
 
   @@unique([email])
   @@unique([username])
@@ -314,4 +319,17 @@ model PlaylistLike {
 
   @@unique([playlistId, userId])
   @@map("playlist_like")
+}
+
+
+model Follow {
+  id String @id @default(cuid())
+  followerId String @map("followed_id")
+  followingId String @map("following_id")
+  follower User @relation("UserFollowing", fields: [followerId], references: [id], onDelete: Cascade)
+  following User @relation("UserFollowers", fields: [followingId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@unique([followerId, followingId])
+  @@map("follow")
 }

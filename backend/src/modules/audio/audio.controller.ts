@@ -149,18 +149,7 @@ export class AudioController {
     return this.audioService.getCover({ id, res });
   }
 
-  @Get(':id/fans')
-  async getTopFans(@Param('id') id: string, @Query('days') days: number) {
-    return this.audioService.getTopFans({ audioId: id, limit: 5, days });
-  }
-
-  @Post(':id/like')
-  async likeAudio(@Param('id') id: string, @Session() session: UserSession) {
-    const userId = session.user.id;
-    return this.audioService.likeAudio({ userId, audioId: id });
-  }
-
-  @Get(':id/like/users')
+  @Get('/slug/:slug/like/users')
   @ApiOperation({
     summary: 'Get all users who liked an audio track',
     description: 'Returns a list of users that liked the given audio track',
@@ -175,6 +164,33 @@ export class AudioController {
   ) {
     const limitValue = limit || 25;
     return this.audioService.getUsersWhoLikedAudio({ slug, limit: limitValue });
+  }
+
+  @Get(':id/playlists')
+  async getAudioPlaylists(
+    @Param('id') id: string,
+    @Query('limit') limit: number = 10,
+  ) {
+    return this.audioService.getTrackPlaylsts({ audioId: id, limit });
+  }
+
+  @Get(':id/reposted')
+  async getTrackReposts(
+    @Param('id') id: string,
+    @Query('limit') limit: number = 10,
+  ) {
+    return this.audioService.getTrackReposted({ audioId: id, limit });
+  }
+
+  @Get(':id/fans')
+  async getTopFans(@Param('id') id: string, @Query('days') days: number) {
+    return this.audioService.getTopFans({ audioId: id, limit: 5, days });
+  }
+
+  @Post(':id/like')
+  async likeAudio(@Param('id') id: string, @Session() session: UserSession) {
+    const userId = session.user.id;
+    return this.audioService.likeAudio({ userId, audioId: id });
   }
 
   @Delete(':id/unlike')

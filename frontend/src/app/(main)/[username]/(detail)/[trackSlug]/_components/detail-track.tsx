@@ -4,16 +4,16 @@ import { PlayerActions } from "@/app/(main)/_components/player-actions";
 import { Button } from "@/components/ui/button";
 import { useAudioBySlug } from "@/hooks/tanstack/audio";
 import { authClient } from "@/lib/auth-client";
-import { AlertCircleIcon, HeartIcon, MusicIcon } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
+import { AlertCircleIcon, MusicIcon } from "lucide-react";
 import { Suspense } from "react";
 import Comments from "./comments";
 import CommentsEmpty from "./comments-empty";
 import FanRankPanel from "./fan-rank-panel";
 import LikeSummaryPanel from "./like-summary-panel";
+import RepostsSummaryPanel from "./reposts-summary-panel";
 import TrackDescription from "./track-description";
 import TrackHeader from "./track-header";
+import TrackInPlaylistsPanel from "./track-in-playlists-panel";
 import UserCard from "./user-card";
 
 interface DetailTrackProps {
@@ -73,7 +73,7 @@ const DetailTrack = ({ slug }: DetailTrackProps) => {
           <div className="flex gap-6">
             <UserCard
               user={audio.data.user}
-              isCurrentUser={audio.data.userId === session?.user.id}
+              currentUserId={session?.user.id as string}
             />
             <div className="flex-1 space-y-8">
               <TrackDescription audio={audio.data} />
@@ -96,86 +96,15 @@ const DetailTrack = ({ slug }: DetailTrackProps) => {
           </div>
         </div>
         <div className="w-[363px] space-y-10">
-          {/* fans */}
           <FanRankPanel audioId={audio.data.id} />
 
           {/* <div>
             <p>TODO: related tracks here...</p>
           </div> */}
 
-          {/* in playlists */}
-          <div className="space-y-5">
-            <div className="flex justify-between items-center">
-              <h1 className="font-semibold uppercase text-sm">in playlist</h1>
-              <Link
-                href="/username/track-title/sets"
-                className="text-xs text-muted-foreground tracking-wide"
-              >
-                View all
-              </Link>
-            </div>
-            <div className="space-y-4">
-              {Array.from({ length: 3 }).map((_, index) => (
-                <div key={index} className="flex gap-3 items-start">
-                  <div className="relative size-14">
-                    <Image
-                      fill
-                      src="https://images.unsplash.com/photo-1654110455429-cf322b40a906?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                      alt="playlist img"
-                      loading="lazy"
-                      decoding="async"
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    />
-                  </div>
-                  <div className="text-sm space-y-3.5">
-                    <div>
-                      <h1 className="font-bold text-muted-foreground">
-                        Alex Pirlea
-                      </h1>
-                      <p className="font-semibold">House</p>
-                    </div>
-                    <button className="text-xs flex items-center gap-1">
-                      <HeartIcon
-                        className="fill-foreground"
-                        size={12}
-                        strokeWidth={2}
-                      />
-                      <span className="font-medium">12</span>
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* likes */}
+          <TrackInPlaylistsPanel audioId={audio.data.id} />
           <LikeSummaryPanel audioSlug={audio.data.slug} />
-
-          {/* reposts */}
-          <div className="space-y-5">
-            <div className="flex justify-between items-center">
-              <h1 className="font-semibold uppercase text-sm">14.3K reposts</h1>
-              <Link
-                href="/username/track-title/reposts"
-                className="text-xs text-muted-foreground tracking-wide"
-              >
-                View all
-              </Link>
-            </div>
-            <div className="flex -space-x-[1.4rem]">
-              {Array.from({ length: 9 }).map((_, index) => (
-                <Image
-                  key={index}
-                  className="ring-background rounded-full ring-2"
-                  src="https://images.unsplash.com/photo-1701615004837-40d8573b6652?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                  width={60}
-                  height={60}
-                  alt="Avatar 01"
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                />
-              ))}
-            </div>
-          </div>
+          <RepostsSummaryPanel audioId={audio.data.id} />
         </div>
       </div>
     </div>

@@ -4,6 +4,8 @@ import { getAxios } from "@/lib/axios";
 import { TApiResponse } from "@/types/api-response.type";
 import { TAudio, TRecentLike } from "@/types/audio.type";
 import { TLike } from "@/types/like.type";
+import { TPlaylist } from "@/types/playlist-type";
+import { TRepost } from "@/types/repost.type";
 import { TUser } from "@/types/user.type";
 
 export async function findAllAudio(params: { showRepost: boolean }) {
@@ -129,7 +131,7 @@ export async function getUsersWhoLikedAudio(params: {
 
   try {
     const response = await axiosInstance.get(
-      `/api/v1/audio/${slug}/like/users`,
+      `/api/v1/audio/slug/${slug}/like/users`,
       {
         params: { limit },
       }
@@ -153,5 +155,43 @@ export async function getTopFans(params: { days: number; audioId: string }) {
   } catch (error) {
     console.error("Failed to increment play count:", error);
     throw new Error("Could not increment play count. Please try again.");
+  }
+}
+
+export async function getTrackPlaylists(params: {
+  audioId: string;
+  limit?: number;
+}) {
+  const { audioId, limit } = params;
+  const axiosInstance = await getAxios();
+
+  try {
+    const response = await axiosInstance.get(
+      `/api/v1/audio/${audioId}/playlists`,
+      { params: { limit } }
+    );
+    return response.data as TApiResponse<TPlaylist[]>;
+  } catch (error) {
+    console.error("Failed to get playlists:", error);
+    throw new Error("Could not get playlists. Please try again.");
+  }
+}
+
+export async function getTrackReposted(params: {
+  audioId: string;
+  limit?: number;
+}) {
+  const { audioId, limit } = params;
+  const axiosInstance = await getAxios();
+
+  try {
+    const response = await axiosInstance.get(
+      `/api/v1/audio/${audioId}/reposted`,
+      { params: { limit } }
+    );
+    return response.data as TApiResponse<TRepost[]>;
+  } catch (error) {
+    console.error("Failed to reposted users:", error);
+    throw new Error("Could not reposted users. Please try again.");
   }
 }

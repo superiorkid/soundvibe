@@ -46,7 +46,7 @@ const DetailPlaylist = ({ playlistSlug }: DetailPlaylistProps) => {
             <div className="w-[143px]">
               <UserCard
                 user={playlist?.data?.user as TUser}
-                isCurrentUser={playlist?.data?.userId === session?.user.id}
+                currentUserId={session?.user.id as string}
               />
             </div>
             <div className="space-y-5 w-full">

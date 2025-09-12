@@ -1,5 +1,8 @@
+"use client";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { useFollow } from "@/hooks/tanstack/follows";
 import { isAbsoluteUrl } from "@/lib/utils";
 import { TUser } from "@/types/user.type";
 import { AudioLinesIcon, UserIcon } from "lucide-react";
@@ -7,10 +10,17 @@ import Link from "next/link";
 
 interface UserCardProps {
   user: TUser;
-  isCurrentUser: boolean;
+  currentUserId: string;
 }
 
-const UserCard = ({ user, isCurrentUser }: UserCardProps) => {
+const UserCard = ({ user, currentUserId }: UserCardProps) => {
+  const { followUserToggleMutation, hasFollowUser, isPending } = useFollow({
+    user,
+    currentUserId,
+  });
+
+  const isCurrentUser = user.id === currentUserId;
+
   return (
     <div className="flex flex-col items-center space-y-2.5 w-[145px]">
       <Avatar className="size-25">
@@ -30,20 +40,26 @@ const UserCard = ({ user, isCurrentUser }: UserCardProps) => {
           {user.name}
         </h5>
         <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground font-medium">
-          <Link href="/username/followers">
+          <Link href={`/${user.displayUsername}/followers`}>
             <UserIcon size={18} className="inline-flex mr-1" />
-            221K
+            {user.followersCounts}
           </Link>
-          <Link href="/username/followers">
+          <Link href={`/${user.displayUsername}/tracks`}>
             <AudioLinesIcon size={18} className="inline-flex mr-1" />
-            76
+            {user.audiosCounts}
           </Link>
         </div>
       </div>
       {!isCurrentUser && (
         <div className="space-y-1.5">
-          <Button size="sm" className="w-full rounded-md">
-            Follow
+          <Button
+            variant={hasFollowUser ? "secondary" : "default"}
+            size="sm"
+            className="w-full rounded-md hover:cursor-pointer"
+            disabled={isPending}
+            onClick={() => followUserToggleMutation(user.id)}
+          >
+            {hasFollowUser ? "Unfollow" : "Follow"}
           </Button>
           <Button size="sm" className="w-full rounded-md" variant="ghost">
             Report

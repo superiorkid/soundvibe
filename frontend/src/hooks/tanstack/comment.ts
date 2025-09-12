@@ -23,7 +23,7 @@ export function useComments(params: {
 }) {
   const { audioId, filter } = params;
   const { data: comments, isPending } = useQuery({
-    queryKey: commentKeys.all(audioId, filter),
+    queryKey: commentKeys.allById(audioId, filter),
     queryFn: async () => getComments({ audioId, filter }),
     enabled: !!audioId,
   });
@@ -43,7 +43,7 @@ export function useCreateComment({
       createComment({ audioId, commentSchema: commentData }),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: commentKeys.all(audioId),
+        queryKey: commentKeys.allById(audioId),
       });
       queryClient.invalidateQueries({
         queryKey: audioKeys.all,
@@ -74,7 +74,7 @@ export function useDeleteComment({
     mutationFn: async () => deleteComment({ audioId, commentId }),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: commentKeys.all(audioId),
+        queryKey: commentKeys.allById(audioId),
       });
       onSuccess?.();
     },
@@ -112,16 +112,16 @@ export function useCommentLike(
     },
     onMutate: async () => {
       await queryClient.cancelQueries({
-        queryKey: commentKeys.all(audioId),
+        queryKey: commentKeys.allById(audioId),
       });
 
       const prevData = queryClient.getQueryData<TComment[]>(
-        commentKeys.all(audioId)
+        commentKeys.allById(audioId)
       );
 
       if (prevData) {
         queryClient.setQueryData<TComment[]>(
-          commentKeys.all(audioId),
+          commentKeys.allById(audioId),
           prevData.map((c) =>
             c.id === comment.id
               ? {
@@ -143,12 +143,15 @@ export function useCommentLike(
     },
     onError: (_error, _variables, context) => {
       if (context?.prevData) {
-        queryClient.setQueryData(commentKeys.all(audioId), context.prevData);
+        queryClient.setQueryData(
+          commentKeys.allById(audioId),
+          context.prevData
+        );
       }
     },
     onSettled: () => {
       queryClient.invalidateQueries({
-        queryKey: commentKeys.all(audioId),
+        queryKey: commentKeys.allById(audioId),
       });
     },
   });

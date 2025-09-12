@@ -29,9 +29,13 @@ export class CommentService {
         this.commentRepository.findAll({
           where: { audioId },
           include: {
-            user: true,
+            user: { include: { followers: true, following: true } },
             commentLikes: true,
-            audio: { include: { user: true } },
+            audio: {
+              include: {
+                user: { include: { followers: true, following: true } },
+              },
+            },
           },
         }),
         this.commentRepository.count({ where: { audioId } }),

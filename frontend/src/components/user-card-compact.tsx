@@ -5,6 +5,7 @@ import { UserIcon } from "lucide-react";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Button, buttonVariants } from "./ui/button";
+import { useFollow } from "@/hooks/tanstack/follows";
 
 interface UserCardCompactProps {
   user: TUser;
@@ -13,6 +14,11 @@ interface UserCardCompactProps {
 const UserCardCompact = ({ user }: UserCardCompactProps) => {
   const { data: session } = authClient.useSession();
   const isCurrentUser = session?.user.id === user.id;
+
+  const { followUserToggleMutation, hasFollowUser, isPending } = useFollow({
+    user,
+    currentUserId: session?.user.id as string,
+  });
 
   return (
     <div className="flex flex-col justify-center items-center space-y-3.5 group">
@@ -42,12 +48,18 @@ const UserCardCompact = ({ user }: UserCardCompactProps) => {
           )}
         >
           <UserIcon size={16} />
-          25 Followers
+          {user.followersCounts} Follower{user.followersCounts > 1 && "s"}
         </Link>
       </div>
       {!isCurrentUser && (
-        <Button size="sm" className="invisible group-hover:visible text-sm">
-          Follow
+        <Button
+          variant={hasFollowUser ? "secondary" : "default"}
+          size="sm"
+          className="invisible group-hover:visible text-sm hover:cursor-pointer"
+          disabled={isPending}
+          onClick={() => followUserToggleMutation(user.id)}
+        >
+          {hasFollowUser ? "Unfollow" : "Follow"}
         </Button>
       )}
     </div>
