@@ -6,8 +6,10 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseIntPipe,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
@@ -48,6 +50,45 @@ export class GenreController {
   @ApiInternalServerErrorResponse({ description: '' })
   async getAll() {
     return this.genreService.getAll();
+  }
+
+  @Get('/name/:name/latest')
+  @ApiOperation({
+    summary: 'Get latest tracks by genre',
+    description:
+      'Retrieve the most recently uploaded tracks that belong to a specific genre.',
+  })
+  async getLatestTracksByGenre(
+    @Param('name') name: string,
+    @Query('limit', new ParseIntPipe()) limit: number = 10,
+  ) {
+    return this.genreService.getLatestTracksByGenre({ name, limit });
+  }
+
+  @Get('/name/:name/popular')
+  @ApiOperation({
+    summary: 'Get popular tracks by genre',
+    description:
+      'Retrieve the most popular tracks based on likes, plays, or other metrics within a specific genre.',
+  })
+  async getPopularTracksByGenre(
+    @Param('name') name: string,
+    @Query('limit', new ParseIntPipe()) limit: number = 10,
+  ) {
+    return this.genreService.getPopularTracksByGenre({ name, limit });
+  }
+
+  @Get('/name/:name/playlists')
+  @ApiOperation({
+    summary: 'Get playlists by genre',
+    description:
+      'Retrieve playlists that include tracks belonging to a specific genre.',
+  })
+  async getPlaylistsByGenre(
+    @Param('name') name: string,
+    @Query('limit', new ParseIntPipe()) limit: number = 10,
+  ) {
+    return this.genreService.getPlaylistsByGenre({ name, limit });
   }
 
   @Get(':id')

@@ -2,11 +2,8 @@
 
 import { buttonVariants } from "@/components/ui/button";
 import { useOtherPlaylistsByUserId } from "@/hooks/tanstack/playlist";
-import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
-import { TUser } from "@/types/user.type";
-import { HeartIcon, RefreshCcwIcon } from "lucide-react";
-import Image from "next/image";
+import { RefreshCcwIcon } from "lucide-react";
 import Link from "next/link";
 import PlaylistCardSecondary from "./playlist-card-secondary";
 

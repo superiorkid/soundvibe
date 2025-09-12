@@ -18,17 +18,17 @@ export function useSearchMenu() {
         isActive: pathname === "/search",
       },
       {
-        href: "/tracks",
+        href: "/search/tracks",
         label: "Tracks",
         isActive: pathname === "/tracks",
       },
       {
-        href: "/people",
+        href: "/search/people",
         label: "People",
         isActive: pathname === "/people",
       },
       {
-        href: "/playlists",
+        href: "/search/playlists",
         label: "Playlist",
         isActive: pathname === "/playlists",
       },

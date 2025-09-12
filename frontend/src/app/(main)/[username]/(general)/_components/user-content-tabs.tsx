@@ -3,6 +3,8 @@
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useFollow } from "@/hooks/tanstack/follows";
+import { useUserByUsername } from "@/hooks/tanstack/user";
 import { authClient } from "@/lib/auth-client";
 import { TUser } from "@/types/user.type";
 import {
@@ -27,22 +29,37 @@ interface UserContentTabs {
 
 const UserContentTabs = ({ username }: UserContentTabs) => {
   const pathname = usePathname();
-  const { data: session, isPending } = authClient.useSession();
+
+  const { data: session, isPending: isSessionLoading } =
+    authClient.useSession();
 
   const isCurrentUser = username === (session?.user as TUser)?.displayUsername;
 
-  const tabMenus = useMemo<TMenu[]>(() => {
-    if (!session?.user) return [];
-    const user = session.user as TUser;
-    return [
-      { href: `/${user.displayUsername}`, label: "Popular tracks" },
-      { href: `/${user.displayUsername}/tracks`, label: "Tracks" },
-      { href: `/${user.displayUsername}/sets`, label: "Playlists" },
-      { href: `/${user.displayUsername}/reposts`, label: "Reposts" },
-    ];
-  }, [session?.user]);
+  const {
+    isError: isUserError,
+    isPending: isUserLoading,
+    user,
+  } = useUserByUsername(username);
 
-  if (isPending) {
+  const {
+    followUserToggleMutation,
+    hasFollowUser,
+    isPending: isFollowLoading,
+  } = useFollow({
+    currentUserId: session?.user.id as string,
+    user: user?.data as TUser,
+  });
+
+  const tabMenus = useMemo<TMenu[]>(() => {
+    return [
+      { href: `/${username}`, label: "Popular tracks" },
+      { href: `/${username}/tracks`, label: "Tracks" },
+      { href: `/${username}/sets`, label: "Playlists" },
+      { href: `/${username}/reposts`, label: "Reposts" },
+    ];
+  }, [username]);
+
+  if (isSessionLoading || isUserLoading) {
     return (
       <div className="flex gap-2 items-center">
         {Array.from({ length: 4 }).map((_, index) => (
@@ -70,24 +87,34 @@ const UserContentTabs = ({ username }: UserContentTabs) => {
       </Tabs>
 
       <div className="flex items-center space-x-3">
-        <Button size="sm" className="rounded-sm">
+        <Button size="sm" className="rounded-sm" variant="secondary">
           <UploadIcon size={16} className="mr-1" />
           Share
         </Button>
         {isCurrentUser ? (
           <EditUserDialog username={username}>
-            <Button size="sm" className="rounded-sm hover:cursor-pointer">
+            <Button
+              size="sm"
+              className="rounded-sm hover:cursor-pointer"
+              variant="secondary"
+            >
               <PencilIcon size={16} className="mr-1" />
               Edit
             </Button>
           </EditUserDialog>
         ) : (
           <>
-            <Button size="sm" className="rounded-sm">
+            <Button
+              size="sm"
+              className="rounded-sm hover:cursor-pointer"
+              disabled={isFollowLoading}
+              onClick={() => followUserToggleMutation(user?.data?.id as string)}
+              variant="secondary"
+            >
               <UserCheckIcon size={16} className="mr-1" />
-              Follow
+              {hasFollowUser ? "Unfollow" : "Follow"}
             </Button>
-            <Button size="sm" className="rounded-sm">
+            <Button size="sm" className="rounded-sm" variant="secondary">
               <EllipsisIcon />
             </Button>
           </>

@@ -19,7 +19,7 @@ const TrackCardCompact = ({ audio, index, onPlay }: TrackCardCompactProps) => {
   const { currentTrack, isPlaying, playTrack, togglePlay } = useAudio();
 
   const isThisTrackPlaying =
-    currentTrack?.audioFile.url === audio.audioFile.url && isPlaying;
+    currentTrack?.audioFile?.url === audio.audioFile?.url && isPlaying;
 
   const handlePlay = () => {
     if (currentTrack?.audioFile.url === audio.audioFile.url) {

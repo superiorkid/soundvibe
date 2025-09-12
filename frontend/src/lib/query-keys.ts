@@ -36,6 +36,12 @@ export const audioKeys = {
 
 export const genreKeys = {
   all: ["genre"] as const,
+  latestTracks: (params: { name: string; limit?: number }) =>
+    [...genreKeys.all, { mode: "latest-tracks", ...params }] as const,
+  popularTracks: (params: { name: string; limit?: number }) =>
+    [...genreKeys.all, { mode: "popular-tracks", ...params }] as const,
+  playlists: (params: { name: string; limit?: number }) =>
+    [...genreKeys.all, { mode: "playlsts", ...params }] as const,
 };
 
 export const commentKeys = {

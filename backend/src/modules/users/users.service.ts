@@ -34,6 +34,8 @@ export class UsersService {
       const user = await this.userRepository.findOne({
         where: { displayUsername: username },
         include: {
+          followers: true,
+          following: true,
           _count: { select: { audios: true } },
         },
       });
