@@ -643,8 +643,6 @@ export class AudioService {
         this.likeRepository.count({ where: { audioId: audio.id } }),
       ]);
 
-      this.logger.log(result);
-
       if (result.length === 0) {
         return {
           success: true,

@@ -131,7 +131,7 @@ export async function getUsersWhoLikedAudio(params: {
 
   try {
     const response = await axiosInstance.get(
-      `/api/v1/audio/${slug}/like/users`,
+      `/api/v1/audio/slug/${slug}/like/users`,
       {
         params: { limit },
       }

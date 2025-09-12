@@ -149,6 +149,23 @@ export class AudioController {
     return this.audioService.getCover({ id, res });
   }
 
+  @Get('/slug/:slug/like/users')
+  @ApiOperation({
+    summary: 'Get all users who liked an audio track',
+    description: 'Returns a list of users that liked the given audio track',
+  })
+  @ApiParam({
+    name: 'slug',
+    description: 'The slug of the audio track',
+  })
+  async getUsersWhoLiked(
+    @Param('slug') slug: string,
+    @Query('limit') limit: number,
+  ) {
+    const limitValue = limit || 25;
+    return this.audioService.getUsersWhoLikedAudio({ slug, limit: limitValue });
+  }
+
   @Get(':id/playlists')
   async getAudioPlaylists(
     @Param('id') id: string,
@@ -174,23 +191,6 @@ export class AudioController {
   async likeAudio(@Param('id') id: string, @Session() session: UserSession) {
     const userId = session.user.id;
     return this.audioService.likeAudio({ userId, audioId: id });
-  }
-
-  @Get(':id/like/users')
-  @ApiOperation({
-    summary: 'Get all users who liked an audio track',
-    description: 'Returns a list of users that liked the given audio track',
-  })
-  @ApiParam({
-    name: 'slug',
-    description: 'The slug of the audio track',
-  })
-  async getUsersWhoLiked(
-    @Param('slug') slug: string,
-    @Query('limit') limit: number,
-  ) {
-    const limitValue = limit || 25;
-    return this.audioService.getUsersWhoLikedAudio({ slug, limit: limitValue });
   }
 
   @Delete(':id/unlike')
