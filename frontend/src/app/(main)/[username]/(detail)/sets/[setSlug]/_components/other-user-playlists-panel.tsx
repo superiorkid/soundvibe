@@ -1,107 +1,101 @@
 "use client";
 
 import { buttonVariants } from "@/components/ui/button";
+import { useOtherPlaylistsByUserId } from "@/hooks/tanstack/playlist";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 import { TUser } from "@/types/user.type";
-import { HeartIcon } from "lucide-react";
+import { HeartIcon, RefreshCcwIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import PlaylistCardSecondary from "./playlist-card-secondary";
 
-const OtherUserPlaylistPanel = () => {
-  const { data: session, isPending } = authClient.useSession();
-  const user = session?.user as TUser;
+interface OtherUserPlaylistPanelProps {
+  userId: string;
+  excludedId: string;
+  username: string;
+}
 
-  if (isPending) {
-    return (
-      <div>
-        <p>Loading...</p>
-      </div>
-    );
-  }
+const OtherUserPlaylistPanel = ({
+  userId,
+  excludedId,
+  username,
+}: OtherUserPlaylistPanelProps) => {
+  const { isError, isPending, playlists, refetch } = useOtherPlaylistsByUserId({
+    excludedId,
+    userId,
+    limit: 3,
+  });
+
+  const items = playlists?.data || [];
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
       <div className="flex justify-between items-center">
-        <h1 className="font-semibold uppercase text-xs">
+        <h2 className="font-semibold uppercase text-xs text-muted-foreground">
           playlists from this user
-        </h1>
-        <Link
-          href={`/${(session?.user as TUser).displayUsername}/sets`}
-          className={cn(
-            buttonVariants({
-              className: "text-xs text-muted-foreground tracking-wide",
-              variant: "ghost",
-              size: "sm",
-            })
-          )}
-        >
-          view all
-        </Link>
+        </h2>
+
+        {items.length > 0 && (
+          <Link
+            href={`/${username}/sets`}
+            className={cn(
+              buttonVariants({
+                className:
+                  "text-xs text-muted-foreground tracking-wide hover:text-foreground",
+                variant: "ghost",
+                size: "sm",
+              })
+            )}
+          >
+            view all
+          </Link>
+        )}
       </div>
 
-      <div className="space-y-4">
-        {(session?.user as TUser).playlists.map((playlist, index) => (
-          <div key={index} className="flex gap-2">
-            <div className="relative size-12">
-              {playlist.playlistCoverFile ? (
-                <Image
-                  fill
-                  src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/playlists/cover/${playlist.id}`}
-                  alt={`${playlist.title} cover`}
-                  className="object-cover"
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  loading="lazy"
-                  decoding="async"
-                />
-              ) : (
-                <div className="absolute inset-0 bg-gradient-to-br from-amber-600/70 to-yellow-400/70 flex items-center justify-center">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="white"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="opacity-80"
-                  >
-                    <path d="M9 18V5l12-2v13" />
-                    <circle cx="6" cy="18" r="3" />
-                    <circle cx="18" cy="16" r="3" />
-                  </svg>
-                </div>
-              )}
+      {isPending && (
+        <div className="space-y-3">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="flex gap-2 animate-pulse">
+              <div className="bg-muted rounded-md size-12" />
+              <div className="flex-1 space-y-2">
+                <div className="bg-muted h-3 w-1/3 rounded" />
+                <div className="bg-muted h-3 w-2/3 rounded" />
+              </div>
             </div>
-            <div className="flex-1 text-sm">
-              <p className="font-medium text-muted-foreground hover:cursor-pointer hover:opacity-50">
-                <Link href={`/${user.displayUsername}`}>{user.username}</Link>
-              </p>
-              <p className="font-medium hover:cursor-pointer hover:opacity-50">
-                <Link href={`/${user.displayUsername}/sets/${playlist.slug}`}>
-                  {playlist.title}
-                </Link>
-              </p>
-              {playlist.likeCount > 0 && (
-                <Link
-                  href={`/${user.displayUsername}/sets/${playlist.slug}/likes`}
-                  className="hover:opacity-50"
-                >
-                  <div className="flex items-center gap-1">
-                    <HeartIcon
-                      className="fill-muted-foreground stroke-muted-foreground"
-                      size={12}
-                    />
-                    <span>{playlist.likeCount}</span>
-                  </div>
-                </Link>
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
+
+      {isError && (
+        <div className="flex flex-col items-center justify-center gap-2 py-6 text-sm text-muted-foreground">
+          <p>Failed to load playlists</p>
+          <button
+            onClick={() => refetch()}
+            className={cn(
+              buttonVariants({ variant: "outline", size: "sm" }),
+              "flex items-center gap-1"
+            )}
+          >
+            <RefreshCcwIcon size={14} />
+            Retry
+          </button>
+        </div>
+      )}
+
+      {!isPending && !isError && items.length === 0 && (
+        <p className="text-sm text-muted-foreground py-4">
+          No other playlists yet.
+        </p>
+      )}
+
+      {!isPending && !isError && items.length > 0 && (
+        <div className="space-y-4">
+          {items.map((playlist) => (
+            <PlaylistCardSecondary key={playlist.id} playlist={playlist} />
+          ))}
+        </div>
+      )}
     </div>
   );
 };

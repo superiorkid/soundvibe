@@ -8,10 +8,10 @@ import { Loader2Icon } from "lucide-react";
 
 interface LikeSummaryPanelProps {
   audioSlug: string;
+  username: string;
 }
 
-const LikeSummaryPanel = ({ audioSlug }: LikeSummaryPanelProps) => {
-  const { data: session } = authClient.useSession();
+const LikeSummaryPanel = ({ audioSlug, username }: LikeSummaryPanelProps) => {
   const { isPending, usersWhoLiked } = useUsersWhoLikedAudio({
     slug: audioSlug,
     limit: 9,
@@ -29,7 +29,7 @@ const LikeSummaryPanel = ({ audioSlug }: LikeSummaryPanelProps) => {
 
   return (
     <UserSummaryPanel
-      href={`/${(session?.user as TUser).displayUsername}/${audioSlug}/likes`}
+      href={`/${username}/${audioSlug}/likes`}
       title="like"
       isPending={isPending}
       total={total}

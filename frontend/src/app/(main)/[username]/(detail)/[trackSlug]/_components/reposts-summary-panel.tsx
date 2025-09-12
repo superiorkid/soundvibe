@@ -51,7 +51,7 @@ const RepostsSummaryPanel = ({ audioId }: RepostsSummaryPanelProps) => {
         )}
 
         {!isPending && !isError && reposts?.data?.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-6 gap-2 text-muted-foreground">
+          <div className="flex flex-col items-center justify-center py-6 gap-2 text-muted-foreground w-full">
             <UsersIcon className="size-6" />
             <p className="text-sm">No reposts yet.</p>
           </div>

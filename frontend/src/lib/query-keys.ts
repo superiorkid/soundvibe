@@ -55,6 +55,15 @@ export const playlistKeys = {
   allCurrentUser: (params?: { query?: string; filter?: PlaylistFilterEnum }) =>
     [...playlistKeys.all, { user: "me", ...params }] as const,
   detailBySlug: (slug: string) => [...playlistKeys.all, { slug }] as const,
+  otherPlaylists: (params: {
+    userId: string;
+    excludedId: string;
+    limit?: number;
+  }) => [...playlistKeys.all, params],
+  usersWhoLikedPlaylist: (params: { playlistId: string; limit?: number }) => [
+    ...playlistKeys.all,
+    { mode: "users-who-liked-playlst", ...params },
+  ],
 };
 
 export const userKeys = {

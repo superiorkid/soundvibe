@@ -8,6 +8,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   Query,
@@ -67,6 +68,24 @@ export class PlaylistController {
     return this.playlistService.getPlaylists({ userId, filter, query });
   }
 
+  @Get('user/:userId/others/:excludedId')
+  @ApiOperation({
+    summary: 'Get other playlists by user excluding a given playlist',
+  })
+  @ApiParam({ name: 'userId', description: 'ID of the user' })
+  @ApiParam({ name: 'excludeId', description: 'ID of the playlist to exclude' })
+  async getOtherPlaylistsByUserId(
+    @Param('userId') userId: string,
+    @Param('excludeId') excludedId: string,
+    @Query('limit', new ParseIntPipe()) limit: number = 25,
+  ) {
+    return this.playlistService.getOtherPlaylistsByUserId({
+      excludedId,
+      limit,
+      userId,
+    });
+  }
+
   @Public()
   @Get('cover/:id')
   async getCover(@Param('id') id: string, @Res() res: Response) {
@@ -99,6 +118,19 @@ export class PlaylistController {
   })
   async detailPlaylistBySlug(@Param('slug') slug: string) {
     return this.playlistService.detailPlaylistBySlug(slug);
+  }
+
+  @Get(':id/likes')
+  @ApiOperation({ summary: 'Get users who liked a playlist' })
+  @ApiParam({ name: 'id', description: 'ID of the playlist' })
+  async whoLikedPlaylist(
+    @Param('id') id: string,
+    @Query('limit', new ParseIntPipe()) limit: number = 10,
+  ) {
+    return this.playlistService.getUsersWhoLikedPlaylist({
+      limit,
+      playlistId: id,
+    });
   }
 
   @Get(':id')

@@ -150,3 +150,49 @@ export async function updatePlaylist(params: {
     throw new Error("Could not update playlsit. Please try again");
   }
 }
+
+export async function getOtherPlaylistsByUserId(params: {
+  userId: string;
+  excludedId: string;
+  limit?: number;
+}) {
+  const { excludedId, userId, limit } = params;
+  const axiosInstance = await getAxios();
+
+  try {
+    const response = await axiosInstance.get(
+      `/api/v1/playlists/user/${userId}/others/${excludedId}`,
+      {
+        params: { limit },
+      }
+    );
+    return response.data as TApiResponse<TPlaylist[]>;
+  } catch (error) {
+    console.error("Failed to fetch playlist", error);
+    throw new Error("Failed to fetch playlist");
+  }
+}
+
+export async function getUsersWhoLikedPlaylist(params: {
+  playlistId: string;
+  limit?: number;
+}) {
+  const { limit, playlistId } = params;
+  const axiosInstance = await getAxios();
+
+  try {
+    const response = await axiosInstance.get(
+      `/api/v1/playlists/${playlistId}/likes`,
+      {
+        params: { limit },
+      }
+    );
+    return response.data as TApiResponse<{
+      total: number;
+      result: TPlaylist[];
+    }>;
+  } catch (error) {
+    console.error("Failed to fetch playlist", error);
+    throw new Error("Failed to fetch playlist");
+  }
+}

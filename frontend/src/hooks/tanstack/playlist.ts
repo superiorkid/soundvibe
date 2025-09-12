@@ -7,7 +7,9 @@ import {
   createPlaylist,
   deletePlaylist,
   getCurrentUserPlaylist,
+  getOtherPlaylistsByUserId,
   getPlaylistBySlug,
+  getUsersWhoLikedPlaylist,
   likePlaylist,
   removeAudioFromPlaylist,
   unlikePlaylist,
@@ -238,4 +240,40 @@ export function useUpdatePlaylist(params: {
   });
 
   return { updatePlaylistMutation: mutate, isPending };
+}
+
+export function useOtherPlaylistsByUserId(params: {
+  userId: string;
+  excludedId: string;
+  limit?: number;
+}) {
+  const {
+    data: playlists,
+    isPending,
+    isError,
+    refetch,
+  } = useQuery({
+    queryKey: playlistKeys.otherPlaylists(params),
+    queryFn: async () => getOtherPlaylistsByUserId(params),
+  });
+
+  return { playlists, isPending, isError, refetch };
+}
+
+export function useUsersWhoLikedPlaylist(params: {
+  playlistId: string;
+  limit?: number;
+}) {
+  const {
+    data: playlists,
+    isPending,
+    isError,
+    refetch,
+  } = useQuery({
+    queryKey: playlistKeys.usersWhoLikedPlaylist(params),
+    queryFn: async () => getUsersWhoLikedPlaylist(params),
+    enabled: !!params.playlistId,
+  });
+
+  return { playlists, isPending, isError, refetch };
 }

@@ -280,7 +280,9 @@ export class PlaylistService {
               },
             },
           },
-          user: true,
+          user: {
+            include: { followers: true, following: true },
+          },
         },
       });
 
@@ -513,6 +515,70 @@ export class PlaylistService {
     } catch (error) {
       this.logger.log(JSON.stringify(error));
       throw new InternalServerErrorException();
+    }
+  }
+
+  async getOtherPlaylistsByUserId(params: {
+    userId: string;
+    excludedId: string;
+    limit: number;
+  }) {
+    const { excludedId, limit, userId } = params;
+
+    try {
+      const playlists = await this.playlistRepository.findAll({
+        where: { userId, id: { not: excludedId } },
+        take: limit,
+        orderBy: { likeCount: 'desc' },
+        include: {
+          playlistCoverFile: true,
+          user: { include: { followers: true, following: true } },
+        },
+      });
+
+      return {
+        success: true,
+        message: 'get other playlists successfully',
+        data: playlists,
+      };
+    } catch (error) {
+      this.logger.log(JSON.stringify(error));
+      throw new InternalServerErrorException();
+    }
+  }
+
+  async getUsersWhoLikedPlaylist(params: {
+    playlistId: string;
+    limit?: number;
+  }) {
+    const { playlistId, limit } = params;
+
+    const playlistExist = await this.playlistRepository.exists({
+      id: playlistId,
+    });
+    if (!playlistExist) throw new NotFoundException('Playlist not found');
+
+    try {
+      const [likes, total] = await Promise.all([
+        this.playlistLikerepository.findAll({
+          where: { playlistId },
+          include: { user: true },
+          take: limit,
+          orderBy: { createdAt: 'desc' },
+        }),
+        this.playlistLikerepository.count({ where: { playlistId } }),
+      ]);
+
+      return {
+        success: true,
+        message: 'Users who liked the playlist retrieved successfully.',
+        data: { total, result: likes },
+      };
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException(
+        'Failed to retrieve playlist likes.',
+      );
     }
   }
 }

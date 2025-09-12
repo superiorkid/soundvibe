@@ -103,7 +103,10 @@ const DetailTrack = ({ slug }: DetailTrackProps) => {
           </div> */}
 
           <TrackInPlaylistsPanel audioId={audio.data.id} />
-          <LikeSummaryPanel audioSlug={audio.data.slug} />
+          <LikeSummaryPanel
+            audioSlug={audio.data.slug}
+            username={audio.data.user.displayUsername}
+          />
           <RepostsSummaryPanel audioId={audio.data.id} />
         </div>
       </div>
