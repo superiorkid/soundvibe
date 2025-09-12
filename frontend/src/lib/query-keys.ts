@@ -28,6 +28,10 @@ export const audioKeys = {
       "top-fans",
       { audioId, days: days ?? "all-time" },
     ] as const,
+  trackPlaylists: (params: { audioId: string; limit?: number }) =>
+    [...audioKeys.all, { mode: "track-playlists", ...params }] as const,
+  trackReposted: (params: { audioId: string; limit?: number }) =>
+    [...audioKeys.all, { mode: "track-reposted", ...params }] as const,
 };
 
 export const genreKeys = {
@@ -35,8 +39,9 @@ export const genreKeys = {
 };
 
 export const commentKeys = {
-  all: (audioId: string, filter?: CommentFilterEnum) =>
-    ["comments", { audioId, ...(filter && { filter }) }] as const,
+  all: ["comments"] as const,
+  allById: (audioId: string, filter?: CommentFilterEnum) =>
+    [...commentKeys.all, { audioId, ...(filter && { filter }) }] as const,
 };
 
 export const listeningHistoryKeys = {

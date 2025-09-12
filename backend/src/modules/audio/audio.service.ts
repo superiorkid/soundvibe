@@ -20,6 +20,7 @@ import { AudioPlaysRepository } from './audio-plays.repository';
 import { AudioRepository } from './audio.repository';
 import { UploadAudioDTO } from './dto/upload-audio.dto';
 import { LikeRepository } from './like.repository';
+import { PlaylistRepository } from '../playlist/playlist.repository';
 
 @Injectable()
 export class AudioService {
@@ -34,6 +35,7 @@ export class AudioService {
     private usersRepository: UsersRepository,
     private repostRepository: RepostRepository,
     private playlistLikeRepository: PlaylistLikeRepository,
+    private playlistRepository: PlaylistRepository,
   ) {}
 
   async uploadTrack(uploadAudioDto: UploadAudioDTO, session: UserSession) {
@@ -170,7 +172,7 @@ export class AudioService {
           orderBy: { createdAt: 'desc' },
           include: {
             audioFile: true,
-            user: true,
+            user: { include: { followers: true, following: true } },
             genre: true,
             tags: true,
             coverFile: true,
@@ -187,7 +189,7 @@ export class AudioService {
                 audio: {
                   include: {
                     audioFile: true,
-                    user: true,
+                    user: { include: { followers: true, following: true } },
                     genre: true,
                     tags: true,
                     coverFile: true,
@@ -248,13 +250,17 @@ export class AudioService {
       const audio = await this.audioRepository.findOne({
         where: { slug },
         include: {
-          user: true,
+          user: { include: { followers: true, following: true } },
           tags: true,
           audioFile: true,
           coverFile: true,
           genre: true,
           likes: { include: { user: true } },
-          comments: true,
+          comments: {
+            include: {
+              user: { include: { followers: true, following: true } },
+            },
+          },
           reposts: true,
           _count: true,
         },
@@ -473,7 +479,7 @@ export class AudioService {
                 include: {
                   genre: true,
                   coverFile: true,
-                  user: true,
+                  user: { include: { followers: true, following: true } },
                   audioFile: true,
                   likes: true,
                   reposts: true,
@@ -716,6 +722,59 @@ export class AudioService {
     } catch (error) {
       console.error(error);
       throw new InternalServerErrorException('Failed to retrieve top fans');
+    }
+  }
+
+  async getTrackPlaylsts(params: { audioId: string; limit?: number }) {
+    const { audioId, limit } = params;
+
+    const audio = await this.audioRepository.exists({ id: audioId });
+    if (!audio) throw new NotFoundException('Audio not exists.');
+
+    try {
+      const playlists = await this.playlistRepository.findAll({
+        where: { audios: { some: { audioId } } },
+        orderBy: { createdAt: 'desc' },
+        take: limit,
+        include: {
+          user: { include: { followers: true, following: true } },
+          playlistCoverFile: true,
+        },
+      });
+
+      return {
+        success: true,
+        message: 'get playlists successfully',
+        data: playlists,
+      };
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException('Failed to retrieve playlists');
+    }
+  }
+
+  async getTrackReposted(params: { audioId: string; limit?: number }) {
+    const { audioId, limit } = params;
+
+    const audio = await this.audioRepository.exists({ id: audioId });
+    if (!audio) throw new NotFoundException('Audio not exists.');
+
+    try {
+      const playlists = await this.repostRepository.findAll({
+        where: { audioId },
+        include: { user: true },
+        orderBy: { createdAt: 'desc' },
+        take: limit,
+      });
+
+      return {
+        success: true,
+        message: 'get reposted users  successfully',
+        data: playlists,
+      };
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException('Failed to get reposted users.');
     }
   }
 

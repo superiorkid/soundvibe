@@ -2,7 +2,6 @@ import { getQueryClient } from "@/lib/query-client";
 import { playlistKeys } from "@/lib/query-keys";
 import { getPlaylistBySlug } from "@/server/playlist";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
-import React from "react";
 import DetailUserPlaylistPage from "./_components/detail-playlist-likes-page";
 
 interface PlaylistLikePageProps {

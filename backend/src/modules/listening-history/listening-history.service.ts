@@ -44,7 +44,7 @@ export class ListeningHistoryService {
             include: {
               genre: true,
               coverFile: true,
-              user: true,
+              user: { include: { followers: true, following: true } },
               audioFile: true,
               likes: true,
               reposts: true,

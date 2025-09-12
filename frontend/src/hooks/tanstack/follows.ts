@@ -1,5 +1,5 @@
 import { getQueryClient } from "@/lib/query-client";
-import { followKeys } from "@/lib/query-keys";
+import { audioKeys, commentKeys, followKeys, userKeys } from "@/lib/query-keys";
 import {
   follow,
   getFollowers,
@@ -17,7 +17,7 @@ const queryClient = getQueryClient();
 
 export function useFollow(params: { user: TUser; currentUserId: string }) {
   const { user, currentUserId } = params;
-  const hasFollowUser = !!user.followers.some(
+  const hasFollowUser = !!user.followers?.some(
     (follow) => follow.followerId === currentUserId
   );
 
@@ -31,6 +31,9 @@ export function useFollow(params: { user: TUser; currentUserId: string }) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: followKeys.all });
+      queryClient.invalidateQueries({ queryKey: audioKeys.all });
+      queryClient.invalidateQueries({ queryKey: commentKeys.all });
+      queryClient.invalidateQueries({ queryKey: userKeys.all });
     },
   });
 

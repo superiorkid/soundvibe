@@ -159,7 +159,7 @@ const TrackCard2 = ({ audio }: TrackCard2Props) => {
             className="fill-muted-foreground stroke-muted-foreground"
             size={16}
           />
-          <span className="line-clamp-1 text-sm font-semibold capitalize">
+          <span className="line-clamp-1 text-sm font-semibold capitalize hover:cursor-pointer hover:opacity-50">
             <Link href={`/${audio.user.displayUsername}/${audio.slug}`}>
               {audio.title}
             </Link>

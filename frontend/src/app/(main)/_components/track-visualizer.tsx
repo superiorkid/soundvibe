@@ -3,7 +3,7 @@
 import { useAudio } from "@/context/audio-context";
 import { formatTime } from "@/lib/utils";
 import { TAudio } from "@/types/audio.type";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import WaveSurfer from "wavesurfer.js";
 
 interface TrackVisualizerProps {
@@ -45,7 +45,7 @@ const createDefaultProgressGradient = (
   return gradient;
 };
 
-const TrackVisualizer = ({
+export const TrackVisualizer = ({
   audio,
   height = 50,
   barWidth = 2,
@@ -58,7 +58,6 @@ const TrackVisualizer = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const hoverRef = useRef<HTMLDivElement>(null);
   const wavesurferRef = useRef<WaveSurfer | null>(null);
-
   const {
     audioRef,
     currentTrack,
@@ -69,18 +68,24 @@ const TrackVisualizer = ({
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [gradientColors, setGradientColors] = useState<{
+    wave: string | CanvasGradient;
+    progress: string | CanvasGradient;
+  }>({
+    wave: "#666",
+    progress: "#f43f5e",
+  });
 
-  const gradientColors = useMemo(() => {
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
     const ctx = document.createElement("canvas").getContext("2d");
-    if (!ctx) return { wave: "#666", progress: "#f43f5e" };
+    if (!ctx) return;
 
-    const defaultWave = createDefaultGradient(ctx, height);
-    const defaultProgress = createDefaultProgressGradient(ctx, height);
-
-    return {
-      wave: waveColor || defaultWave,
-      progress: progressColor || defaultProgress,
-    };
+    setGradientColors({
+      wave: waveColor || createDefaultGradient(ctx, height),
+      progress: progressColor || createDefaultProgressGradient(ctx, height),
+    });
   }, [height, waveColor, progressColor]);
 
   useEffect(() => {
@@ -114,7 +119,6 @@ const TrackVisualizer = ({
     });
 
     ws.on("error", (error: Error) => {
-      // Ignore AbortError since it's expected on destroy
       if (error?.name === "AbortError") return;
       console.error("WaveSurfer error:", error);
       setLoading(false);
@@ -134,10 +138,10 @@ const TrackVisualizer = ({
     cursorColor,
   ]);
 
+  // --- Sync audio element with WaveSurfer ---
   useEffect(() => {
     if (!wavesurferRef.current || !audioRef.current) return;
     const audioEl = audioRef.current;
-
     let frameId: number;
 
     const update = () => {
@@ -166,6 +170,7 @@ const TrackVisualizer = ({
     };
   }, [audio.id, audioRef, currentTrack, setGlobalCurrentTime]);
 
+  // --- WaveSurfer interaction ---
   useEffect(() => {
     const ws = wavesurferRef.current;
     if (!ws) return;
@@ -173,9 +178,7 @@ const TrackVisualizer = ({
     const handleInteraction = () => {
       const currentTime = ws.getCurrentTime();
       if (currentTrack?.id === audio.id) {
-        if (audioRef.current) {
-          audioRef.current.currentTime = currentTime;
-        }
+        if (audioRef.current) audioRef.current.currentTime = currentTime;
       } else {
         playTrack(audio, currentTime);
       }
@@ -185,9 +188,9 @@ const TrackVisualizer = ({
     return () => ws.un("interaction", handleInteraction);
   }, [audio, audioRef, currentTrack, playTrack]);
 
+  // --- Hover overlay ---
   useEffect(() => {
     if (!hoverRef.current || !containerRef.current) return;
-
     const hoverEl = hoverRef.current;
     const container = containerRef.current;
 

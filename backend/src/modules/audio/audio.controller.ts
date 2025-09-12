@@ -149,6 +149,22 @@ export class AudioController {
     return this.audioService.getCover({ id, res });
   }
 
+  @Get(':id/playlists')
+  async getAudioPlaylists(
+    @Param('id') id: string,
+    @Query('limit') limit: number = 10,
+  ) {
+    return this.audioService.getTrackPlaylsts({ audioId: id, limit });
+  }
+
+  @Get(':id/reposted')
+  async getTrackReposts(
+    @Param('id') id: string,
+    @Query('limit') limit: number = 10,
+  ) {
+    return this.audioService.getTrackReposted({ audioId: id, limit });
+  }
+
   @Get(':id/fans')
   async getTopFans(@Param('id') id: string, @Query('days') days: number) {
     return this.audioService.getTopFans({ audioId: id, limit: 5, days });

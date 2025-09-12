@@ -19,10 +19,10 @@ interface UserTooltipProps {
 const UserTooltip = ({ children, user }: UserTooltipProps) => {
   const { data: session } = authClient.useSession();
 
-  // const { followUserToggleMutation, hasFollowUser, isPending } = useFollow({
-  //   user,
-  //   currentUserId: session?.user.id as string,
-  // });
+  const { followUserToggleMutation, hasFollowUser, isPending } = useFollow({
+    user,
+    currentUserId: session?.user.id as string,
+  });
 
   return (
     <HoverCard>
@@ -63,7 +63,7 @@ const UserTooltip = ({ children, user }: UserTooltipProps) => {
             </p>
           )}
         </div>
-        {/* {session?.user.id !== user.id && (
+        {session?.user.id !== user.id && (
           <Button
             variant={hasFollowUser ? "secondary" : "default"}
             className="w-full"
@@ -73,7 +73,7 @@ const UserTooltip = ({ children, user }: UserTooltipProps) => {
           >
             {hasFollowUser ? "Unfollow" : "Follow"}
           </Button>
-        )} */}
+        )}
       </HoverCardContent>
     </HoverCard>
   );

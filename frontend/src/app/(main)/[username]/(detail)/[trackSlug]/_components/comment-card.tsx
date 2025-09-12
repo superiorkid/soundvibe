@@ -61,7 +61,7 @@ const CommentCard = ({ comment }: CommentCardProps) => {
           <div className="flex-1 space-y-3 w-full">
             <div>
               <h3 className="text-sm">
-                <UserTooltip user={user}>
+                <UserTooltip user={comment.user}>
                   <Link
                     href={`/${user.displayUsername}`}
                     className="font-semibold hover:opacity-50"

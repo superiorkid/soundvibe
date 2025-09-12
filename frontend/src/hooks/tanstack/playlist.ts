@@ -94,12 +94,13 @@ export function usePlaylistBySlug(slug: string) {
     data: playlist,
     isPending,
     isError,
+    refetch,
   } = useQuery({
     queryKey: playlistKeys.detailBySlug(slug),
     queryFn: async () => getPlaylistBySlug(slug),
   });
 
-  return { playlist, isPending, isError };
+  return { playlist, isPending, isError, refetch };
 }
 
 // export function useLikePlaylist(params: {
