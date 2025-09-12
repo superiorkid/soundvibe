@@ -16,13 +16,20 @@ const PlaylistLikeSummaryPanel = ({
     limit: 3,
   });
 
+  const users = playlists?.data?.result ?? [];
+  const total = playlists?.data?.total ?? 0;
+
+  if (!isPending && users.length === 0) {
+    return null;
+  }
+
   return (
     <UserSummaryPanel
       href={`/${username}/sets/${playlistSlug}/likes`}
       title="like"
       isPending={isPending}
-      total={playlists?.data?.total}
-      users={playlists?.data?.result.map((playlist) => playlist.user)}
+      total={total}
+      users={users.map((playlist) => playlist.user)}
     />
   );
 };
