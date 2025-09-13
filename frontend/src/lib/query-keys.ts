@@ -99,3 +99,9 @@ export const followKeys = {
   getFollowingByUsername: (params: { username: string; filter?: string }) =>
     [...followKeys.all, { ...params, mode: "get-following" }] as const,
 };
+
+export const searchKeys = {
+  all: ["search"] as const,
+  seachEverything: (params: { keyword: string; limit?: number }) =>
+    [...searchKeys.all, params] as const,
+};

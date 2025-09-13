@@ -11,6 +11,7 @@ import { PauseIcon, PlayIcon } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import PlaylistActions from "../../../(detail)/sets/[setSlug]/_components/playlist-actions";
+import Link from "next/link";
 
 interface PlaylistsCardProps {
   playlist: TPlaylist;
@@ -92,7 +93,13 @@ const PlaylistsCard = ({ playlist }: PlaylistsCardProps) => {
               <p className="text-sm text-muted-foreground font-semibold tracking-tight">
                 {playlist.user.name}
               </p>
-              <h1 className="text-lg font-bold">{playlist.title}</h1>
+              <h1 className="text-lg font-bold hover:cursor-pointer hover:opacity-50">
+                <Link
+                  href={`/${playlist.user.displayUsername}/sets/${playlist.slug}`}
+                >
+                  {playlist.title}
+                </Link>
+              </h1>
             </div>
           </div>
           <span className="text-sm text-muted-foreground font-medium">

@@ -18,10 +18,10 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { useMainMenu } from "@/hooks/use-main-menu";
 import { authClient } from "@/lib/auth-client";
+import { TUser } from "@/types/user.type";
 import { SearchIcon } from "lucide-react";
 import Link from "next/link";
 import UserProfileDropdown from "./user-profile-dropdown";
-import { TUser } from "@/types/user.type";
 
 const MainNavigation = () => {
   const menus = useMainMenu();
@@ -31,7 +31,6 @@ const MainNavigation = () => {
   return (
     <header className="sticky top-0 bg-background z-50">
       <div className="flex h-12 justify-between gap-4">
-        {/* Left side */}
         <div className="flex gap-2">
           <div className="flex items-center md:hidden">
             {/* Mobile menu trigger */}
@@ -84,7 +83,6 @@ const MainNavigation = () => {
               </PopoverContent>
             </Popover>
           </div>
-          {/* Main nav */}
           <div className="flex items-center gap-6">
             <AppBrand>
               <AppBrand.Icon size={25} strokeWidth={2.5} />
@@ -115,20 +113,11 @@ const MainNavigation = () => {
         </div>
         <div className="flex items-center flex-1">
           <AppSearch>
-            <AppSearch.Input
-              value=""
-              onChange={() => console.log("search")}
-              placeholder="Search"
-              className="h-9"
-            />
-            <AppSearch.Loading />
-            <AppSearch.Button onClick={() => console.log(`search for`)}>
-              <SearchIcon className="size-6" />
+            <AppSearch.Input placeholder="Search" />
+            <AppSearch.Button>
+              <SearchIcon className="size-5" />
             </AppSearch.Button>
-            <AppSearch.Results>
-              <AppSearch.Item>Recent Search 1</AppSearch.Item>
-              <AppSearch.Item>Recent Search 2</AppSearch.Item>
-            </AppSearch.Results>
+            <AppSearch.Results />
           </AppSearch>
         </div>
         {/* Right side */}

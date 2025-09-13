@@ -16,6 +16,7 @@ import { DatabaseModule } from './shared/database/database.module';
 import { DatabaseService } from './shared/database/database.service';
 import { FileUploadModule } from './shared/file-upload/file-upload.module';
 import { FollowModule } from './modules/follow/follow.module';
+import { SearchModule } from './modules/search/search.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { FollowModule } from './modules/follow/follow.module';
     ListeningHistoryModule,
     PlaylistModule,
     FollowModule,
+    SearchModule,
   ],
   providers: [
     {
