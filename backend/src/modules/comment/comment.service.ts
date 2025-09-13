@@ -7,9 +7,9 @@ import {
 } from '@nestjs/common';
 import { CommentFilterEnum } from 'src/common/enums/comment-filter.enum';
 import { AudioRepository } from '../audio/audio.repository';
+import { CommentLikeRepository } from './coment-like.repository';
 import { CommentDTO } from './comment.dto';
 import { CommentRepository } from './comment.repository';
-import { CommentLikeRepository } from './coment-like.repository';
 
 @Injectable()
 export class CommentService {
@@ -164,7 +164,7 @@ export class CommentService {
       ]);
       return {
         success: true,
-        message: '',
+        message: 'Comment deleted successfully',
       };
     } catch (error) {
       this.logger.log(JSON.stringify(error));
