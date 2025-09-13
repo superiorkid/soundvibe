@@ -165,7 +165,9 @@ const TrackCard = ({
             </div>
             <div>
               <Badge variant="secondary" className="tracking-wide text-sm">
-                #{audio.genre.name}
+                <Link href={`/tags/${audio.genre.name}`}>
+                  #{audio.genre.name}
+                </Link>
               </Badge>
             </div>
           </div>

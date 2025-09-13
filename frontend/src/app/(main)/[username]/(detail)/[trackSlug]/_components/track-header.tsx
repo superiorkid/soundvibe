@@ -72,7 +72,9 @@ const TrackHeader = ({ audio }: TrackHeaderProps) => {
               })}
             </h5>
             <Badge className="px-2 py-1 bg-gray-200 rounded text-sm text-foreground">
-              #{audio?.genre.name}
+              <Link href={`/tags/${audio.genre.name}`}>
+                #{audio?.genre.name}
+              </Link>
             </Badge>
           </div>
         </div>
