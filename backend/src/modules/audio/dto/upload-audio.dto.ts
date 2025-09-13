@@ -1,10 +1,13 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
+  ArrayMaxSize,
   IsArray,
   IsNotEmpty,
   IsOptional,
   IsString,
+  Length,
   Matches,
+  MaxLength,
 } from 'class-validator';
 import {
   HasMimeType,
@@ -33,49 +36,67 @@ export class UploadAudioDTO {
   @ApiProperty({
     type: 'string',
     format: 'binary',
-    description: 'Audio file (WAV, FLAC, AIFF, ALAC, up to 100MB)',
+    description: 'Audio file (WAV, FLAC, AIFF, ALAC, MP3 up to 100MB)',
+    example: 'audio-file.mp3',
   })
-  @IsFile()
-  @MaxFileSize(MAX_AUDIO_SIZE)
-  @HasMimeType(ACCEPTED_AUDIO_TYPES)
+  @IsFile({ message: 'audioFile must be a valid file' })
+  @MaxFileSize(MAX_AUDIO_SIZE, {
+    message: `Audio file size must be less than ${MAX_AUDIO_SIZE / (1024 * 1024)}MB`,
+  })
+  @HasMimeType(ACCEPTED_AUDIO_TYPES, {
+    message: `Invalid audio format. Accepted types: ${ACCEPTED_AUDIO_TYPES.join(', ')}`,
+  })
   audioFile: MemoryStoredFile;
 
   @ApiPropertyOptional({
     type: 'string',
     format: 'binary',
-    description: 'Cover image (JPG, PNG, WEBP, MP3 up to 3MB)',
+    description: 'Cover image (JPG, PNG, WEBP up to 3MB)',
+    example: 'cover-image.jpg',
   })
   @IsOptional()
-  @IsFile()
-  @MaxFileSize(MAX_COVER_SIZE)
-  @HasMimeType(ACCEPTED_IMAGE_TYPES)
+  @IsFile({ message: 'cover must be a valid image file' })
+  @MaxFileSize(MAX_COVER_SIZE, {
+    message: `Cover image size must be less than ${MAX_COVER_SIZE / (1024 * 1024)}MB`,
+  })
+  @HasMimeType(ACCEPTED_IMAGE_TYPES, {
+    message: `Invalid image format. Accepted types: ${ACCEPTED_IMAGE_TYPES.join(', ')}`,
+  })
   cover?: MemoryStoredFile;
 
   @ApiProperty({
     description: 'Title of the audio track',
     example: 'My First Track',
+    minLength: 1,
+    maxLength: 255,
   })
-  @IsString()
-  @IsNotEmpty()
+  @IsString({ message: 'title must be a string' })
+  @IsNotEmpty({ message: 'title is required' })
+  @Length(1, 255, { message: 'title must be between 1 and 255 characters' })
   title: string;
 
   @ApiProperty({
     description:
       'The artist(s) responsible for the audio track. For multiple artists, separate with commas.',
     example: 'Martin Garrix, Kygo',
+    minLength: 1,
+    maxLength: 255,
   })
-  @IsString()
-  @IsNotEmpty()
+  @IsString({ message: 'artist must be a string' })
+  @IsNotEmpty({ message: 'artist is required' })
+  @Length(1, 255, { message: 'artist must be between 1 and 255 characters' })
   artist: string;
 
   @ApiProperty({
     description: 'Genre ID of the track (cuid)',
     example: 'ckv8z1o1a0000r4d7h8f7xj9w',
+    pattern: '^c[a-z0-9]{24}$',
   })
-  @IsString()
-  @IsNotEmpty()
+  @IsString({ message: 'genreId must be a string' })
+  @IsNotEmpty({ message: 'genreId is required' })
   @Matches(/^c[a-z0-9]{24}$/, {
-    message: 'genre must be a valid cuid',
+    message:
+      'genreId must be a valid cuid format (starts with "c" followed by 24 alphanumeric characters)',
   })
   genreId: string;
 
@@ -83,17 +104,21 @@ export class UploadAudioDTO {
     description: 'Additional tags for the track',
     example: ['study', 'chill', 'instrumental'],
     type: [String],
+    maxItems: 10,
   })
-  @IsString({ each: true })
-  @IsArray()
+  @IsString({ each: true, message: 'Each tag must be a string' })
+  @IsArray({ message: 'additionalTags must be an array' })
+  @ArrayMaxSize(10, { message: 'Cannot have more than 10 tags' })
   @IsOptional()
   additionalTags?: string[];
 
   @ApiPropertyOptional({
     description: 'Description of the track',
     example: 'A relaxing lo-fi beat for study sessions',
+    maxLength: 1000,
   })
-  @IsString()
+  @IsString({ message: 'description must be a string' })
+  @MaxLength(1000, { message: 'description cannot exceed 1000 characters' })
   @IsOptional()
   description?: string;
 }

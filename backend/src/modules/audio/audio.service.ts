@@ -14,13 +14,13 @@ import slugify from 'slugify';
 import { DatabaseService } from 'src/shared/database/database.service';
 import { FileUploadService } from 'src/shared/file-upload/file-upload.service';
 import { PlaylistLikeRepository } from '../playlist/playlist-like.repository';
+import { PlaylistRepository } from '../playlist/playlist.repository';
 import { RepostRepository } from '../repost/repost.repository';
 import { UsersRepository } from '../users/users.repository';
 import { AudioPlaysRepository } from './audio-plays.repository';
 import { AudioRepository } from './audio.repository';
 import { UploadAudioDTO } from './dto/upload-audio.dto';
 import { LikeRepository } from './like.repository';
-import { PlaylistRepository } from '../playlist/playlist.repository';
 
 @Injectable()
 export class AudioService {
@@ -165,47 +165,61 @@ export class AudioService {
     }
   }
 
-  async allAudios(params: { showRepost: boolean }) {
+  async allAudios(params: { showRepost: boolean; userId: string }) {
     try {
-      const [audios, reposts] = await Promise.all([
-        this.audioRepository.findAll({
-          orderBy: { createdAt: 'desc' },
-          include: {
-            audioFile: true,
-            user: { include: { followers: true, following: true } },
-            genre: true,
-            tags: true,
-            coverFile: true,
-            likes: { include: { user: true } },
-            reposts: true,
-            comments: true,
-          },
-        }),
-        // Only fetch reposts if showRepost is true
-        params.showRepost
-          ? this.repostRepository.findAll({
-              include: {
-                user: true,
-                audio: {
-                  include: {
-                    audioFile: true,
-                    user: { include: { followers: true, following: true } },
-                    genre: true,
-                    tags: true,
-                    coverFile: true,
-                    likes: { include: { user: true } },
-                    reposts: true,
-                    comments: true,
-                  },
+      const currentUser = await this.usersRepository.findOne({
+        where: { id: params.userId },
+        include: { following: { select: { followingId: true } } },
+      });
+
+      if (!currentUser) {
+        throw new NotFoundException('User not found');
+      }
+
+      const followingIds = currentUser.following.map((f) => f.followingId);
+      const visibleUserIds = [...followingIds, currentUser.id];
+
+      const audios = await this.audioRepository.findAll({
+        where: { userId: { in: visibleUserIds } },
+        orderBy: { createdAt: 'desc' },
+        include: {
+          audioFile: true,
+          user: { include: { followers: true, following: true } },
+          genre: true,
+          tags: true,
+          coverFile: true,
+          likes: { include: { user: true } },
+          reposts: true,
+          comments: true,
+        },
+      });
+
+      const reposts = params.showRepost
+        ? await this.repostRepository.findAll({
+            where: {
+              userId: { in: visibleUserIds },
+            },
+            include: {
+              user: true,
+              audio: {
+                include: {
+                  audioFile: true,
+                  user: { include: { followers: true, following: true } },
+                  genre: true,
+                  tags: true,
+                  coverFile: true,
+                  likes: { include: { user: true } },
+                  reposts: true,
+                  comments: true,
                 },
               },
-            })
-          : Promise.resolve([]),
-      ]);
+            },
+          })
+        : [];
 
       const audioFeed = audios.map((audio) => ({
         id: audio.id,
-        type: 'audio',
+        type: 'audio' as const,
         createdAt: audio.createdAt,
         user: audio.user,
         audio: {
@@ -216,7 +230,7 @@ export class AudioService {
 
       const repostFeed = reposts.map((repost) => ({
         id: repost.id,
-        type: 'repost',
+        type: 'repost' as const,
         createdAt: repost.createdAt,
         user: repost.user,
         audio: {
@@ -225,7 +239,6 @@ export class AudioService {
         },
       }));
 
-      // Only include reposts in the merged feed if showRepost is true
       const mergedFeed = params.showRepost
         ? [...audioFeed, ...repostFeed].sort(
             (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
@@ -236,11 +249,11 @@ export class AudioService {
 
       return {
         success: true,
-        message: '',
+        message: 'Successfully retrieved audio tracks',
         data: mergedFeed,
       };
     } catch (error) {
-      this.logger.log(JSON.stringify(error));
+      this.logger.error(error);
       throw new InternalServerErrorException('');
     }
   }
