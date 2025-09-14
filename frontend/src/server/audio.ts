@@ -8,13 +8,17 @@ import { TPlaylist } from "@/types/playlist-type";
 import { TRepost } from "@/types/repost.type";
 import { TUser } from "@/types/user.type";
 
-export async function findAllAudio(params: { showRepost: boolean }) {
-  const { showRepost } = params;
+export async function findAllAudio(params: {
+  showRepost: boolean;
+  page?: number;
+  limit?: number;
+}) {
+  const { showRepost, limit, page } = params;
   const axiosInstance = await getAxios();
 
   try {
     const response = await axiosInstance.get("/api/v1/audio", {
-      params: { showRepost },
+      params: { showRepost, page, limit },
     });
     return response.data as TApiResponse<
       {

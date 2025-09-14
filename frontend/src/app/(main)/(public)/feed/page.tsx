@@ -3,9 +3,9 @@ import { getQueryClient } from "@/lib/query-client";
 import { audioKeys } from "@/lib/query-keys";
 import { findAllAudio } from "@/server/audio";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+import { Suspense } from "react";
 import AudioList from "../_components/audio-list";
 import RepostToggleSwitcher from "./_components/repost-toggle-switcher";
-import { Suspense } from "react";
 
 interface FeedPageProps {
   searchParams: Promise<{ showRepost?: string }>;
@@ -18,9 +18,12 @@ const FeedPage = async ({ searchParams }: FeedPageProps) => {
 
   const queryClient = getQueryClient();
 
-  await queryClient.prefetchQuery({
-    queryKey: audioKeys.audioWithRepost(showRepost),
-    queryFn: async () => findAllAudio({ showRepost }),
+  const filter = { showRepost, limit: 6 } as const;
+  await queryClient.prefetchInfiniteQuery({
+    queryKey: audioKeys.audioWithRepost(filter),
+    queryFn: async ({ pageParam = 1 }) =>
+      findAllAudio({ ...filter, page: pageParam }),
+    initialPageParam: 1,
   });
 
   return (

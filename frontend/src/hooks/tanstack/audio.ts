@@ -15,16 +15,37 @@ import {
 } from "@/server/audio";
 import { TAudio, TRecentLike } from "@/types/audio.type";
 import { TLike } from "@/types/like.type";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 const queryClient = getQueryClient();
 
-export function useAudio(params: { showRepost: boolean }) {
+export function useInfiniteAudios(params: {
+  showRepost: boolean;
+  limit?: number;
+}) {
+  const { showRepost, limit = 6 } = params;
+  return useInfiniteQuery({
+    queryKey: audioKeys.audioWithRepost({ showRepost, limit }),
+    queryFn: async ({ pageParam = 1 }) =>
+      findAllAudio({ showRepost, page: pageParam, limit }),
+    getNextPageParam: (lastPage, allPages) => {
+      if (!lastPage?.data || lastPage.data.length < limit) return undefined;
+      return allPages.length + 1;
+    },
+    initialPageParam: 1,
+  });
+}
+
+export function useAudios(params: {
+  showRepost: boolean;
+  page?: number;
+  limit?: number;
+}) {
   const { data: audios, isPending } = useQuery({
-    queryKey: audioKeys.audioWithRepost(params.showRepost),
-    queryFn: async () => findAllAudio({ showRepost: params.showRepost }),
+    queryKey: audioKeys.audioWithRepost(params),
+    queryFn: async () => findAllAudio(params),
   });
 
   return { audios, isPending };

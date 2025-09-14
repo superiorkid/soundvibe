@@ -13,7 +13,7 @@ interface YourPlaylistPageProps {
 }
 
 const YourPlaylistPage = async ({ searchParams }: YourPlaylistPageProps) => {
-  const { ["playlist-filter"]: playlistFilter } = await searchParams;
+  const { ["playlist-filter"]: playlistFilter = "All" } = await searchParams;
 
   const queryClient = getQueryClient();
 

@@ -11,6 +11,7 @@ import {
   NotFoundException,
   Param,
   ParseBoolPipe,
+  ParseIntPipe,
   Post,
   Query,
   Req,
@@ -157,9 +158,16 @@ export class AudioController {
   @ApiBearerAuth()
   async allTracks(
     @Session() session: UserSession,
-    @Query('showRepost') showRepost: boolean = true,
+    @Query('showRepost', new ParseBoolPipe()) showRepost: boolean = true,
+    @Query('limit', new ParseIntPipe()) limit: number = 10,
+    @Query('page', new ParseIntPipe()) page: number = 1,
   ) {
-    return this.audioService.allAudios({ showRepost, userId: session.user.id });
+    return this.audioService.allAudios({
+      showRepost,
+      userId: session.user.id,
+      limit,
+      page,
+    });
   }
 
   @Get('liked/recent')
@@ -222,7 +230,7 @@ export class AudioController {
   })
   @ApiBearerAuth()
   async recentLikedTracks(
-    @Query('limit') limit: number = 10,
+    @Query('limit', new ParseIntPipe()) limit: number = 10,
     @Query('query') query: string,
     @Query('username') username: string,
     @Query('withPlaylist', ParseBoolPipe) withPlaylist: boolean = false,

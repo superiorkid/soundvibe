@@ -7,8 +7,11 @@ export const authKeys = {
 
 export const audioKeys = {
   all: ["audio"] as const,
-  audioWithRepost: (showRepost: boolean) =>
-    [...audioKeys.all, { showRepost }] as const,
+  audioWithRepost: (params: {
+    showRepost: boolean;
+    page?: number;
+    limit?: number;
+  }) => [...audioKeys.all, params] as const,
   detailById: (audioId: string) => [...audioKeys.all, { audioId }] as const,
   detailBySlug: (slug: string) => [...audioKeys.all, { slug }] as const,
   recentLiked: (params: {
@@ -90,7 +93,7 @@ export const followKeys = {
   all: ["follows"] as const,
   getFollowersById: (userId: string) =>
     [...followKeys.all, { userId, mode: "get-followers" }] as const,
-  getFollowingById: (params: { userId: string; filter?: string }) =>
+  getFollowingById: (params: { userId: string; filter?: string | null }) =>
     [...followKeys.all, { ...params, mode: "get-following" }] as const,
   getSuggestedUsers: (limit: number = 10) =>
     [...followKeys.all, { mode: "get-suggested-users", limit }] as const,

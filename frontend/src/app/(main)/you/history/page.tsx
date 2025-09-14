@@ -18,6 +18,7 @@ const YourListeningHistoryPage = async () => {
     queryKey: listeningHistoryKeys.audioWithLimit({
       userId: userId as string,
       take: 25,
+      query: "",
     }),
     queryFn: async () =>
       getListehingHistory({ take: 25, userId: userId as string }),

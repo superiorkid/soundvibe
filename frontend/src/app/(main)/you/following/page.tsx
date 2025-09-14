@@ -13,7 +13,7 @@ const YourFollowingPage = async () => {
   const userId = session?.user.id as string;
 
   await queryClient.prefetchQuery({
-    queryKey: followKeys.getFollowingById({ userId }),
+    queryKey: followKeys.getFollowingById({ userId, filter: null }),
     queryFn: async () => getFollowing({ userId }),
   });
 

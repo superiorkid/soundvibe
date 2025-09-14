@@ -165,10 +165,17 @@ export class AudioService {
     }
   }
 
-  async allAudios(params: { showRepost: boolean; userId: string }) {
+  async allAudios(params: {
+    showRepost: boolean;
+    userId: string;
+    limit: number;
+    page: number;
+  }) {
+    const { limit, page, showRepost, userId } = params;
+
     try {
       const currentUser = await this.usersRepository.findOne({
-        where: { id: params.userId },
+        where: { id: userId },
         include: { following: { select: { followingId: true } } },
       });
 
@@ -194,11 +201,9 @@ export class AudioService {
         },
       });
 
-      const reposts = params.showRepost
+      const reposts = showRepost
         ? await this.repostRepository.findAll({
-            where: {
-              userId: { in: visibleUserIds },
-            },
+            where: { userId: { in: visibleUserIds } },
             include: {
               user: true,
               audio: {
@@ -239,18 +244,18 @@ export class AudioService {
         },
       }));
 
-      const mergedFeed = params.showRepost
-        ? [...audioFeed, ...repostFeed].sort(
-            (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
-          )
-        : audioFeed.sort(
-            (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
-          );
+      let mergedFeed = showRepost ? [...audioFeed, ...repostFeed] : audioFeed;
+
+      mergedFeed = mergedFeed.sort(
+        (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
+      );
+
+      const paginatedFeed = mergedFeed.slice((page - 1) * limit, page * limit);
 
       return {
         success: true,
         message: 'Successfully retrieved audio tracks',
-        data: mergedFeed,
+        data: paginatedFeed,
       };
     } catch (error) {
       this.logger.error(error);
