@@ -1,5 +1,6 @@
 "use client";
 
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import {
   HoverCard,
   HoverCardContent,
@@ -22,14 +23,15 @@ import {
   ShuffleIcon,
   SkipBackIcon,
   SkipForwardIcon,
-  UserPlusIcon,
   Volume1Icon,
   Volume2Icon,
   VolumeOffIcon,
   VolumeXIcon,
 } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
+import PlaylistOption from "../(main)/_components/playlist-option";
 
 const AudioPlayer = () => {
   const {
@@ -45,10 +47,12 @@ const AudioPlayer = () => {
   const { data: session } = authClient.useSession();
 
   const { audio } = useAudioBySlug(currentTrack?.slug || "");
-  const { hasLiked, toggleLikeMutation, isPending } = useLike(
-    audio?.data as TAudio,
-    session?.user.id as string
-  );
+
+  const {
+    hasLiked,
+    toggleLikeMutation,
+    isPending: isLikePending,
+  } = useLike(audio?.data as TAudio, session?.user.id as string);
 
   const { lastTrack } = useLastTrack();
 
@@ -88,7 +92,7 @@ const AudioPlayer = () => {
     return <Volume2Icon size={16} />;
   };
 
-  // show player if we have either a current track or a persisted lastTrack
+  // Don’t render if no track
   if (!currentTrack && !lastTrack) return null;
 
   return (
@@ -194,17 +198,24 @@ const AudioPlayer = () => {
                 )}
               </div>
               <div className="text-sm max-w-[172px] space-y-0.5">
-                <h2 className="font-medium text-xs text-muted-foreground line-clamp-1 capitalize">
-                  {currentTrack.artist ?? "Unknown Artist"}
+                <h2 className="font-medium text-xs text-muted-foreground line-clamp-1 capitalize hover:cursor-pointer hover:opacity-50">
+                  <Link href={`/${currentTrack.user.displayUsername}`}>
+                    {currentTrack.artist ?? "Unknown Artist"}
+                  </Link>
                 </h2>
-                <p className="font-semibold text-xs tracking-wide line-clamp-1 capitalize">
-                  {currentTrack.title}
+                <p className="font-semibold text-xs tracking-wide line-clamp-1 capitalize hover:cursor-pointer hover:opacity-50">
+                  <Link
+                    href={`/${currentTrack.user.displayUsername}/${currentTrack.slug}`}
+                  >
+                    {currentTrack.title}
+                  </Link>
                 </p>
               </div>
             </div>
             <div className="flex items-center gap-7">
+              {/* Like */}
               <button
-                disabled={isPending}
+                disabled={isLikePending}
                 onClick={() => toggleLikeMutation()}
                 className="hover:cursor-pointer"
               >
@@ -220,12 +231,23 @@ const AudioPlayer = () => {
                   {hasLiked ? "Dislike" : "Like"} Track
                 </span>
               </button>
-              <button>
-                <UserPlusIcon size={17} strokeWidth={2} />
-              </button>
-              <button>
-                <ListPlusIcon size={17} strokeWidth={2} />
-              </button>
+
+              <Dialog>
+                <DialogTrigger
+                  className="hover:cursor-pointer flex items-center gap-1.5"
+                  asChild
+                >
+                  <button>
+                    <ListPlusIcon size={16} strokeWidth={2} />
+                  </button>
+                </DialogTrigger>
+                <DialogContent
+                  className="top-[8%] left-[50%] translate-x-[-50%] translate-y-[-0%] data-[state=open]:slide-in-from-top-90 data-[state=closed]:slide-out-to-top-90 duration-400 rounded-md min-w-[556px] p-4"
+                  onInteractOutside={(event) => event.preventDefault()}
+                >
+                  <PlaylistOption audio={currentTrack} />
+                </DialogContent>
+              </Dialog>
             </div>
           </div>
         )}

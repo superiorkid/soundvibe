@@ -42,7 +42,12 @@ const RepostsPage = ({ username }: RepostsPageProps) => {
   return (
     <div className="space-y-6">
       {tracks.data.map((track, index) => (
-        <TrackCard key={index} audio={track.audio as TAudio} type="repost" />
+        <TrackCard
+          key={index}
+          audio={track.audio as TAudio}
+          type="repost"
+          whosReposted={track.user}
+        />
       ))}
     </div>
   );

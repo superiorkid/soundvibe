@@ -15,9 +15,13 @@ import { toast } from "sonner";
 
 const queryClient = getQueryClient();
 
-export function useFollow(params: { user: TUser; currentUserId: string }) {
+export function useFollow(params: {
+  user: TUser;
+  currentUserId: string;
+  onOperationComplete?: (isNowFollowing: boolean) => void;
+}) {
   const { user, currentUserId } = params;
-  const hasFollowUser = !!user.followers?.some(
+  const hasFollowUser = !!user?.followers?.some(
     (follow) => follow.followerId === currentUserId
   );
 
@@ -34,6 +38,9 @@ export function useFollow(params: { user: TUser; currentUserId: string }) {
       queryClient.invalidateQueries({ queryKey: audioKeys.all });
       queryClient.invalidateQueries({ queryKey: commentKeys.all });
       queryClient.invalidateQueries({ queryKey: userKeys.all });
+
+      const isNowFollowing = !hasFollowUser;
+      params.onOperationComplete?.(isNowFollowing);
     },
   });
 

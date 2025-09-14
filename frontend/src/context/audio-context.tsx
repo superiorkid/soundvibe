@@ -26,6 +26,7 @@ interface AudioState {
   setCurrentTime: (time: number) => void;
   resetTrack: () => void;
   clearTrack: () => void;
+  setCurrentTrack: React.Dispatch<React.SetStateAction<TAudio | null>>;
 }
 
 const AudioContext = createContext<AudioState | null>(null);
@@ -201,6 +202,7 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
         pauseTrack,
         stopTrack,
         clearTrack,
+        setCurrentTrack,
       }}
     >
       {children}

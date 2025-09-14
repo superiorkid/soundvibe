@@ -5,14 +5,16 @@ import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import UserTooltip from "@/components/user-tooltip";
 import { useAudio } from "@/context/audio-context";
+import { getInitials, isAbsoluteUrl } from "@/lib/utils";
 import { TAudio } from "@/types/audio.type";
+import { TUser } from "@/types/user.type";
 import { formatDistance } from "date-fns";
 import { PauseIcon, PlayIcon, Repeat2Icon } from "lucide-react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 import { PlayerActions } from "./player-actions";
-import { isAbsoluteUrl } from "@/lib/utils";
+import AuthDialog from "@/app/_components/auth-dialog";
 
 const TrackVisualizer = dynamic(() => import("./track-visualizer"), {
   ssr: false,
@@ -23,6 +25,7 @@ interface TrackCardProps {
   type?: "audio" | "repost";
   showActionText?: boolean;
   repostedAt?: Date;
+  whosReposted?: TUser;
 }
 
 const TrackCard = ({
@@ -30,6 +33,7 @@ const TrackCard = ({
   type = "audio",
   showActionText = true,
   repostedAt,
+  whosReposted,
 }: TrackCardProps) => {
   const { currentTrack, isPlaying, playTrack, togglePlay } = useAudio();
 
@@ -47,23 +51,38 @@ const TrackCard = ({
   return (
     <div className="space-y-2.5">
       <div className="flex gap-2 items-center">
-        <Avatar className="size-8">
-          <AvatarImage
-            src={
-              audio.user.image
-                ? isAbsoluteUrl(audio.user.image)
-                  ? audio.user.image
-                  : `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/users/cover/${audio.user.id}`
-                : "https://github.com/shadcn.png"
-            }
-          />
-          <AvatarFallback>CN</AvatarFallback>
-        </Avatar>
+        {whosReposted ? (
+          <Avatar className="size-8">
+            <AvatarImage
+              src={
+                whosReposted.image
+                  ? isAbsoluteUrl(whosReposted.image)
+                    ? whosReposted.image
+                    : `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/users/cover/${whosReposted.id}`
+                  : "https://github.com/shadcn.png"
+              }
+            />
+            <AvatarFallback>{getInitials(whosReposted.name)}</AvatarFallback>
+          </Avatar>
+        ) : (
+          <Avatar className="size-8">
+            <AvatarImage
+              src={
+                audio.user.image
+                  ? isAbsoluteUrl(audio.user.image)
+                    ? audio.user.image
+                    : `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/users/cover/${audio.user.id}`
+                  : "https://github.com/shadcn.png"
+              }
+            />
+            <AvatarFallback>{audio.user.name}</AvatarFallback>
+          </Avatar>
+        )}
 
         <Label className="font-medium">
-          <UserTooltip user={audio.user}>
+          <UserTooltip user={whosReposted ?? audio.user}>
             <span className="hover:cursor-pointer hover:opacity-50">
-              {audio.user.name}
+              {whosReposted?.name ?? audio.user.name}
             </span>
           </UserTooltip>
           {showActionText && (

@@ -79,6 +79,7 @@ const AudioList = () => {
               audio={audio?.audio as TAudio}
               type={audio?.type}
               repostedAt={audio?.createdAt}
+              whosReposted={audio?.user}
             />
           </div>
         );
