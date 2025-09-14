@@ -10,6 +10,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { Throttle } from '@nestjs/throttler';
 import { ListeningHistoryService } from './listening-history.service';
 
 @Controller({ version: '1' })
@@ -17,6 +18,7 @@ import { ListeningHistoryService } from './listening-history.service';
 export class ListeningHistoryController {
   constructor(private listeningHistoryService: ListeningHistoryService) {}
 
+  @Throttle({ default: { limit: 60, ttl: 60000 } })
   @Get('users/:userId/listening-history')
   @ApiQuery({ name: 'take' })
   async getListeningHistory(
@@ -38,6 +40,7 @@ export class ListeningHistoryController {
   }
 
   @Post('listening-history/:audioId')
+  @Throttle({ default: { limit: 60, ttl: 60000 } })
   @ApiParam({ name: 'audioId' })
   @HttpCode(HttpStatus.CREATED)
   async setListeningHistory(

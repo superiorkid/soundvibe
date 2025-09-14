@@ -36,6 +36,7 @@ import {
   ApiTags,
   ApiUnsupportedMediaTypeResponse,
 } from '@nestjs/swagger';
+import { Throttle } from '@nestjs/throttler';
 import type { Request, Response } from 'express';
 import { FormDataRequest } from 'nestjs-form-data';
 import { UsersRepository } from '../users/users.repository';
@@ -294,6 +295,8 @@ export class AudioController {
   }
 
   @Public()
+  @Throttle({ 'streaming-generous': { limit: 1000, ttl: 60000 } })
+  @Get('stream/:id')
   @Get('stream/:id')
   @ApiOperation({
     summary: 'Stream audio file',
@@ -820,6 +823,7 @@ export class AudioController {
     },
   })
   @ApiBearerAuth()
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
   async incrementPlay(
     @Param('id') id: string,
     @Session() session: UserSession,
