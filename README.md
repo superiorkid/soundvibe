@@ -212,9 +212,3 @@ COOKIE_NAME=better-auth.session_token
 
 - Open an issue or PR. Follow code style and run tests.
 - Branching model: `main` for production, feature branches for new work.
-
----
-
-## License
-
-MIT License
