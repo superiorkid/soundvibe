@@ -19,6 +19,8 @@ import {
   ListPlusIcon,
   PauseIcon,
   PlayIcon,
+  Repeat1Icon,
+  Repeat2Icon,
   RepeatIcon,
   ShuffleIcon,
   SkipBackIcon,
@@ -44,6 +46,10 @@ const AudioPlayer = () => {
     audioRef,
     playNext,
     playPrevious,
+    shuffle,
+    repeat,
+    toggleShuffle,
+    toggleRepeat,
   } = useAudio();
 
   const { data: session } = authClient.useSession();
@@ -128,11 +134,26 @@ const AudioPlayer = () => {
 
         {/* Progress & Volume */}
         <div className="flex items-center gap-6 flex-1">
-          <button>
-            <ShuffleIcon size={16} />
+          <button onClick={toggleShuffle} className="hover:cursor-pointer">
+            <ShuffleIcon
+              size={16}
+              className={cn(shuffle && "stroke-red-500")}
+            />
           </button>
-          <button>
-            <RepeatIcon size={16} />
+          <button onClick={toggleRepeat} className="hover:cursor-pointer">
+            {repeat === "one" ? (
+              <Repeat1Icon
+                size={16}
+                className={cn(repeat && "stroke-red-500")}
+              />
+            ) : repeat === "all" ? (
+              <Repeat2Icon
+                size={16}
+                className={cn(repeat && "stroke-red-500")}
+              />
+            ) : (
+              <RepeatIcon size={16} />
+            )}
           </button>
           <div className="flex items-center gap-2 w-full">
             <Label>{formatTime(seeking ? tempTime : currentTime)}</Label>

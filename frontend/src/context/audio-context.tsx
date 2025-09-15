@@ -12,6 +12,8 @@ import React, {
   useState,
 } from "react";
 
+type RepeatMode = "off" | "one" | "all";
+
 interface AudioState {
   audioRef: React.MutableRefObject<HTMLAudioElement | null>;
 
@@ -38,6 +40,11 @@ interface AudioState {
   resetTrack: () => void;
   clearTrack: () => void;
   setCurrentTrack: React.Dispatch<React.SetStateAction<TAudio | null>>;
+
+  shuffle: boolean;
+  repeat: RepeatMode;
+  toggleShuffle: () => void;
+  toggleRepeat: () => void;
 }
 
 const AudioContext = createContext<AudioState | null>(null);
@@ -54,6 +61,13 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
 
   const [queue, setQueueState] = useState<TAudio[]>([]);
   const [currentIndex, setCurrentIndex] = useState<number>(-1);
+
+  const [shuffle, setShuffle] = useState<boolean>(false);
+  const [repeat, setRepeat] = useState<RepeatMode>("off");
+
+  const toggleShuffle = () => setShuffle(!shuffle);
+  const toggleRepeat = () =>
+    setRepeat(repeat === "off" ? "all" : repeat === "all" ? "one" : "off");
 
   // local flag for preventing multiple play counts
   const hasCountedRef = useRef(false);
@@ -80,18 +94,12 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
 
     const updateDuration = () => setDuration(audio.duration || 0);
     const handleEnded = () => {
-      // setIsPlaying(false);
-      // setCurrentTime(0);
-      // if (audioRef.current) {
-      //   audioRef.current.currentTime = 0;
-      //   audioRef.current.pause();
-      // }
-
-      if (currentIndex < queue.length - 1) {
-        playNext();
-      } else {
-        stopTrack();
+      if (repeat === "one") {
+        playTrack(currentTrack, 0);
+        return;
       }
+
+      playNext();
     };
 
     audio.addEventListener("timeupdate", updateTime);
@@ -203,22 +211,54 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const playNext = () => {
+    if (shuffle && queue.length > 1) {
+      // pick a random index that isn't the current one
+      let nextIndex = currentIndex;
+      while (nextIndex === currentIndex) {
+        nextIndex = Math.floor(Math.random() * queue.length);
+      }
+      setCurrentIndex(nextIndex);
+      playTrack(queue[nextIndex]);
+      return;
+    }
+
     if (currentIndex < queue.length - 1) {
       const nextIndex = currentIndex + 1;
       setCurrentIndex(nextIndex);
       playTrack(queue[nextIndex]);
     } else {
-      stopTrack(); // or loop
+      if (repeat === "all") {
+        setCurrentIndex(0);
+        playTrack(queue[0]);
+      } else {
+        stopTrack();
+      }
     }
   };
 
   const playPrevious = () => {
+    if (shuffle && queue.length > 1) {
+      let prevIndex = currentIndex;
+      while (prevIndex === currentIndex) {
+        prevIndex = Math.floor(Math.random() * queue.length);
+      }
+      setCurrentIndex(prevIndex);
+      playTrack(queue[prevIndex]);
+      return;
+    }
+
     if (currentIndex > 0) {
       const prevIndex = currentIndex - 1;
       setCurrentIndex(prevIndex);
       playTrack(queue[prevIndex]);
     } else {
-      stopTrack();
+      if (repeat === "all") {
+        const lastIndex = queue.length - 1;
+        setCurrentIndex(lastIndex);
+        playTrack(queue[lastIndex]);
+      } else {
+        stopTrack();
+      }
     }
   };
 
@@ -254,6 +294,10 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
         playPrevious,
         queue,
         setQueue,
+        shuffle,
+        repeat,
+        toggleShuffle,
+        toggleRepeat,
       }}
     >
       {children}
