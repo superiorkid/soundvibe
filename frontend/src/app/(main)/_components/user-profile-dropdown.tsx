@@ -81,7 +81,9 @@ const UserProfileDropdown = ({ user }: UserProfileDropdownProps) => {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem>Settings</DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link href="/settings">Settings</Link>
+          </DropdownMenuItem>
           <DropdownMenuItem
             onClick={() => {
               authClient.signOut({

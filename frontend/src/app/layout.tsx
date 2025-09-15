@@ -7,6 +7,7 @@ import { type Metadata } from "next";
 import { Geist } from "next/font/google";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 
+import { ThemeProvider } from "@/providers/theme-provider";
 import "./globals.css";
 
 const geist = Geist({
@@ -31,28 +32,35 @@ export default function RootLayout({
           geist.className
         )}
       >
-        <QueryClientProvider>
-          <AudioProvider>
-            <div className="max-w-7xl mx-auto px-5 2xl:px-0">
-              <NuqsAdapter>
-                <ReactLenis
-                  root
-                  options={{
-                    lerp: 0.1,
-                    duration: 1.2,
-                    smoothWheel: true,
-                    syncTouch: true,
-                    syncTouchLerp: 0.075,
-                    wheelMultiplier: 1,
-                    touchMultiplier: 1.5,
-                  }}
-                />
-                {children}
-                <Toaster richColors expand />
-              </NuqsAdapter>
-            </div>
-          </AudioProvider>
-        </QueryClientProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <QueryClientProvider>
+            <AudioProvider>
+              <div className="max-w-7xl mx-auto px-5 2xl:px-0">
+                <NuqsAdapter>
+                  <ReactLenis
+                    root
+                    options={{
+                      lerp: 0.1,
+                      duration: 1.2,
+                      smoothWheel: true,
+                      syncTouch: true,
+                      syncTouchLerp: 0.075,
+                      wheelMultiplier: 1,
+                      touchMultiplier: 1.5,
+                    }}
+                  />
+                  {children}
+                  <Toaster richColors expand />
+                </NuqsAdapter>
+              </div>
+            </AudioProvider>
+          </QueryClientProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

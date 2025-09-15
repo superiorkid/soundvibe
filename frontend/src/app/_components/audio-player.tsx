@@ -104,12 +104,12 @@ const AudioPlayer = () => {
   if (!currentTrack && !lastTrack) return null;
 
   return (
-    <div className="fixed bottom-0 left-0 w-full h-13 border-t px-5 2xl:px-0 bg-zinc-100 border-zinc-300 z-50">
+    <div className="fixed bottom-0 left-0 w-full h-13 border-t px-5 2xl:px-0  bg-zinc-100 dark:bg-zinc-800 border-zinc-300 dark:border-zinc-700 z-50">
       <div className="max-w-7xl mx-auto h-full flex items-center gap-8">
         {/* Playback Controls */}
         <div className="flex items-center gap-5">
           <button onClick={playPrevious} className="hover:cursor-pointer">
-            <SkipBackIcon size={19} fill="black" />
+            <SkipBackIcon size={19} className="fill-foreground" />
           </button>
           <button
             className="p-2 rounded-full border border-background bg-foreground text-background"
@@ -128,7 +128,7 @@ const AudioPlayer = () => {
             )}
           </button>
           <button onClick={playNext} className="hover:cursor-pointer">
-            <SkipForwardIcon size={19} fill="black" />
+            <SkipForwardIcon size={19} className="fill-foreground" />
           </button>
         </div>
 
