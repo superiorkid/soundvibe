@@ -14,7 +14,7 @@ const ThemeSwitcherRadioGroup = () => {
       className="space-y-1.5"
     >
       <div className="flex items-center space-x-2">
-        <RadioGroupItem value="light" id="option-one" />
+        <RadioGroupItem value="light" id="light" />
         <Label htmlFor="light">Light</Label>
       </div>
       <div className="flex items-center space-x-2">
