@@ -42,6 +42,8 @@ const AudioPlayer = () => {
     seekTo,
     currentTrack,
     audioRef,
+    playNext,
+    playPrevious,
   } = useAudio();
 
   const { data: session } = authClient.useSession();
@@ -100,7 +102,7 @@ const AudioPlayer = () => {
       <div className="max-w-7xl mx-auto h-full flex items-center gap-8">
         {/* Playback Controls */}
         <div className="flex items-center gap-5">
-          <button>
+          <button onClick={playPrevious} className="hover:cursor-pointer">
             <SkipBackIcon size={19} fill="black" />
           </button>
           <button
@@ -119,7 +121,7 @@ const AudioPlayer = () => {
               />
             )}
           </button>
-          <button>
+          <button onClick={playNext} className="hover:cursor-pointer">
             <SkipForwardIcon size={19} fill="black" />
           </button>
         </div>

@@ -14,7 +14,6 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 import { PlayerActions } from "./player-actions";
-import AuthDialog from "@/app/_components/auth-dialog";
 
 const TrackVisualizer = dynamic(() => import("./track-visualizer"), {
   ssr: false,
@@ -22,6 +21,8 @@ const TrackVisualizer = dynamic(() => import("./track-visualizer"), {
 
 interface TrackCardProps {
   audio: TAudio;
+  index?: number;
+  allAudios?: TAudio[];
   type?: "audio" | "repost";
   showActionText?: boolean;
   repostedAt?: Date;
@@ -34,15 +35,20 @@ const TrackCard = ({
   showActionText = true,
   repostedAt,
   whosReposted,
+  allAudios,
+  index,
 }: TrackCardProps) => {
-  const { currentTrack, isPlaying, playTrack, togglePlay } = useAudio();
+  const { currentTrack, isPlaying, playTrack, togglePlay, setQueue } =
+    useAudio();
 
   const isThisTrackPlaying =
     currentTrack?.audioFile.url === audio.audioFile.url && isPlaying;
 
   const handlePlay = () => {
-    if (currentTrack?.audioFile.url === audio.audioFile.url) {
+    if (currentTrack?.id === audio.id) {
       togglePlay();
+    } else if (allAudios) {
+      setQueue(allAudios, index!);
     } else {
       playTrack(audio);
     }

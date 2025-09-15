@@ -14,10 +14,21 @@ import React, {
 
 interface AudioState {
   audioRef: React.MutableRefObject<HTMLAudioElement | null>;
+
+  queue: TAudio[];
+  currentIndex: number;
   currentTrack: TAudio | null;
+
   isPlaying: boolean;
   currentTime: number;
   duration: number;
+
+  // Queue functions
+  setQueue: (tracks: TAudio[], startIndex?: number) => void;
+  playNext: () => void;
+  playPrevious: () => void;
+
+  // Player functions
   playTrack: (track: TAudio | null, startTime?: number) => void;
   togglePlay: () => void;
   seekTo: (time: number) => void;
@@ -40,6 +51,9 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, _setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+
+  const [queue, setQueueState] = useState<TAudio[]>([]);
+  const [currentIndex, setCurrentIndex] = useState<number>(-1);
 
   // local flag for preventing multiple play counts
   const hasCountedRef = useRef(false);
@@ -66,11 +80,17 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
 
     const updateDuration = () => setDuration(audio.duration || 0);
     const handleEnded = () => {
-      setIsPlaying(false);
-      setCurrentTime(0);
-      if (audioRef.current) {
-        audioRef.current.currentTime = 0;
-        audioRef.current.pause();
+      // setIsPlaying(false);
+      // setCurrentTime(0);
+      // if (audioRef.current) {
+      //   audioRef.current.currentTime = 0;
+      //   audioRef.current.pause();
+      // }
+
+      if (currentIndex < queue.length - 1) {
+        playNext();
+      } else {
+        stopTrack();
       }
     };
 
@@ -176,6 +196,32 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
     setLastTrack(null);
   };
 
+  const setQueue = (tracks: TAudio[], startIndex = 0) => {
+    setQueueState(tracks);
+    setCurrentIndex(startIndex);
+    playTrack(tracks[startIndex]);
+  };
+
+  const playNext = () => {
+    if (currentIndex < queue.length - 1) {
+      const nextIndex = currentIndex + 1;
+      setCurrentIndex(nextIndex);
+      playTrack(queue[nextIndex]);
+    } else {
+      stopTrack(); // or loop
+    }
+  };
+
+  const playPrevious = () => {
+    if (currentIndex > 0) {
+      const prevIndex = currentIndex - 1;
+      setCurrentIndex(prevIndex);
+      playTrack(queue[prevIndex]);
+    } else {
+      stopTrack();
+    }
+  };
+
   useEffect(() => {
     try {
       if (lastTrack) {
@@ -203,6 +249,11 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
         stopTrack,
         clearTrack,
         setCurrentTrack,
+        playNext,
+        currentIndex,
+        playPrevious,
+        queue,
+        setQueue,
       }}
     >
       {children}

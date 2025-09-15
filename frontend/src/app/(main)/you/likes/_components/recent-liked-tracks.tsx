@@ -62,6 +62,8 @@ const RecentLikedTracks = () => {
           key={index}
           audio={track.audio as TAudio}
           showActionText={false}
+          allAudios={recent.map((like) => like.audio as TAudio)}
+          index={index}
         />
       ))}
     </div>

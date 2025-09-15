@@ -47,6 +47,8 @@ const RepostsPage = ({ username }: RepostsPageProps) => {
           audio={track.audio as TAudio}
           type="repost"
           whosReposted={track.user}
+          allAudios={tracks.data?.map((a) => a.audio as TAudio)}
+          index={index}
         />
       ))}
     </div>

@@ -80,6 +80,8 @@ const AudioList = () => {
               type={audio?.type}
               repostedAt={audio?.createdAt}
               whosReposted={audio?.user}
+              allAudios={audios.map((a) => a?.audio as TAudio)}
+              index={index}
             />
           </div>
         );

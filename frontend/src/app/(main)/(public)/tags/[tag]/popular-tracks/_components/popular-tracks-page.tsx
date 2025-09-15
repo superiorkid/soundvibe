@@ -52,8 +52,14 @@ const PopularTracksPage = ({ name }: PopularTracksByTagProps) => {
 
   return (
     <div className="space-y-6">
-      {tracks.data.map((track) => (
-        <TrackCard key={track.id} audio={track} type="audio" />
+      {tracks.data.map((track, index) => (
+        <TrackCard
+          key={track.id}
+          audio={track}
+          type="audio"
+          allAudios={tracks.data}
+          index={index}
+        />
       ))}
     </div>
   );

@@ -116,6 +116,7 @@ const PlaylistsCard = ({ playlist }: PlaylistsCardProps) => {
               index={index}
               audio={audio.audio}
               onPlay={(selected) => setActiveAudio(selected)}
+              allAudios={visibleAudios.map((a) => a.audio)}
             />
           ))}
 

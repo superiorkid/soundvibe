@@ -13,10 +13,17 @@ interface TrackCardCompactProps {
   audio: TAudio;
   index: number;
   onPlay?: (audio: TAudio) => void;
+  allAudios?: TAudio[];
 }
 
-const TrackCardCompact = ({ audio, index, onPlay }: TrackCardCompactProps) => {
-  const { currentTrack, isPlaying, playTrack, togglePlay } = useAudio();
+const TrackCardCompact = ({
+  audio,
+  index,
+  onPlay,
+  allAudios,
+}: TrackCardCompactProps) => {
+  const { currentTrack, isPlaying, playTrack, togglePlay, setQueue } =
+    useAudio();
 
   const isThisTrackPlaying =
     currentTrack?.audioFile?.url === audio.audioFile?.url && isPlaying;
@@ -24,6 +31,8 @@ const TrackCardCompact = ({ audio, index, onPlay }: TrackCardCompactProps) => {
   const handlePlay = () => {
     if (currentTrack?.audioFile.url === audio.audioFile.url) {
       togglePlay();
+    } else if (allAudios) {
+      setQueue(allAudios, index!);
     } else {
       playTrack(audio);
     }
