@@ -35,11 +35,7 @@ const UserContentTabs = ({ username }: UserContentTabs) => {
 
   const isCurrentUser = username === (session?.user as TUser)?.displayUsername;
 
-  const {
-    isError: isUserError,
-    isPending: isUserLoading,
-    user,
-  } = useUserByUsername(username);
+  const { isPending: isUserLoading, user } = useUserByUsername(username);
 
   const {
     followUserToggleMutation,

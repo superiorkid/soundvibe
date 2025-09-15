@@ -2,7 +2,6 @@
 
 import UserSummaryPanel from "@/components/user-summary-panel";
 import { useUsersWhoLikedAudio } from "@/hooks/tanstack/audio";
-import { authClient } from "@/lib/auth-client";
 import { TUser } from "@/types/user.type";
 import { Loader2Icon } from "lucide-react";
 

@@ -37,7 +37,7 @@ import { FileUploadModule } from './shared/file-upload/file-upload.module';
       throttlers: [
         {
           ttl: 60000,
-          limit: 10,
+          limit: 25,
         },
       ],
     }),
