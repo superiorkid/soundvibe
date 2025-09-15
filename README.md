@@ -1,4 +1,4 @@
-# SoundCloud Clone
+# Soundvibe
 
 A full-featured SoundCloud-like application built with Next.js (frontend) and NestJS (backend). Features streaming audio, playlists, social interactions and more — designed for fast development and production deployment.
 
