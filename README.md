@@ -2,6 +2,20 @@
 
 A full-featured SoundCloud-like application built with Next.js (frontend) and NestJS (backend). Features streaming audio, playlists, social interactions and more — designed for fast development and production deployment.
 
+## Screenshots
+
+> Example UI previews of the app
+
+| Auth Dialog                                   | Detail Track                                     |
+| --------------------------------------------- | ------------------------------------------------ |
+| ![Upload PDF](./screenshoots/auth-dialog.png) | ![Chat with PDF](./screenshoots/detail-page.png) |
+
+| Feed / Homepage                           | Landing Page                                      |
+| ----------------------------------------- | ------------------------------------------------- |
+| ![Homepage](./screenshoots/feed-page.png) | ![Chat with PDF](./screenshoots/landing-page.png) |
+
+---
+
 > **Stack**
 
 - **Frontend:** Next.js, TailwindCSS, shadcn-ui, TanStack Query (React Query)
